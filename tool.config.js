@@ -1,0 +1,1 @@
+require('bam-auto-tool')({})

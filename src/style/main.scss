@@ -1,0 +1,21 @@
+@import 'transition';
+
+#app {
+  height: 100vh;
+}
+
+#layout {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+.btn-pill {
+  width: 100%;
+  padding: 0.5rem 1rem;
+  border-width: 1px;
+  border-radius: 99rem;
+  &:focus {
+    outline: none;
+  }
+}
