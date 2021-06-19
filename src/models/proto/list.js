@@ -76,9 +76,12 @@ export default class ListModel {
         )
       }
     })
-    return this.cache.filter((p) => {
-      return data.find((m) => Number(m[this.primaryKey]) === Number(p[this.primaryKey]))
+    const model = this.cache.filter((p) => {
+      return data.find((m) => {
+        return Number(m[this.primaryKey]) === Number(p[this.primaryKey])
+      })
     })
+    return model
   }
 
   /**

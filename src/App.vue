@@ -15,6 +15,9 @@ export default {
     window.addEventListener('resize', () => {
       store.commit('setWindowInnerWidth')
     })
+    document.addEventListener('click', () => {
+      store.commit('setHeaderShow', false)
+    })
   },
 }
 </script>

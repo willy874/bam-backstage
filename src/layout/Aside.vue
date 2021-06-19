@@ -1,10 +1,10 @@
 <template>
   <div
-    class="bg-blue-600 h-full flex-shrink-0 border-r z-10 transform"
+    class="bg-primary-500 h-full flex-shrink-0 border-r z-10 transform"
     :style="{
       transition: 'all 0.3s',
       willChange: 'auto',
-      width: !global.asideShow && global.windowInnerWidth > deviceSwitch ? '40px' : `${asideWidth}px`,
+      width: !global.asideShow && global.windowInnerWidth > deviceSwitch ? `${global.iconWidth + 16}px` : `${asideWidth}px`,
       position: global.windowInnerWidth < deviceSwitch ? 'fixed' : 'relative',
       '--tw-translate-x': global.windowInnerWidth < deviceSwitch && !global.asideShow ? `-100%` : 0,
     }"

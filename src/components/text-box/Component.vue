@@ -96,7 +96,6 @@ export default {
             context.slots[name]()
           )
         : null
-    // const renderErrorBox = () => h('div')
     const renderInput = () =>
       h(type.value === 'textarea' ? 'textarea' : 'input', {
         ...context.attrs,

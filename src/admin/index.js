@@ -11,8 +11,8 @@ const AdminPlugin = {
   },
 }
 
-const useDatabase = () => {
+const useAdmin = () => {
   return AdminPlugin.admin
 }
 
-export { AdminPlugin, useDatabase }
+export { AdminPlugin, useAdmin }

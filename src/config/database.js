@@ -1,7 +1,7 @@
-// import { ArticleModel } from '@/models'
+import { ArticleModel } from '@/models/index'
 
 export default {
-  // Articles: {
-  //   model: ArticleModel,
-  // },
+  Articles: {
+    model: ArticleModel,
+  },
 }

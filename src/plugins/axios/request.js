@@ -12,7 +12,7 @@ export const axiosInstance = (ops = {}) => {
   const axios = Axios.create({
     baseURL: baseURL || `${config.api.baseUrl}`,
     headers: {
-      'X-Client-Version': config.version,
+      'X-Client-Version': config.api.version,
       ...headers,
     },
     params,
@@ -44,7 +44,7 @@ export const axiosInstance = (ops = {}) => {
     return Promise.reject(err)
   }
   const responseSuccess = (res) => {
-    LoadingModels[`${res.config.method}:${res.config.baseURL}${res.config.url}`] = null
+    LoadingModels[`${res.config.method}:${res.config.baseURL}${res.config.url}`] = res
     return res
   }
   const responseError = (err) => {

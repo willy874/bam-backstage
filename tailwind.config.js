@@ -1,5 +1,4 @@
 const colors = require('tailwindcss/colors')
-
 module.exports = {
   purge: ['./index.html', './src/**/*.{vue,js,ts,jsx,tsx}'],
   presets: [],
@@ -15,6 +14,10 @@ module.exports = {
     colors: {
       transparent: 'transparent',
       current: 'currentColor',
+      primary: {
+        mirror: '#fafafa',
+        500: '#17A2B8',
+      },
       black: colors.black,
       white: colors.white,
       gray: colors.coolGray,

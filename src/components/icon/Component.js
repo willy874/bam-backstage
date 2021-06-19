@@ -12,7 +12,7 @@ export default {
       required: true,
     },
     size: {
-      type: [String, Array, Object],
+      type: [Number, String, Array, Object],
       default: 'auto auto',
     },
     tag: {
@@ -22,6 +22,12 @@ export default {
   },
   setup(props, context) {
     const svgSize = () => {
+      if (typeof props.size === 'number') {
+        return {
+          width: props.size,
+          height: props.size,
+        }
+      }
       if (typeof props.size === 'string') {
         const size = props.size.split(',')
         return {

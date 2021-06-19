@@ -1,5 +1,5 @@
 <template>
-  <div @click="clickBtn" class="navbtn" :class="{ active: global.asideShow }">
+  <div @click="clickBtn" class="navbtn" :class="{ active: global[stateName] }">
     <div class="navbtn__line top-line"></div>
     <div class="navbtn__line center-line"></div>
     <div class="navbtn__line bottom-line"></div>
@@ -11,12 +11,23 @@ import { useStore } from 'vuex'
 
 export default {
   name: 'Navbtn',
-  setup() {
+  props: {
+    stateName: {
+      type: String,
+    },
+    commit: {
+      type: String,
+    },
+    action: {
+      type: String,
+    },
+  },
+  setup(props) {
     const store = useStore()
     return {
       global: ref(store.state.global),
       clickBtn: () => {
-        store.commit('setAsideShow', !store.state.global.asideShow)
+        store.commit(props.commit, !store.state.global[props.stateName])
       },
     }
   },

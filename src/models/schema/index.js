@@ -1,0 +1,4 @@
+module.exports = {
+  Article: require('./article.js'),
+  Image: require('./image.js'),
+}

@@ -6,8 +6,9 @@ export default {
     routes: {},
     windowInnerWidth: window.innerWidth,
     windowInnerHeight: window.innerHeight,
-    fontSize: 16,
+    iconWidth: 24,
     asideShow: window.innerWidth > config.layout.deviceSwitch,
+    headerShow: false,
   },
   mutations: {
     setLang(state, value) {
@@ -25,6 +26,13 @@ export default {
         state.asideShow = value
       } else {
         state.asideShow = !state.asideShow
+      }
+    },
+    setHeaderShow(state, value) {
+      if (typeof value === 'boolean') {
+        state.headerShow = value
+      } else {
+        state.headerShow = !state.headerShow
       }
     },
   },

@@ -31,7 +31,7 @@
     "@vitejs/plugin-vue": "^1.2.3",
     "@vue/compiler-sfc": "^3.0.5",
     "autoprefixer": "^10.2.6",
-    "bam-auto-tool": "ssh://git@github.com/willy874/bam-auto-tool.git#0.0.3",
+    "bam-auto-tool": "git+ssh://git@github.com/willy874/bam-auto-tool.git#0.0.4",
     "bam-utility-plugins": "git+ssh://git@github.com/willy874/bam-utility-plugins.git#0.1.6",
     "commitizen": "^4.2.4",
     "eslint": "^7.28.0",

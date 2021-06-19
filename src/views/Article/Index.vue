@@ -1,12 +1,9 @@
 <template>
-  <div>
-    <div>Article</div>
-    <RouterView />
-  </div>
+  <RouterView />
 </template>
 
 <script>
-export default {}
+export default {
+  name: 'Article',
+}
 </script>
-
-<style></style>

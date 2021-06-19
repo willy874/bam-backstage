@@ -9,28 +9,33 @@
           }"
         >
           <div class="px-3 flex-shrink-0" v-show="global.windowInnerWidth < deviceSwitch">
-            <Navbtn />
+            <Navbtn state-name="asideShow" commit="setAsideShow" />
           </div>
           <div class="flex-grow px-3 py-1">
             <img class="h-10" src="../assets/logo-light.png" alt="" />
           </div>
         </div>
       </template>
+      <template #right>
+        <HeaderBar />
+      </template>
     </Header>
     <div class="flex flex-grow relative">
       <Aside>
         <template #header>
           <div class="px-1 py-2" v-show="global.windowInnerWidth > deviceSwitch">
-            <Navbtn class="text-white" />
+            <Navbtn state-name="asideShow" commit="setAsideShow" class="text-primary-mirror" />
           </div>
         </template>
-        <div>456</div>
+        <div>
+          <Navbar :config="navbarConfig" />
+        </div>
         <template #footer>
-          <div>789</div>
+          <div></div>
         </template>
       </Aside>
       <main class="h-full flex-grow relative">
-        <div class="absolute inset-0 overflow-auto">
+        <div class="absolute inset-0 overflow-auto flex flex-col">
           <RouterView v-slot="{ Component, route }">
             <transition :name="route.meta.transition || 'fade'">
               <keep-alive>
@@ -49,8 +54,11 @@ import { ref } from 'vue'
 import { useStore } from 'vuex'
 import config from '@/config/index'
 import Header from './Header.vue'
+import HeaderBar from './HeaderBar.vue'
 import Aside from './Aside.vue'
+import Navbar from './Navbar.vue'
 import Navbtn from './Navbtn.vue'
+import navbarConfig from './navbar.config'
 
 export default {
   name: 'Layout',
@@ -58,6 +66,7 @@ export default {
     const store = useStore()
 
     return {
+      navbarConfig,
       global: ref(store.state.global),
       asideWidth: ref(config.layout.asideWidth),
       deviceSwitch: ref(config.layout.deviceSwitch),
@@ -65,7 +74,9 @@ export default {
   },
   components: {
     Header,
+    HeaderBar,
     Aside,
+    Navbar,
     Navbtn,
   },
 }
