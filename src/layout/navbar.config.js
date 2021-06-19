@@ -33,11 +33,4 @@ export default [
       name: 'News',
     },
   },
-  {
-    title: '上稿文章',
-    icon: 'Edit',
-    route: {
-      name: 'Article',
-    },
-  },
 ]

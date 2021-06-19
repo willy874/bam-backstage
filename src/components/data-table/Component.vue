@@ -27,18 +27,30 @@
           </div>
         </div>
         <div class="datatable__container__body" ref="body" @scroll="scrollBody">
-          <div v-for="(data, index) in listData.data" class="datatable__table__tr" :key="data.id" :style="{ gridTemplateColumns: widthTemplate }">
+          <div
+            v-for="(data, index) in listData.data"
+            class="datatable__table__tr"
+            :key="data.id"
+            :style="{ gridTemplateColumns: widthTemplate, cursor: clickTr ? 'pointer' : 'auto' }"
+            @click="clickTr || (() => {})"
+          >
             <div
               class="datatable__table__td"
               v-for="table in tables"
               :key="table.id"
               :style="{
                 textAlign: table.align,
+                cursor: clickTr ? 'pointer' : 'auto',
                 ...table.columnStyle,
                 ...table.bodyStyle,
               }"
+              @click="clickTd || (() => {})"
             >
-              <div v-if="typeof table.field === 'object' && table.field.render" :is="table.field" v-bind="{ listIndex: index, listData, ...table.props }"></div>
+              <template
+                v-if="typeof table.field === 'object' && table.field.render"
+                :is="table.field"
+                v-bind="{ listIndex: index, listData, ...table.props }"
+              ></template>
               <div
                 v-else
                 class="datatable__table__td__block"
@@ -46,6 +58,10 @@
                 v-html="content(table.field, index, listData)"
               ></div>
             </div>
+          </div>
+          <div v-if="list.loading" class="datatable__table__loading">
+            <slot name="loading" v-if="$slots.loading"></slot>
+            <div v-else class="datatable__table__loading__animation"></div>
           </div>
         </div>
         <div class="datatable__container__foot" v-if="$slots.footer">
@@ -80,6 +96,8 @@ import { ListModel } from '@/models/index'
  *
  * @param {Array<Tables>} tables 要放入的設定
  * @param {ListModel} list 要解算為 table 的 ListModel
+ * @param {Function} clickTr
+ * @param {Function} clickTd
  */
 export default {
   name: 'DataTable',
@@ -91,6 +109,14 @@ export default {
     list: {
       type: ListModel,
       default: () => new ListModel(),
+    },
+    clickTr: {
+      type: Function,
+      default: null,
+    },
+    clickTd: {
+      type: Function,
+      default: null,
     },
   },
   setup(props) {
@@ -155,6 +181,17 @@ export default {
     }
   },
 }
+/**
+ * drag
+ * dragend
+ * dragenter
+ * dragexit
+ * dragleave
+ * dragover
+ * dragstart
+ * drop
+ * dblclick
+ */
 </script>
 
 <style lang="scss" scoped>
@@ -196,6 +233,8 @@ export default {
     }
     &__body {
       position: relative;
+      display: flex;
+      flex-direction: column;
       flex-grow: 1;
       flex-shrink: 1;
       overflow: auto;
@@ -222,6 +261,7 @@ export default {
         background: #eee;
       }
       .datatable__table__tr {
+        flex-shrink: 0;
         &:last-of-type {
           border: 0;
         }
@@ -257,13 +297,28 @@ export default {
     }
   }
 }
-.datatable__table__tr {
-  display: grid;
-  text-decoration: none;
-}
 .datatable__table {
+  &__loading {
+    display: flex;
+    flex-grow: 1;
+    align-items: center;
+    justify-content: center;
+    &__animation {
+      width: 2rem;
+      height: 2rem;
+      border-color: transparent rgb(23, 162, 184) rgb(23, 162, 184);
+      border-width: 4px;
+      border-radius: 50%;
+      animation: rotate 1s linear infinite;
+    }
+  }
+  &__tr {
+    display: grid;
+    text-decoration: none;
+  }
   &__th {
     overflow: hidden;
+    font-size: 14px;
     &__block {
       width: 100%;
       padding: 0.5rem;
@@ -275,6 +330,7 @@ export default {
     display: flex;
     align-items: center;
     overflow: hidden;
+    font-size: 14px;
     color: #343a40;
     &__block {
       display: -webkit-box;
@@ -285,6 +341,14 @@ export default {
       white-space: normal;
       -webkit-box-orient: vertical;
     }
+  }
+}
+@keyframes rotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
   }
 }
 </style>

@@ -1,27 +1,25 @@
 <template>
   <PageLayout>
     <template #header>
-      <div class="border-b flex py-2">
-        <h2 class="text-2xl font-bold px-3">{{ routeTitle }}</h2>
+      <div class="border-b flex">
+        <div class="px-4 py-2">
+          <Breadcrumb />
+        </div>
+        <div class="flex items-end py-1"></div>
       </div>
     </template>
     <div class="flex-grow flex flex-col p-4">
       <DataTable v-bind="dataTableProps">
-        <template #header>
-          <div>頭部</div>
-        </template>
-        <template #footer>
-          <div>腳部</div>
-        </template>
+        <template #header v-if="dataTableHeater" :is="dataTableHeater"></template>
+        <template #footer v-if="dataTableFooter" :is="dataTableFooter"></template>
       </DataTable>
     </div>
-    <template #footer></template>
+    <template #footer v-if="pageFooter" :is="pageFooter"></template>
   </PageLayout>
 </template>
 
 <script>
 import { reactive } from 'vue'
-// import dayjs from 'dayjs'
 import PageLayout from '@/container/PageLayout.vue'
 import { ListModel, ArticleModel } from '@/models/index'
 
@@ -30,58 +28,58 @@ export default {
   props: {
     routeTitle: {
       type: String,
-      default: '文章編輯',
+      default: '',
+    },
+    modelSchema: {
+      type: Object,
+      default: () => ({
+        model: ArticleModel,
+      }),
+    },
+    pageHeater: {
+      type: Object,
+      default: () => null,
+    },
+    pageFooter: {
+      type: Object,
+      default: () => null,
+    },
+    dataTable: {
+      type: Object,
+      default: () => ({}),
+    },
+    dataTableHeater: {
+      type: Object,
+      default: () => null,
+    },
+    dataTableFooter: {
+      type: Object,
+      default: () => null,
+    },
+    setupTest: {
+      type: Function,
+      default: () => {},
     },
   },
-  setup() {
-    const listModelData = reactive(
-      new ListModel({
-        model: ArticleModel,
-      })
-    )
-    setTimeout(() => {
-      listModelData.set({
-        data: [
-          {
-            id: 1,
-            subject: '測試',
-            content: '',
-            image: {},
-            created_at: '',
-            published_at: '',
-            finished_at: '',
-            status: 1,
-          },
-        ],
-      })
-    }, 2000)
-
+  setup(props, context) {
+    const listModelData = reactive(new ListModel(props.modelSchema))
     const dataTableProps = reactive({
-      options: [
-        { title: 'No.', field: (item, index) => index + 1, width: '80px', align: 'center' },
-        {
-          title: '標題',
-          field: 'subject',
-          width: 1,
-          columnStyle: { minWidth: '160px' },
-          bodyStyle: { padding: '0 0.5rem' },
-          align: 'center',
-        },
-        {
-          title: '內容',
-          field: 'content',
-          width: 1,
-          columnStyle: { minWidth: '160px' },
-          bodyStyle: { padding: '0 0.5rem' },
-          align: 'center',
-        },
-        { title: '顯示/隱藏', field: (item) => (item.status ? '顯示' : '隱藏'), width: '100px', align: 'center' },
-      ],
+      ...props.dataTable,
       list: listModelData,
     })
-    return {
+
+    const setupResult = {
       dataTableProps,
     }
+
+    // 攔截回傳，資料檢測。
+    props.setupTest({
+      props,
+      context,
+      setupResult,
+    })
+
+    return setupResult
   },
   components: {
     PageLayout,

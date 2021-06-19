@@ -10,7 +10,7 @@ export default {
   components: {
     Layout,
   },
-  setup() {
+  created() {
     const store = useStore()
     window.addEventListener('resize', () => {
       store.commit('setWindowInnerWidth')
