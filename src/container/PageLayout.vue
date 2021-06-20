@@ -1,5 +1,5 @@
 <template>
-  <div class="flex-grow flex flex-col">
+  <div class="flex-grow flex flex-col py-2">
     <header v-if="$slots.header">
       <slot name="header"></slot>
     </header>

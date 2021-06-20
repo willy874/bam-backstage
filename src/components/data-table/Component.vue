@@ -1,11 +1,6 @@
 <template>
   <div class="datatable">
     <div class="datatable__container">
-      <!-- <div class="datatable__container__header" v-if="$slots.header">
-        <div class="datatable__table__tr">
-          <slot name="header"></slot>
-        </div>
-      </div> -->
       <div class="datatable__container__table">
         <div class="datatable__container__head" ref="head">
           <div class="datatable__table__tr" :style="{ gridTemplateColumns: widthTemplate }">
@@ -20,7 +15,7 @@
               }"
             >
               <div class="datatable__table__th__block">
-                <div v-if="typeof table.field === 'object' && table.title.render" :is="table.title" v-bind="{ listData, ...table.props }"></div>
+                <div v-if="typeof table.field === 'object' && table.title.render" :is="table.title" v-bind="{ listData, listIndex: -1, ...table.props }"></div>
                 <div v-else v-html="table.title"></div>
               </div>
             </div>
@@ -32,7 +27,7 @@
             class="datatable__table__tr"
             :key="data.id"
             :style="{ gridTemplateColumns: widthTemplate, cursor: clickTr ? 'pointer' : 'auto' }"
-            @click="clickTr || (() => {})"
+            @click="clickTrEvent(listData.data[index], index, listData, tables)"
           >
             <div
               class="datatable__table__td"
@@ -44,7 +39,7 @@
                 ...table.columnStyle,
                 ...table.bodyStyle,
               }"
-              @click="clickTd || (() => {})"
+              @click="clickTdEvent(listData.data[index], index, listData, table.props)"
             >
               <template
                 v-if="typeof table.field === 'object' && table.field.render"
@@ -64,9 +59,10 @@
             <div v-else class="datatable__table__loading__animation"></div>
           </div>
         </div>
-        <div class="datatable__container__foot" v-if="$slots.footer">
+        <div class="datatable__container__foot">
           <div class="datatable__table__tr">
-            <slot name="footer"></slot>
+            <slot v-if="$slots.footer" name="footer"></slot>
+            <FooterBar v-bind="{ setFilterList, listData: list, ajax }" />
           </div>
         </div>
       </div>
@@ -75,9 +71,10 @@
 </template>
 
 <script>
-import { reactive, computed, isReactive } from 'vue'
+import { ref, reactive, computed, isReactive } from 'vue'
 import { v4 as uuid } from 'uuid'
 import { ListModel } from '@/models/index'
+import FooterBar from './FooterBar.vue'
 
 /**
  * @type {Tables}
@@ -118,8 +115,12 @@ export default {
       type: Function,
       default: null,
     },
+    ajax: {
+      type: Boolean,
+      default: false,
+    },
   },
-  setup(props) {
+  setup(props, context) {
     const tables = reactive(
       props.options.map((item) => {
         return {
@@ -129,12 +130,19 @@ export default {
       })
     )
     const listData = isReactive(props.list) ? props.list : reactive(props.list)
-    const sortList = computed(() => {
-      return listData.data.map((model) => {
-        return {
-          id: model.id,
-        }
-      })
+    const filterList = ref((list) => list)
+    const setFilterList = (handle) => {
+      filterList.value = handle
+    }
+    const handleList = computed(() => {
+      return filterList.value(
+        new ListModel({
+          model: listData.modelType,
+          api: listData.api,
+          primaryKey: listData.primaryKey,
+          ...listData,
+        })
+      )
     })
     const widthTemplate = computed(() => {
       return tables
@@ -150,14 +158,19 @@ export default {
         })
         .join(' ')
     })
-
+    const head = ref(null)
+    const body = ref(null)
     return {
+      head,
+      body,
+      clickTrEvent: props.clickTr || (() => {}),
+      clickTdEvent: props.clickTd || (() => {}),
       tables,
-      listData,
-      sortList,
+      listData: handleList,
       widthTemplate,
+      setFilterList,
       scrollBody: (e) => {
-        this.$refs.head.scrollTo(e.target.scrollLeft, 0)
+        head.value.scrollTo(e.target.scrollLeft, 0)
       },
       widthType: (width) => {
         switch (true) {
@@ -179,6 +192,9 @@ export default {
         return ''
       },
     }
+  },
+  components: {
+    FooterBar,
   },
 }
 /**
@@ -238,6 +254,7 @@ export default {
       flex-grow: 1;
       flex-shrink: 1;
       overflow: auto;
+      box-shadow: inset -2px 0 16px 4px rgba(0, 0, 0, 0.06);
       &::-webkit-scrollbar {
         width: 5px;
         height: 10px;
@@ -288,12 +305,6 @@ export default {
       z-index: 1;
       flex-shrink: 0;
       background-color: #f6f6f6;
-      .datatable__table {
-        &__tr {
-          border-top: 2px solid #999;
-          border-bottom: 0;
-        }
-      }
     }
   }
 }

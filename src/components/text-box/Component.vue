@@ -35,10 +35,15 @@ export default {
       type: String,
       default: 'input-box',
     },
+    style: {
+      type: Object,
+      default: () => ({}),
+    },
   },
   setup(props, context) {
     const errorInit = ref(false)
     const type = ref(props.type)
+    console.log(props.type)
     // const isPassword = ref(type.value === 'password')
     const classPrefix = props.classPrefix
     const computedHandle = ref(props.computed)
@@ -103,6 +108,7 @@ export default {
         class: cx(`${classPrefix}__input`, {
           [`${classPrefix}--invalid`]: isError.value,
         }),
+        style: props.style,
         onInput: (e) => {
           modelValue.value = e.target.value
           context.emit('input', e)

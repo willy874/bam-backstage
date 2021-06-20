@@ -1,16 +1,18 @@
 <template>
   <PageLayout>
     <template #header>
-      <div class="border-b flex">
-        <div class="px-4 py-2">
-          <Breadcrumb />
+      <div class="py-2 px-4">
+        <div class="flex shadow">
+          <div class="px-4 py-2">
+            <Breadcrumb />
+          </div>
+          <div class="flex items-end py-1"></div>
         </div>
-        <div class="flex items-end py-1"></div>
       </div>
     </template>
-    <div class="flex-grow flex flex-col p-4">
-      <DataTable v-bind="dataTableProps">
-        <template #header v-if="dataTableHeater" :is="dataTableHeater"></template>
+    <div class="flex-grow flex flex-col py-2 px-4">
+      <DataTable v-bind="dataTableProps" class="shadow-lg">
+        <template #loading v-if="dataTableLoading" :is="dataTableLoading"></template>
         <template #footer v-if="dataTableFooter" :is="dataTableFooter"></template>
       </DataTable>
     </div>

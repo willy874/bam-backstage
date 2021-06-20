@@ -1,5 +1,5 @@
 <template>
-  <header class="border-b">
+  <header class="border-b shadow-md">
     <div class="flex">
       <div class="flex-shrink-0">
         <slot name="left"></slot>

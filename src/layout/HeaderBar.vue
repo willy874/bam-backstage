@@ -1,21 +1,23 @@
 <template>
   <div class="h-full flex items-center relative">
     <div class="px-3">
-      <div class="flex justify-end" :style="{ width: `${barWidth}px` }">Test</div>
+      <div class="flex justify-end" :style="{ width: `${barWidth}px` }">
+        <div></div>
+      </div>
     </div>
     <div class="px-3" @click.stop>
       <Navbtn state-name="headerShow" commit="setHeaderShow" class="text-primary-500" />
     </div>
     <div
-      class="absolute top-full right-0 z-10 overflow-hidden"
+      class="absolute top-full right-0 z-10 overflow-hidden shadow-lg"
       @click.stop
       :style="{ transition: 'all 0.4s', maxHeight: global.headerShow ? 'calc(100vh - 48px)' : '0' }"
     >
       <div class="border py-1 bg-primary-mirror">
         <div class="px-4 py-1 border-b">{{ user.name }}</div>
         <ul class="py-2 overflow-auto" style="max-height: calc((100vh - 48px) - 33px)">
-          <li class="py-1 px-4">
-            <button type="button">登出</button>
+          <li class="">
+            <button type="button" class="py-1 px-4 w-full text-center hover:bg-primary-500 hover:text-primary-mirror">登出</button>
           </li>
         </ul>
       </div>

@@ -1,5 +1,6 @@
 <template>
   <Layout />
+  <Dialog />
 </template>
 
 <script>

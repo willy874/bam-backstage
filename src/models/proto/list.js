@@ -28,9 +28,9 @@ export default class ListModel {
     const Model = entity.model || DataModel
     this.data = (entity.data && entity.data.map((p) => new Model(p))) || []
     this.loading = entity.loading || false
-    this.currentPage = entity.current_page || 0
-    this.lastPage = entity.last_page || 0
-    this.perPage = entity.per_page || 0
+    this.currentPage = entity.currentPage || 0
+    this.lastPage = entity.lastPage || 0
+    this.perPage = entity.perPage || 0
     this.from = entity.from || 0
     this.to = entity.to || 0
     this.total = entity.total || 0
@@ -92,6 +92,12 @@ export default class ListModel {
     Object.keys(entity).forEach((key) => {
       if (key === 'data') {
         this[key] = this.setData(entity.data)
+      } else if (key === 'currentPage') {
+        this[key] = entity[key] || this[key]
+      } else if (key === 'lastPage') {
+        this[key] = entity[key] || this[key]
+      } else if (key === 'perPage') {
+        this[key] = entity[key] || this[key]
       } else {
         this[key] = entity[key]
       }
@@ -105,13 +111,13 @@ export default class ListModel {
    */
   setPages(args) {
     const entity = args || {}
-    this.currentPage = entity.current_page || 0
-    this.lastPage = entity.last_page || 0
-    this.perPage = entity.per_page || 0
-    this.from = entity.from || 0
-    this.to = entity.to || 0
-    this.total = entity.total || 0
-    this.path = entity.path || ''
+    this.currentPage = entity.currentPage || this.currentPage
+    this.lastPage = entity.lastPage || this.lastPage
+    this.perPage = entity.perPage || this.perPage
+    this.from = entity.from || this.from
+    this.to = entity.to || this.to
+    this.total = entity.total || this.total
+    this.path = entity.path || this.path
   }
 
   /**
