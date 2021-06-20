@@ -8,7 +8,7 @@
 import { h } from 'vue'
 import { debounce } from 'lodash'
 import config from './editor-config'
-import editorClass from './ckeditor'
+import './build/ckeditor'
 
 const INPUT_EVENT_DEBOUNCE_WAIT = 300
 
@@ -65,8 +65,7 @@ export default {
       editorConfig.initialData = this.modelValue
     }
 
-    editorClass
-      .create(this.$el, editorConfig)
+    window.ClassicEditor.create(this.$el, editorConfig)
       .then((editor) => {
         // Save the reference to the $_instance for further use.
         this.$_instance = editor

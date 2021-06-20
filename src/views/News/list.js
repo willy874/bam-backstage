@@ -1,6 +1,6 @@
 import schema from '@/config/database'
 import { useDialog } from '@/components/dialog/index'
-import DialogTemplate from '@/components/dialog/Template.vue'
+import DetailDialog from './DetailDialog.vue'
 
 export default {
   routeTitle: '最新消息列表',
@@ -26,10 +26,15 @@ export default {
       },
       { title: '顯示/隱藏', field: (item) => (item.status ? '顯示' : '隱藏'), width: '100px', align: 'center' },
     ],
-    clickTr: async (...args) => {
-      // console.log('clickTr', args)
+    clickTr: async (model) => {
       const dialog = useDialog()
-      await dialog.popup(DialogTemplate)
+      await dialog.popup(DetailDialog, {
+        onBackgroundClick: () => {},
+        width: '768px',
+        props: {
+          model,
+        },
+      })
       console.log('close')
     },
     clickTd: (...args) => {

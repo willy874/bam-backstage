@@ -11,6 +11,7 @@
   "dependencies": {
     "@ckeditor/ckeditor5-vue": "^2.0.1",
     "axios": "^0.21.1",
+    "bam-utility-plugins": "^0.1.6",
     "classnames": "^2.3.1",
     "dayjs": "^1.10.4",
     "load-script": "^1.0.0",
@@ -27,13 +28,12 @@
     "vuex": "^4.0.1"
   },
   "devDependencies": {
+    "bam-auto-tool": "0.0.4",
     "@commitlint/cli": "^12.1.4",
     "@commitlint/config-conventional": "^12.1.4",
     "@vitejs/plugin-vue": "^1.2.3",
     "@vue/compiler-sfc": "^3.0.5",
     "autoprefixer": "^10.2.6",
-    "bam-auto-tool": "git+ssh://git@github.com/willy874/bam-auto-tool.git#0.0.4",
-    "bam-utility-plugins": "git+ssh://git@github.com/willy874/bam-utility-plugins.git#0.1.6",
     "commitizen": "^4.2.4",
     "eslint": "^7.28.0",
     "eslint-config-prettier": "^8.3.0",

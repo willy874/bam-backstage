@@ -23,9 +23,9 @@ export default {
     })
     const dialog = DialogComponent.dialog
     const popupItem = ref({})
-    popup.updated = function () {
-      this.offsetWidth = popupItem.value.offsetWidth
-      this.offsetHeight = popupItem.value.offsetHeight
+    popup.updated = () => {
+      popup.offsetWidth = popupItem.value.offsetWidth
+      popup.offsetHeight = popupItem.value.offsetHeight
     }
     onMounted(() => {
       popup.ref = popupItem
@@ -92,11 +92,11 @@ export default {
             }
           },
           style: {
-            maxWidth: props.width || 'auto',
-            width: props.width ? '100%' : 'auto',
-            maxHeight: props.height || 'auto',
-            height: props.height ? '100%' : 'auto',
-            zIndex: (props.index + 1) * 1,
+            maxWidth: popup.width || 'auto',
+            width: popup.width ? '100%' : 'auto',
+            maxHeight: popup.height || 'auto',
+            height: popup.height ? '100%' : 'auto',
+            zIndex: (popup.index + 1) * 1,
           },
         },
         [
@@ -106,6 +106,7 @@ export default {
             popupElement: popupItem.value,
             props: popup.props,
             onClick: (e) => e.stopPropagation(),
+            updated: popup.updated,
             drag: (e) => {
               e.dataTransfer.setDragImage(new Image(), 0, 0)
               dialog.dropTarget = popupItem
