@@ -10,9 +10,7 @@ export default class NewsMessageModel extends ArticleModel {
   constructor(args) {
     super(args)
     const entity = args || {}
-    this.images = entity.images
-      ? entity.images.map(p => new ImageModel(p))
-      : '[]'
+    this.images = entity.images ? entity.images.map((p) => new ImageModel(p)) : '[]'
     this.arrayModel.images = ImageModel
     this.published_at = entity.published_at || ''
     this.finished_at = entity.finished_at || ''
