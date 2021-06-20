@@ -45,6 +45,7 @@ require('bam-auto-tool')({
     // overwrite: true,
   },
   ckeditor: {
+    input: 'src/plugins/ckeditor/editor-create.js',
     output: 'src/plugins/ckeditor/build',
     filename: 'ckeditor.js',
   },

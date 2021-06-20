@@ -4,6 +4,7 @@ import store from './store/index'
 import { AdminPlugin } from './admin/index'
 import { DatabaesPlugin } from './database/index'
 import ComponentPlugin from './components/index'
+import CKEditor from './plugins/ckeditor/index'
 import App from './App.vue'
 import Mixin from './utility/mixin'
 import './style/index.css'
@@ -19,7 +20,7 @@ new Promise((resolve, reject) => {
     const app = createApp({
       mixins: [App, Mixin],
     })
-    app.use(router).use(store).use(DatabaesPlugin).use(AdminPlugin).use(ComponentPlugin)
+    app.use(router).use(store).use(DatabaesPlugin).use(AdminPlugin).use(ComponentPlugin).use(CKEditor)
     await awaitTime(1000)
     resolve(app)
   })()
