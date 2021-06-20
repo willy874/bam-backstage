@@ -4,7 +4,7 @@
     "dev": "vite --port 3010 --host 0.0.0.0",
     "build": "vite build",
     "serve": "vite preview",
-    "format": "prettier --write \"src/**/*.{js,vue,scss}\"",
+    "format": "prettier --write \"src/**/*.{js,vue}\"",
     "lint": "eslint --ignore-path .gitignore .",
     "tool": "node tool.config.js"
   },

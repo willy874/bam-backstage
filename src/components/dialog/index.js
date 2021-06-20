@@ -1,12 +1,12 @@
 import Popup from './popup'
-import VueDialog from './dialog-component'
+import DialogComponent from './DialogComponent.vue'
 
 const DialogPlugin = {
   install(app) {
     const { globalProperties } = app.config
-    DialogPlugin.dialog = VueDialog.dialog
-    globalProperties.$dialog = VueDialog.dialog
-    app.component('Dialog', VueDialog)
+    DialogPlugin.dialog = DialogComponent.dialog
+    globalProperties.$dialog = DialogComponent.dialog
+    app.component('Dialog', DialogComponent)
   },
 }
 

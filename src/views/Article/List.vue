@@ -50,7 +50,7 @@ export default {
       type: Object,
       default: () => ({}),
     },
-    dataTableHeater: {
+    dataTableLoading: {
       type: Object,
       default: () => null,
     },

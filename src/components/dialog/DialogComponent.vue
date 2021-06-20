@@ -1,7 +1,8 @@
+<script>
 import { h, reactive } from 'vue'
 import Dialog from './dialog'
 import cx from 'classnames'
-import PopupComponent from './popup-component'
+import PopupComponent from './PopupComponent.vue'
 
 const dialog = reactive(new Dialog())
 
@@ -55,8 +56,8 @@ export default {
       return h(
         'div',
         {
-          class: cx('fixed inset-0 bg-black bg-opacity-25 z-40 transition-opacity duration-300', {
-            'pointer-events-none opacity-0': !isPopupOpen(),
+          class: cx('dialog', {
+            'dialog--active': !isPopupOpen(),
           }),
           onClick: () => {
             dialog.popups.forEach((popup) => {
@@ -88,3 +89,22 @@ export default {
     }
   },
 }
+</script>
+
+<style lang="scss" scoped>
+.dialog {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 40;
+  background-color: rgba(0, 0, 0, 0.25);
+  opacity: 1;
+  transition: opacity 0.3s;
+}
+.dialog--active {
+  pointer-events: none;
+  opacity: 0;
+}
+</style>

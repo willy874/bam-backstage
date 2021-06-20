@@ -142,7 +142,10 @@ export default class ListModel {
           res.handle = this.data
           resolve(res)
         })
-        .catch(reject)
+        .catch((err) => {
+          this.loading = false
+          reject(err)
+        })
     })
   }
 

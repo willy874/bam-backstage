@@ -177,7 +177,10 @@ export default class DataModel {
           this.set(res.data)
           resolve(res)
         })
-        .catch(reject)
+        .catch((err) => {
+          this.loading = false
+          reject(err)
+        })
     })
   }
 
@@ -210,7 +213,10 @@ export default class DataModel {
           this.set(res.data)
           resolve(res)
         })
-        .catch(reject)
+        .catch((err) => {
+          this.loading = false
+          reject(err)
+        })
     })
   }
 
@@ -237,7 +243,10 @@ export default class DataModel {
           this.loading = false
           resolve(res)
         })
-        .catch(reject)
+        .catch((err) => {
+          this.loading = false
+          reject(err)
+        })
     })
   }
 
@@ -256,7 +265,10 @@ export default class DataModel {
           this.loading = false
           resolve(res)
         })
-        .catch(reject)
+        .catch((err) => {
+          this.loading = false
+          reject(err)
+        })
     })
   }
 }

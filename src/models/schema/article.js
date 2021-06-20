@@ -44,17 +44,5 @@ module.exports = {
       default: '',
       description: '該筆文章刪除的使用者',
     },
-    {
-      name: 'published_at',
-      type: String,
-      default: '',
-      description: '該筆文章的公開時間',
-    },
-    {
-      name: 'finished_at',
-      type: String,
-      default: '',
-      description: '該筆文章的下架時間',
-    },
   ],
 }

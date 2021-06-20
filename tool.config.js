@@ -4,7 +4,10 @@
 require('bam-auto-tool')({
   index: {
     input: [
-      'src/models/data',
+      {
+        path: 'src/models/data',
+        suffix: 'Model',
+      },
       {
         path: 'src/models/schema',
         type: 'cjs',
@@ -35,11 +38,11 @@ require('bam-auto-tool')({
     output: {
       path: 'src/models/data',
       overwrite: {
-        // exclude: [/\\image\./]
-        // allow: [/\\image\./]
+        exclude: /\\(article|news-message|image)\./,
+        // allow: /\\image\./
       },
     },
-    overwrite: true,
+    // overwrite: true,
   },
   ckeditor: {
     output: 'src/plugins/ckeditor/build',

@@ -1,5 +1,5 @@
 <template>
-  <div class="bg-white p-3 rounded-lg">
+  <div class="bg-white p-3 rounded-lg shadow-2xl border">
     <button class="m-2" type="button" draggable="true" @dragstart="drag" @touchstart="touch" style="cursor: grab">我要拖曳</button>
     <button class="m-2" type="button" @click="open">多開一個</button>
   </div>

@@ -1,16 +1,8 @@
 <template>
   <div class="datatable-foot">
-    <div class="datatable-foot__left-text">
-      <span>總共</span>
-      <span>{{ list.total }}</span>
-      <span>筆</span>
-    </div>
+    <div class="datatable-foot__left-text">總共{{ list.total }}筆</div>
     <div class="datatable-foot__right-text">
       <div class="datatable-foot__right-text__per-page">
-        <!-- <TextBox type="number" :model="list" field="perPage" :style="{ width: '3rem', fontSize: '14px', borderColor: 'transparent' }">
-          <template #prefix><span class="datatable-foot__right-text__per-page__prefix">顯示</span></template>
-          <template #suffix><span class="datatable-foot__right-text__per-page__suffix">筆</span></template>
-        </TextBox> -->
         <select v-model="list.perPage" @change="changePerPage">
           <option :value="perPage">顯示{{ perPage }}筆</option>
           <option :value="25">顯示25筆</option>
@@ -24,11 +16,7 @@
           <option v-for="i in list.lastPage" :key="i" :value="i">第{{ i }}頁</option>
         </select>
       </div>
-      <div class="datatable-foot__right-text__last-page">
-        <span>共</span>
-        <span>{{ list.lastPage }}</span>
-        <span>頁</span>
-      </div>
+      <div class="datatable-foot__right-text__last-page">共{{ list.lastPage }}頁</div>
     </div>
   </div>
 </template>
@@ -65,7 +53,7 @@ export default {
       if (props.ajax) {
         // AJAX 行為
       } else {
-        if (list.total === 0) list.total = list.cache.length
+        if (list.total === 0) list.total = list.data.length
         if (list.currentPage === 0) list.currentPage = 1
         if (list.perPage === 0) list.perPage = 10
         if (list.lastPage === 0) list.lastPage = Math.ceil(list.total / list.perPage)

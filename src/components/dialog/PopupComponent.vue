@@ -1,7 +1,7 @@
+<script>
 import { h, onMounted, onUpdated, ref } from 'vue'
-import cx from 'classnames'
 import Popup from './popup'
-import Component from './dialog-component'
+import DialogComponent from './DialogComponent.vue'
 
 export default {
   props: {
@@ -15,20 +15,21 @@ export default {
     },
   },
   setup(props) {
+    const popup = props.popup
     // 解除 Proxy 代理
     const PopupView = {}
-    Object.keys(props.popup.view).forEach((key) => {
-      PopupView[key] = props.popup.view[key]
+    Object.keys(popup.view).forEach((key) => {
+      PopupView[key] = popup.view[key]
     })
-    const dialog = Component.dialog
+    const dialog = DialogComponent.dialog
     const popupItem = ref({})
-    props.popup.updated = () => {
-      props.popup.offsetWidth = popupItem.value.offsetWidth
-      props.popup.offsetHeight = popupItem.value.offsetHeight
+    popup.updated = function () {
+      this.offsetWidth = popupItem.value.offsetWidth
+      this.offsetHeight = popupItem.value.offsetHeight
     }
     onMounted(() => {
-      props.popup.ref = popupItem
-      const position = props.popup.position
+      popup.ref = popupItem
+      const position = popup.position
       const correctionValue = 20
       const topMath = (top) => {
         if (typeof top === 'number') {
@@ -68,21 +69,21 @@ export default {
         popupItem.value.style.left = position.left ? leftMath(position.left) : 0
         popupItem.value.style.top = position.top ? topMath(position.top) : 0
       }
-      props.popup.updated()
+      popup.updated()
     })
     onUpdated(() => {
-      props.popup.updated()
+      popup.updated()
     })
     return () => {
       return h(
         'div',
         {
           ref: popupItem,
-          class: cx('absolute transition-opacity duration-300 shadow-2xl'),
+          class: 'dialog__popup',
           onClick: (e) => e.stopPropagation(),
           // change zIndex
-          onMouseDown: () => {
-            const indexOf = dialog.popups.indexOf(props.popup)
+          onMousedown: () => {
+            const indexOf = dialog.popups.indexOf(popup)
             if (dialog.popups[indexOf].zIndexLock) {
               return
             }
@@ -100,10 +101,11 @@ export default {
         },
         [
           h(PopupView, {
-            id: props.id,
+            id: popup.id,
             dialog: dialog,
             popupElement: popupItem.value,
-            props: props.popup.props,
+            props: popup.props,
+            onClick: (e) => e.stopPropagation(),
             drag: (e) => {
               e.dataTransfer.setDragImage(new Image(), 0, 0)
               dialog.dropTarget = popupItem
@@ -122,3 +124,11 @@ export default {
     }
   },
 }
+</script>
+
+<style lang="scss" scoped>
+.dialog__popup {
+  position: absolute;
+  transition: opacity 0.3s;
+}
+</style>
