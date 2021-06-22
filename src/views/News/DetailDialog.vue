@@ -20,6 +20,9 @@
         </keep-alive>
       </div> -->
     </div>
+    <div>
+      <ImageBox src="http://api.tocin.bsdctw.tw/api/images/carousels/7970010B-5D10-474B-A56C-59137AA20479.jpeg" />
+    </div>
   </div>
 </template>
 

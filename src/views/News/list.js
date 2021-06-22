@@ -1,6 +1,7 @@
 import schema from '@/config/database'
 import { useDialog } from '@/components/dialog/index'
 import DetailDialog from './DetailDialog.vue'
+// import Template from '@/components/dialog/Template.vue'
 
 export default {
   routeTitle: '最新消息列表',
@@ -28,6 +29,7 @@ export default {
     ],
     clickTr: async (model) => {
       const dialog = useDialog()
+      // await dialog.popup(Template)
       await dialog.popup(DetailDialog, {
         onBackgroundClick: () => {},
         width: '768px',

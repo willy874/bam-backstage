@@ -29,4 +29,5 @@ router.afterEach((to, from) => {
   to.meta.transition = cache.to
   from.meta.transition = cache.from
 })
+
 export default router

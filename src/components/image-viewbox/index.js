@@ -1,6 +1,20 @@
-import ImageBox from './image-box'
+import ImageComponent from './ImageComponent.vue'
 import ImageCache from './image-cache'
-import PhotoFrame from './PhotoFrame.vue'
-import ImageUpload from './ImageUpload.vue'
 
-export { ImageBox, ImageCache, PhotoFrame, ImageUpload }
+const ImageBox = ImageComponent
+
+const ImagePlugin = {
+  install(app, options) {
+    const { globalProperties } = app.config
+    const imageCache = new ImageCache(options)
+    ImagePlugin.$image = imageCache
+    globalProperties.$image = imageCache
+    app.component('ImageBox', ImageBox)
+  },
+}
+
+const useImageCache = () => {
+  return ImagePlugin.imageCache
+}
+
+export { ImagePlugin, useImageCache, ImageBox }

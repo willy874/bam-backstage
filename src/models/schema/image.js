@@ -55,5 +55,23 @@ module.exports = {
       default: '',
       description: '該圖片的資訊的json資料',
     },
+    {
+      name: 'image_url',
+      type: String,
+      default: '',
+      description: '',
+    },
+    {
+      name: 'image_base64',
+      type: String,
+      default: '',
+      description: '',
+    },
+    {
+      name: 'image_blob',
+      type: String,
+      default: '',
+      description: '',
+    },
   ],
 }

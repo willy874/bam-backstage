@@ -322,65 +322,65 @@ export default {
     display: flex;
     flex-wrap: wrap;
     &__item {
-      padding: 0.5rem;
-      max-width: 50%;
       flex: 0 0 50%;
+      max-width: 50%;
+      padding: 0.5rem;
       @media (min-width: 576px) {
-        max-width: 33.333%;
         flex: 0 0 33.333%;
+        max-width: 33.333%;
       }
       @media (min-width: 992px) {
-        max-width: 25%;
         flex: 0 0 25%;
+        max-width: 25%;
       }
       @media (min-width: 1400px) {
-        max-width: 20%;
         flex: 0 0 20%;
+        max-width: 20%;
       }
       &__block {
-        margin: auto;
-        max-width: 200px;
-        border: 1px solid #ccc;
-        cursor: pointer;
-        border-radius: 0.5rem;
         position: relative;
+        max-width: 200px;
+        margin: auto;
+        cursor: pointer;
+        border: 1px solid #ccc;
+        border-radius: 0.5rem;
         &.photo-frame__container__item__block--active {
           box-shadow: 0 0 0 0.25rem rgba(93, 162, 207, 0.7);
         }
         &__image {
           padding-top: 100%;
-          background-size: contain;
-          background-position: center;
           background-repeat: no-repeat;
+          background-position: center;
+          background-size: contain;
         }
         &__close {
           position: absolute;
           top: 0.5rem;
           right: 0.5rem;
-          width: 2.5rem;
-          height: 2.5rem;
-          color: #dc3545;
-          border-radius: 50%;
-          padding: 0.6rem;
           display: flex;
           align-items: center;
           justify-content: center;
-          opacity: 0;
+          width: 2.5rem;
+          height: 2.5rem;
+          padding: 0.6rem;
+          color: #dc3545;
           pointer-events: none;
-          transition: opacity 0.2s;
           background-color: #eee;
+          border-radius: 50%;
+          opacity: 0;
+          transition: opacity 0.2s;
           &:hover {
             background-color: #ddd;
           }
         }
         &__form {
           position: absolute;
-          left: 0;
           right: 0;
           bottom: 0;
+          left: 0;
           padding: 0.125rem 0;
-          opacity: 0;
           pointer-events: none;
+          opacity: 0;
           transition: opacity 0.2s;
           input {
             display: block;
@@ -403,8 +403,8 @@ export default {
               box-shadow: 0 0 0 0.2rem rgb(93 162 207 / 50%);
             }
             &::placeholder {
-              text-align: center;
               color: #ccc;
+              text-align: center;
             }
           }
           &__title {
@@ -419,12 +419,12 @@ export default {
           }
         }
         &:hover .photo-frame__container__item__block__close {
-          opacity: 1;
           pointer-events: auto;
+          opacity: 1;
         }
         &:hover .photo-frame__container__item__block__form {
-          opacity: 1;
           pointer-events: auto;
+          opacity: 1;
         }
       }
       &__input {
@@ -434,14 +434,14 @@ export default {
     .photo-frame__container__item--create {
       position: relative;
       .photo-frame__container__item__block {
-        border: 1px solid #ddd;
         cursor: pointer;
+        border: 1px solid #ddd;
         &:hover {
           background-color: #eee;
         }
         &__image {
-          opacity: 0.3;
           background-size: 60%;
+          opacity: 0.3;
         }
       }
     }
@@ -452,18 +452,18 @@ export default {
     bottom: 0.25rem;
     display: flex;
     &__trash {
-      margin: 0 0.25rem;
       width: 2rem;
       height: 2rem;
-      cursor: pointer;
+      margin: 0 0.25rem;
       color: #dc3545;
+      cursor: pointer;
     }
     &__plus {
-      margin: 0 0.25rem;
       width: 2rem;
       height: 2rem;
-      cursor: pointer;
+      margin: 0 0.25rem;
       color: #28a745;
+      cursor: pointer;
       &__input {
         display: none;
       }

@@ -11,6 +11,9 @@ import { DataModel } from '../index'
  * @property {String} alt 該圖片的替代文字
  * @property {String} title 該圖片的標題文字
  * @property {String} infomation 該圖片的資訊的json資料
+ * @property {String} image_url
+ * @property {String} image_base64
+ * @property {String} image_blob
  */
 export default class ImageModel extends DataModel {
   constructor(args) {
@@ -25,6 +28,9 @@ export default class ImageModel extends DataModel {
     this.alt = entity.alt || ''
     this.title = entity.title || ''
     this.infomation = entity.infomation || ''
+    this.image_url = entity.image_url || ''
+    this.image_base64 = entity.image_base64 || ''
+    this.image_blob = entity.image_blob || ''
     // proto set
     this.api = entity.api || 'image'
   }

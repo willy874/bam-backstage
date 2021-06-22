@@ -9,6 +9,12 @@ const dialog = reactive(new Dialog())
 export default {
   dialog,
   setup() {
+    document.addEventListener('dragend', () => {
+      dialog.dragStatus = 0
+    })
+    document.addEventListener('touchend', () => {
+      dialog.touchStatus = 0
+    })
     const isPopupOpen = () => dialog.popups.length
     const popupMove = (e) => {
       const offsetWidth = dialog.dropTarget.offsetWidth
@@ -66,13 +72,17 @@ export default {
           },
           onDragover: (e) => {
             if (dialog.dropTarget) {
-              popupMove(e)
+              if (dialog.dragStatus) {
+                popupMove(e)
+              }
             }
           },
-          onTouchMove: (event) => {
+          onTouchmove: (event) => {
             if (dialog.dropTarget) {
-              const e = Array.apply([], event.touches).find((p) => p.target === event.target)
-              popupMove(e)
+              if (dialog.touchStatus) {
+                const e = Array.apply([], event.touches).find((p) => p.target === event.target)
+                popupMove(e)
+              }
             }
           },
         },

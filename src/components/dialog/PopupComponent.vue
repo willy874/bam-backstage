@@ -112,12 +112,14 @@ export default {
               dialog.dropTarget = popupItem
               dialog.dropOffsetX = e.pageX - popupItem.value.offsetLeft
               dialog.dropOffsetY = e.pageY - popupItem.value.offsetTop
+              dialog.dragStatus = 1
             },
             touch: (event) => {
               const e = Array.apply([], event.touches).find((p) => p.target === event.target)
               dialog.dropTarget = popupItem
               dialog.dropOffsetX = e.pageX - popupItem.value.offsetLeft
               dialog.dropOffsetY = e.pageY - popupItem.value.offsetTop
+              dialog.touchStatus = 1
             },
           }),
         ]
