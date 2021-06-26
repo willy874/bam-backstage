@@ -1,3 +1,5 @@
 src/style/index.css
 src/plugins/ckeditor/build
 **/*.jpg
+**/*.png
+**/*.svg

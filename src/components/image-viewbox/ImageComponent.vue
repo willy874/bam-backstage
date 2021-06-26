@@ -1,7 +1,6 @@
 <script>
-import { h, ref, reactive, isReactive } from 'vue'
+import { h, ref, reactive, isReactive, onMounted } from 'vue'
 import { ImageModel } from '@/models/index'
-import defaultImage from './default-image.jpg'
 
 export default {
   name: 'ImageBox',
@@ -14,16 +13,30 @@ export default {
       type: [ImageModel, String],
       default: '',
     },
-    defaultImage: {
-      type: String,
-      default: defaultImage,
+    errorImage: {
+      type: [String, Promise],
+      default: import('./default-image.jpg'),
     },
-    loadingImage: {
-      type: String,
-      default: '',
+    defaultImage: {
+      type: [String, Promise],
+      default: import('./default-image.jpg'),
     },
   },
   setup(props, context) {
+    const renderCheck = (el, count) => {
+      return new Promise((resolve) => {
+        let hz = 0
+        const render = () => {
+          if (count > hz && el && el.offsetHeight === 0) {
+            hz++
+            window.requestAnimationFrame(render)
+          } else {
+            resolve()
+          }
+        }
+        render()
+      })
+    }
     const createImageModel = (src) => {
       if (src instanceof ImageModel) {
         return isReactive(src) ? src : reactive(src)
@@ -33,7 +46,7 @@ export default {
           return reactive(new ImageModel({ image_base64: src }))
         }
         if (/^http(s)?:\/\//.test(src)) {
-          return reactive(new ImageModel({ image_url: src }))
+          return reactive(new ImageModel({ image_url: src, loading: true }))
         }
       }
       if (src instanceof Blob) {
@@ -42,17 +55,16 @@ export default {
       return reactive(new ImageModel())
     }
     const handleImage = async (image) => {
-      if (image.loading) {
-        source.value = props.loadingImage
-      } else if (image.image_url) {
+      if (image.image_url) {
         source.value = await handleUrl(image)
       } else if (image.image_base64) {
         source.value = image.image_base64
       } else if (image.image_blob) {
         source.value = await handleBlob(image)
       } else {
-        source.value = props.defaultImage
+        source.value = props.defaultImage instanceof Promise ? (await props.defaultImage).default : props.defaultImage
       }
+      return source.value
     }
     const handleBlob = (image) => {
       const blob = image.image_blob
@@ -61,45 +73,56 @@ export default {
         reader.onload = (e) => {
           const base64 = e.target.result
           image.image_base64 = base64
-          context.emit('load', base64)
           resolve(base64)
         }
         reader.readAsDataURL(blob)
       })
     }
     const handleUrl = async (image) => {
-      const res = await fetch(image.image_url)
-      const blob = await res.blob()
-      image.image_blob = blob
-      handleBlob(image)
-      return URL.createObjectURL(blob)
+      const useImageCache = (await import('./use')).default
+      const ImageCache = useImageCache()
+      const url = image.image_url
+      if (ImageCache.has(url)) {
+        return ImageCache.get(url)
+      }
+      const res = await fetch(url)
+      if (res.ok) {
+        const blob = await res.blob()
+        image.loading = false
+        image.image_blob = blob
+        ImageCache.set(url, blob)
+        // const base64 = URL.createObjectURL(blob)
+        const base64 = await handleBlob(image)
+        return base64
+      } else {
+        return props.errorImage instanceof Promise ? (await props.errorImage).default : props.errorImage
+      }
     }
     const model = createImageModel(props.src)
+    const imgElement = ref(null)
     const source = ref('')
-    handleImage(model)
+
+    onMounted(async () => {
+      await handleImage(model)
+      await renderCheck(imgElement.value, 60)
+      context.emit('ready')
+    })
     return () => {
-      if (source.value) {
-        if (props.display === 'background' || props.display === 'bg') {
-          return h('div', {
-            ...context.attrs,
-            class: 'image-box',
-            style: {
-              backgroundImage: `url(${source.value})`,
-            },
-          })
-        } else {
-          return h('img', {
-            class: 'image-box',
-            src: source.value,
-            ...context.attrs,
-          })
-        }
+      if (props.display === 'background' || props.display === 'bg') {
+        return h('div', {
+          ...context.attrs,
+          class: 'image-box',
+          style: {
+            backgroundImage: `url(${source.value})`,
+          },
+        })
       } else {
-        if (context.slots && context.slots.loading) {
-          return context.slots.loading
-        } else {
-          return h('div', { class: 'image-box--loading' })
-        }
+        return h('img', {
+          ref: imgElement,
+          class: 'image-box',
+          src: source.value,
+          ...context.attrs,
+        })
       }
     }
   },

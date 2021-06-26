@@ -1,0 +1,9 @@
+ * drag
+ * dragend
+ * dragenter
+ * dragexit
+ * dragleave
+ * dragover
+ * dragstart
+ * drop
+ * dblclick

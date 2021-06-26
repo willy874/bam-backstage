@@ -16,12 +16,15 @@
       </div>
       <!-- <div>
         <keep-alive>
-          <Ckeditor @ready="editorMounted" v-model="model.content" />
+          <Ckeditor @ready="ready" v-model="model.content" />
         </keep-alive>
       </div> -->
     </div>
     <div>
-      <ImageBox src="http://api.tocin.bsdctw.tw/api/images/carousels/7970010B-5D10-474B-A56C-59137AA20479.jpeg" />
+      <ImageBox src="http://api.tocin.bsdctw.tw/api/images/carousels/7970010B-5D10-474B-A56C-59137AA20479.jpeg" @ready="ready" />
+    </div>
+    <div class="py-4">
+      <PhotoFrame :model="[]" />
     </div>
   </div>
 </template>
@@ -32,13 +35,13 @@ import { NewsMessageModel } from '@/models'
 
 export default {
   name: 'DetailDialog',
-  props: ['drag', 'touch', 'updated', 'props', 'id', 'popupElement', 'dialog'],
+  props: ['drag', 'touch', 'props', 'id', 'popupElement', 'dialog', 'initPosition'],
   setup(props) {
     const model = reactive(new NewsMessageModel(props.props.model))
     return {
       model,
-      editorMounted: () => {
-        props.updated()
+      ready() {
+        props.initPosition()
       },
       close: () => {
         props.dialog.closePopup(props.id)

@@ -1,5 +1,5 @@
 <script>
-import { h, onMounted, onUpdated, ref } from 'vue'
+import { h, onMounted, ref } from 'vue'
 import Popup from './popup'
 import DialogComponent from './DialogComponent.vue'
 
@@ -23,56 +23,53 @@ export default {
     })
     const dialog = DialogComponent.dialog
     const popupItem = ref({})
-    popup.updated = () => {
-      popup.offsetWidth = popupItem.value.offsetWidth
-      popup.offsetHeight = popupItem.value.offsetHeight
-    }
     onMounted(() => {
-      popup.ref = popupItem
-      const position = popup.position
-      const correctionValue = 20
-      const topMath = (top) => {
-        if (typeof top === 'number') {
-          return top + 'px'
-        } else if (typeof top === 'string') {
-          if (top === 'top') {
-            return correctionValue + 'px'
-          } else if (top === 'center') {
-            return (window.innerHeight - popupItem.value.offsetHeight) / 2 + 'px'
-          } else if (top === 'bottom') {
-            return window.innerHeight - correctionValue + 'px'
+      popup.initPosition = () => {
+        popup.ref = popupItem
+        const position = popup.position
+        const correctionValue = 20
+        popup.offsetWidth = popupItem.value.offsetWidth
+        popup.offsetHeight = popupItem.value.offsetHeight
+        const topMath = (top) => {
+          if (typeof top === 'number') {
+            return top + 'px'
+          } else if (typeof top === 'string') {
+            if (top === 'top') {
+              return correctionValue + 'px'
+            } else if (top === 'center') {
+              return (window.innerHeight - popupItem.value.offsetHeight) / 2 + 'px'
+            } else if (top === 'bottom') {
+              return window.innerHeight - correctionValue + 'px'
+            }
+            return top
           }
-          return top
+          return 0
         }
-        return 0
-      }
-      const leftMath = (left) => {
-        if (typeof left === 'number') {
-          return left + 'px'
-        } else if (typeof left === 'string') {
-          if (left === 'left') {
-            return correctionValue + 'px'
-          } else if (left === 'center') {
-            return (window.innerWidth - popupItem.value.offsetWidth) / 2 + 'px'
-          } else if (left === 'bottom') {
-            return window.innerWidth - correctionValue + 'px'
+        const leftMath = (left) => {
+          if (typeof left === 'number') {
+            return left + 'px'
+          } else if (typeof left === 'string') {
+            if (left === 'left') {
+              return correctionValue + 'px'
+            } else if (left === 'center') {
+              return (window.innerWidth - popupItem.value.offsetWidth) / 2 + 'px'
+            } else if (left === 'bottom') {
+              return window.innerWidth - correctionValue + 'px'
+            }
+            return left
           }
-          return left
+          return 0
         }
-        return 0
+        if (position.x || position.y) {
+          popupItem.value.style.left = position.x ? leftMath(position.x) : 0
+          popupItem.value.style.top = position.y ? topMath(position.y) : 0
+        }
+        if (position.left || position.top) {
+          popupItem.value.style.left = position.left ? leftMath(position.left) : 0
+          popupItem.value.style.top = position.top ? topMath(position.top) : 0
+        }
       }
-      if (position.x || position.y) {
-        popupItem.value.style.left = position.x ? leftMath(position.x) : 0
-        popupItem.value.style.top = position.y ? topMath(position.y) : 0
-      }
-      if (position.left || position.top) {
-        popupItem.value.style.left = position.left ? leftMath(position.left) : 0
-        popupItem.value.style.top = position.top ? topMath(position.top) : 0
-      }
-      popup.updated()
-    })
-    onUpdated(() => {
-      popup.updated()
+      popup.initPosition()
     })
     return () => {
       return h(
@@ -94,7 +91,7 @@ export default {
           style: {
             maxWidth: popup.width || 'auto',
             width: popup.width ? '100%' : 'auto',
-            maxHeight: popup.height || 'auto',
+            maxHeight: popup.height || '100vh',
             height: popup.height ? '100%' : 'auto',
             zIndex: (popup.index + 1) * 1,
           },
@@ -106,17 +103,17 @@ export default {
             popupElement: popupItem.value,
             props: popup.props,
             onClick: (e) => e.stopPropagation(),
-            updated: popup.updated,
+            initPosition: popup.initPosition,
             drag: (e) => {
               e.dataTransfer.setDragImage(new Image(), 0, 0)
-              dialog.dropTarget = popupItem
+              dialog.dragTarget = popup
               dialog.dropOffsetX = e.pageX - popupItem.value.offsetLeft
               dialog.dropOffsetY = e.pageY - popupItem.value.offsetTop
               dialog.dragStatus = 1
             },
             touch: (event) => {
-              const e = Array.apply([], event.touches).find((p) => p.target === event.target)
-              dialog.dropTarget = popupItem
+              const e = Array.from(event.touches).find((p) => p.target === event.target)
+              dialog.dragTarget = popup
               dialog.dropOffsetX = e.pageX - popupItem.value.offsetLeft
               dialog.dropOffsetY = e.pageY - popupItem.value.offsetTop
               dialog.touchStatus = 1
@@ -132,6 +129,29 @@ export default {
 <style lang="scss" scoped>
 .dialog__popup {
   position: absolute;
+  overflow: auto;
   transition: opacity 0.3s;
+  &::-webkit-scrollbar {
+    width: 5px;
+    height: 10px;
+  }
+  &::-webkit-scrollbar-track {
+    background: #ccc;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: #999;
+    border-radius: 0.5rem;
+  }
+  &::-webkit-scrollbar-button {
+    width: 0;
+    height: 0;
+  }
+  &::-webkit-scrollbar-corner {
+    background: #555;
+    border-radius: 50%;
+  }
+  &::-webkit-scrollbar-track-piece {
+    background: #eee;
+  }
 }
 </style>

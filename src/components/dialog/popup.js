@@ -6,6 +6,8 @@ import { v4 as uuidv4 } from 'uuid'
  * @property {Number} width
  * @property {Number} height
  * @property {Boolean} zIndexLock
+ * @property {Boolean} positionLock 當發生 resize 時是否固定位置
+ * @property {Boolean} windowRangeLimt 當發生 drag or touch 是否可以超出視窗
  */
 export default class Popup {
   constructor(args) {
@@ -16,6 +18,8 @@ export default class Popup {
     this.width = entity.width || 0
     this.height = entity.height || 0
     this.zIndexLock = entity.zIndexLock || false
+    this.positionLock = entity.positionLock || false
+    this.windowRangeLimt = entity.windowRangeLimt || false
     this.position = entity.position || {
       x: 'center',
       y: 'center',

@@ -1,14 +1,13 @@
 <script>
-import { h, reactive } from 'vue'
-import Dialog from './dialog'
+import { h } from 'vue'
 import cx from 'classnames'
+import useDialog from './use'
 import PopupComponent from './PopupComponent.vue'
 
-const dialog = reactive(new Dialog())
-
 export default {
-  dialog,
+  dialog: useDialog(),
   setup() {
+    const dialog = useDialog()
     document.addEventListener('dragend', () => {
       dialog.dragStatus = 0
     })
@@ -17,21 +16,27 @@ export default {
     })
     const isPopupOpen = () => dialog.popups.length
     const popupMove = (e) => {
-      const offsetWidth = dialog.dropTarget.offsetWidth
-      const offsetHeight = dialog.dropTarget.offsetHeight
-      if (window.innerWidth - offsetWidth < e.pageX - dialog.dropOffsetX) {
-        dialog.dropTarget.style.left = window.innerWidth - offsetWidth - 1 + 'px'
-      } else if (e.pageX - dialog.dropOffsetX < 1) {
-        dialog.dropTarget.style.left = 0
+      const el = dialog.dragTarget.ref
+      const offsetWidth = el.offsetWidth
+      const offsetHeight = el.offsetHeight
+      if (dialog.dragTarget.windowRangeLimt) {
+        el.style.left = e.pageX - dialog.dropOffsetX + 'px'
+        el.style.top = e.pageY - dialog.dropOffsetY + 'px'
       } else {
-        dialog.dropTarget.style.left = e.pageX - dialog.dropOffsetX + 'px'
-      }
-      if (window.innerHeight - offsetHeight < e.pageY - dialog.dropOffsetY) {
-        dialog.dropTarget.style.top = window.innerHeight - offsetHeight - 1 + 'px'
-      } else if (e.pageY - dialog.dropOffsetY < 1) {
-        dialog.dropTarget.style.top = 0
-      } else {
-        dialog.dropTarget.style.top = e.pageY - dialog.dropOffsetY + 'px'
+        if (window.innerWidth - offsetWidth < e.pageX - dialog.dropOffsetX) {
+          el.style.left = window.innerWidth - offsetWidth - 1 + 'px'
+        } else if (e.pageX - dialog.dropOffsetX < 1) {
+          el.style.left = 0
+        } else {
+          el.style.left = e.pageX - dialog.dropOffsetX + 'px'
+        }
+        if (window.innerHeight - offsetHeight < e.pageY - dialog.dropOffsetY) {
+          el.style.top = window.innerHeight - offsetHeight - 1 + 'px'
+        } else if (e.pageY - dialog.dropOffsetY < 1) {
+          el.style.top = 0
+        } else {
+          el.style.top = e.pageY - dialog.dropOffsetY + 'px'
+        }
       }
     }
     const windowResize = () => {
@@ -52,7 +57,9 @@ export default {
             }
           }
           requestAnimationFrame(() => {
-            popup.updated()
+            if (!popup.positionLock) {
+              popup.initPosition()
+            }
           })
         })
       }
@@ -71,16 +78,16 @@ export default {
             })
           },
           onDragover: (e) => {
-            if (dialog.dropTarget) {
+            if (dialog.dragTarget && dialog.dragTarget.ref) {
               if (dialog.dragStatus) {
                 popupMove(e)
               }
             }
           },
           onTouchmove: (event) => {
-            if (dialog.dropTarget) {
+            if (dialog.dragTarget && dialog.dragTarget.ref) {
               if (dialog.touchStatus) {
-                const e = Array.apply([], event.touches).find((p) => p.target === event.target)
+                const e = Array.from(event.touches).find((p) => p.target === event.target)
                 popupMove(e)
               }
             }

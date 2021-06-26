@@ -197,17 +197,6 @@ export default {
     FooterBar,
   },
 }
-/**
- * drag
- * dragend
- * dragenter
- * dragexit
- * dragleave
- * dragover
- * dragstart
- * drop
- * dblclick
- */
 </script>
 
 <style lang="scss" scoped>
@@ -283,7 +272,9 @@ export default {
           border: 0;
         }
         &:hover {
-          background-color: #f6f6f6;
+          > .datatable__table__td {
+            background-color: #f6f6f6;
+          }
         }
       }
     }

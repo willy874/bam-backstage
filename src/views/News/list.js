@@ -30,14 +30,13 @@ export default {
     clickTr: async (model) => {
       const dialog = useDialog()
       // await dialog.popup(Template)
-      await dialog.popup(DetailDialog, {
+      dialog.popup(DetailDialog, {
         onBackgroundClick: () => {},
         width: '768px',
         props: {
           model,
         },
       })
-      console.log('close')
     },
     clickTd: (...args) => {
       // console.log('clickTd', args)

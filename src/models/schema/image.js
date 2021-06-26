@@ -14,6 +14,12 @@ module.exports = {
       description: '該圖片的檔案名稱',
     },
     {
+      name: 'uuid',
+      type: String,
+      default: '',
+      description: '該圖片的唯一碼',
+    },
+    {
       name: 'ext',
       type: String,
       default: '',
@@ -48,12 +54,6 @@ module.exports = {
       type: String,
       default: '',
       description: '該圖片的標題文字',
-    },
-    {
-      name: 'infomation',
-      type: String,
-      default: '',
-      description: '該圖片的資訊的json資料',
     },
     {
       name: 'image_url',
