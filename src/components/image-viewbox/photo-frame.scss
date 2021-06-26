@@ -1,0 +1,105 @@
+.photo-frame {
+  position: relative;
+  padding: 1rem 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 0.5rem;
+  &--hover {
+    background-color: rgba(93, 162, 207, 0.2);
+  }
+  &__container {
+    display: flex;
+    flex-wrap: wrap;
+    margin-right: -0.5rem;
+    margin-left: -0.5rem;
+    &__item {
+      flex-grow: 0;
+      flex-shrink: 0;
+      padding: 0.5rem;
+      &__block {
+        position: relative;
+        max-width: 200px;
+        margin: auto;
+        cursor: pointer;
+        border: 1px solid #ccc;
+        border-radius: 0.5rem;
+        &.photo-frame__container__item__block--active {
+          box-shadow: 0 0 0 0.25rem rgba(93, 162, 207, 0.7);
+        }
+        &__image {
+          padding-top: 100%;
+          background-repeat: no-repeat;
+          background-position: center;
+          background-size: contain;
+        }
+        &__close {
+          position: absolute;
+          top: 0.5rem;
+          right: 0.5rem;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          width: 2.5rem;
+          height: 2.5rem;
+          padding: 0.6rem;
+          color: #dc3545;
+          pointer-events: none;
+          background-color: #eee;
+          border-radius: 50%;
+          opacity: 0;
+          transition: opacity 0.2s;
+          &:hover {
+            background-color: #ddd;
+          }
+        }
+        &:hover .photo-frame__container__item__block__close {
+          pointer-events: auto;
+          opacity: 1;
+        }
+        &:hover .photo-frame__container__item__block__form {
+          pointer-events: auto;
+          opacity: 1;
+        }
+      }
+      &__input {
+        display: none;
+      }
+    }
+    .photo-frame__container__item--create {
+      position: relative;
+      .photo-frame__container__item__block {
+        cursor: pointer;
+        border: 1px solid #ddd;
+        &:hover {
+          background-color: #eee;
+        }
+        &__image {
+          background-size: 60%;
+          opacity: 0.3;
+        }
+      }
+    }
+  }
+  &__fixed-bar {
+    position: absolute;
+    right: 0;
+    bottom: 0.25rem;
+    display: flex;
+    &__trash {
+      width: 2rem;
+      height: 2rem;
+      margin: 0 0.25rem;
+      color: #dc3545;
+      cursor: pointer;
+    }
+    &__plus {
+      width: 2rem;
+      height: 2rem;
+      margin: 0 0.25rem;
+      color: #28a745;
+      cursor: pointer;
+      &__input {
+        display: none;
+      }
+    }
+  }
+}

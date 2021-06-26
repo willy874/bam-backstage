@@ -1,20 +1,3 @@
-:root {
-  --input-box-primary: #007bff;
-  --input-box-danger: #dc3545;
-  --input-box-success: #198754;
-  --input-box-disabled: #6c757d;
-  --input-box-text-color: #212529;
-  --input-box-placeholder-color: #d8d8d8;
-  --input-box-bg-color: transparent;
-  --input-box-border-color: #cecece;
-  --input-box-text-color-focus: var(--input-box-text-color);
-  --input-box-bg-color-focus: var(--input-box-bg-color);
-  --input-box-border-color-focus: #86b7fe;
-  --input-box-text-color-hover: var(--input-box-text-color);
-  --input-box-bg-color-hover: var(--input-box-bg-color);
-  --input-box-border-color-hover: var(--input-box-primary);
-}
-
 @mixin slot-class {
   .input-box__prefix svg {
     color: var(--input-box-primary);
@@ -31,6 +14,21 @@
 }
 
 .input-box {
+  --input-box-primary: #007bff;
+  --input-box-danger: #dc3545;
+  --input-box-success: #198754;
+  --input-box-disabled: #6c757d;
+  --input-box-text-color: #212529;
+  --input-box-placeholder-color: #d8d8d8;
+  --input-box-bg-color: transparent;
+  --input-box-border-color: #cecece;
+  --input-box-text-color-focus: var(--input-box-text-color);
+  --input-box-bg-color-focus: var(--input-box-bg-color);
+  --input-box-border-color-focus: #86b7fe;
+  --input-box-text-color-hover: var(--input-box-text-color);
+  --input-box-bg-color-hover: var(--input-box-bg-color);
+  --input-box-border-color-hover: var(--input-box-primary);
+
   position: relative;
   display: flex;
   flex-grow: 1;

@@ -14,13 +14,19 @@ module.exports = {
       description: '該圖片的檔案名稱',
     },
     {
+      name: 'image_name',
+      type: String,
+      default: '',
+      description: '該圖片的檔案名稱',
+    },
+    {
       name: 'uuid',
       type: String,
       default: '',
       description: '該圖片的唯一碼',
     },
     {
-      name: 'ext',
+      name: 'image_ext',
       type: String,
       default: '',
       description: '該圖片的副檔名',
@@ -44,13 +50,13 @@ module.exports = {
       description: '該圖片的檔案路徑',
     },
     {
-      name: 'alt',
+      name: 'image_alt',
       type: String,
       default: '',
       description: '該圖片的替代文字',
     },
     {
-      name: 'title',
+      name: 'image_title',
       type: String,
       default: '',
       description: '該圖片的標題文字',

@@ -1,6 +1,15 @@
 <template>
-  <div class="photo-frame" @click.stop="resetSelect" ref="container" @dragover="dragover" @drop="dropFileInput">
-    <div class="photo-frame__container" v-if="filterList.length">
+  <div
+    class="photo-frame"
+    :class="{ 'photo-frame--hover': dragHover }"
+    @click.stop="resetSelect"
+    ref="root"
+    @dragover="dragover"
+    @drop="dropFileInput"
+    @dragenter="dragenter"
+    @dragleave="dragleave"
+  >
+    <div class="photo-frame__container" ref="container" v-if="filterList.length">
       <div
         class="photo-frame__container__item"
         v-for="(image, index) in filterList"
@@ -10,17 +19,20 @@
           maxWidth: columnWidth,
         }"
         @dragover="dragover($event, image, index)"
-        @drop.stop="dropFileInput($event, image, index)"
+        @dragenter="dragenterItem($event, image, index)"
+        @dragleave="dragleaveItem($event, image, index)"
+        @drop="dropFileInput($event, image, index)"
+        :ref="setItem(index)"
       >
         <div
           class="photo-frame__container__item__block"
           @click.stop="clickImageItem($event, index)"
-          :class="{ 'photo-frame__container__item__block--active': isActive(image) }"
+          :class="{ 'photo-frame__container__item__block--active': isActive(image) || image.dragHover }"
         >
           <ImageBox :src="image" display="background" class="photo-frame__container__item__block__image" />
           <div class="photo-frame__container__item__block__close" v-html="closeIcon" @click.stop="deleteImage($event, image)"></div>
         </div>
-        <input class="photo-frame__container__item__input" type="file" :ref="setInput(index)" @change="changeFileInput($event, image, index)" />
+        <input class="photo-frame__container__item__input" type="file" @change="changeFileInput($event, image, index)" />
       </div>
     </div>
     <div class="photo-frame__container" v-else>
@@ -123,16 +135,19 @@ export default {
 </svg>`
     const selecteList = reactive(props.selecteList)
     const list = reactive(props.model instanceof ListModel ? props.model : new ListModel({ data: props.model, model: ImageModel }))
+    const filterList = computed(() => list.data.filter((p) => !p.deleted))
     const refs = {
       create: ref(null),
       plus: ref(null),
+      root: ref(null),
       container: ref(null),
     }
+    const dragHover = ref(false)
     const resetSelect = () => {
       selecteList.splice(0)
     }
     const checkFileLength = (fileList) => {
-      if (fileList.length + list.data.length > props.fileLength) {
+      if (fileList.length + filterList.value.length > props.fileLength) {
         alert('上傳檔案數量超過上限')
         return true
       }
@@ -210,7 +225,7 @@ export default {
         })
         .forEach((image) => {
           if (fileList.length === 1 && (imageIndex || imageIndex === 0)) {
-            list.data[imageIndex].set(image)
+            filterList.value[imageIndex].set(image)
           } else {
             list.data.push(image)
           }
@@ -220,14 +235,14 @@ export default {
           }
           reader.readAsDataURL(image.image_blob)
         })
-      list.data.forEach((image, index) => {
+      filterList.value.forEach((image, index) => {
         image.sort = index
       })
       list.data.sort((a, b) => a.sort - b.sort)
     }
     const columnWidth = ref('50%')
     const checkWidth = () => {
-      const width = refs.container.value.offsetWidth
+      const width = refs.root.value.offsetWidth
       switch (true) {
         case width > 1024:
           columnWidth.value = '20%'
@@ -250,13 +265,12 @@ export default {
     onUnmounted(() => {
       window.removeEventListener('resize', checkWidth)
     })
-    const filterList = computed(() => list.data.filter((p) => !p.deleted))
     return {
       listData: list,
       filterList,
-      setInput: (index) => {
+      setItem: (index) => {
         return (el) => {
-          if (el) filterList.value[index].input = el
+          if (el) filterList.value[index].el = el
         }
       },
       ...refs,
@@ -264,6 +278,7 @@ export default {
       closeIcon,
       trashIcon,
       columnWidth,
+      dragHover,
       clickCreateImage: (refsName) => {
         refs[refsName].value.click()
       },
@@ -277,7 +292,7 @@ export default {
             selecteList.push(model)
           }
         } else {
-          filterList.value[index].input.click()
+          filterList.value[index].el.querySelector('input').click()
         }
       },
       resetSelect,
@@ -312,116 +327,43 @@ export default {
       dropFileInput: (e, image, index) => {
         e.preventDefault()
         e.stopPropagation()
+        dragHover.value = false
+        filterList.value.forEach((image) => {
+          image.dragHover = false
+        })
         const fileList = Array.from(e.dataTransfer.files)
         imageUpload(fileList, index)
       },
-      dragSort: () => {},
+      dragleave: (e) => {
+        e.preventDefault()
+        e.stopPropagation()
+        if (!refs.root.value.contains(e.fromElement)) {
+          dragHover.value = false
+        }
+      },
+      dragenter: (e) => {
+        e.preventDefault()
+        e.stopPropagation()
+        if (refs.root.value === e.target || refs.container.value === e.target) {
+          dragHover.value = true
+          filterList.value.forEach((image) => {
+            image.dragHover = false
+          })
+        }
+      },
+      dragleaveItem: (e, image, index) => {
+        e.preventDefault()
+        e.stopPropagation()
+      },
+      dragenterItem: (e, image, index) => {
+        e.preventDefault()
+        e.stopPropagation()
+        dragHover.value = false
+        image.dragHover = true
+      },
     }
   },
 }
 </script>
 
-<style lang="scss" scoped>
-.photo-frame {
-  position: relative;
-  padding: 1rem 0.5rem;
-  border: 1px solid #ccc;
-  border-radius: 0.5rem;
-  &__container {
-    display: flex;
-    flex-wrap: wrap;
-    margin-right: -0.5rem;
-    margin-left: -0.5rem;
-    &__item {
-      flex-grow: 0;
-      flex-shrink: 0;
-      padding: 0.5rem;
-      &__block {
-        position: relative;
-        max-width: 200px;
-        margin: auto;
-        cursor: pointer;
-        border: 1px solid #ccc;
-        border-radius: 0.5rem;
-        &.photo-frame__container__item__block--active {
-          box-shadow: 0 0 0 0.25rem rgba(93, 162, 207, 0.7);
-        }
-        &__image {
-          padding-top: 100%;
-          background-repeat: no-repeat;
-          background-position: center;
-          background-size: contain;
-        }
-        &__close {
-          position: absolute;
-          top: 0.5rem;
-          right: 0.5rem;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          width: 2.5rem;
-          height: 2.5rem;
-          padding: 0.6rem;
-          color: #dc3545;
-          pointer-events: none;
-          background-color: #eee;
-          border-radius: 50%;
-          opacity: 0;
-          transition: opacity 0.2s;
-          &:hover {
-            background-color: #ddd;
-          }
-        }
-        &:hover .photo-frame__container__item__block__close {
-          pointer-events: auto;
-          opacity: 1;
-        }
-        &:hover .photo-frame__container__item__block__form {
-          pointer-events: auto;
-          opacity: 1;
-        }
-      }
-      &__input {
-        display: none;
-      }
-    }
-    .photo-frame__container__item--create {
-      position: relative;
-      .photo-frame__container__item__block {
-        cursor: pointer;
-        border: 1px solid #ddd;
-        &:hover {
-          background-color: #eee;
-        }
-        &__image {
-          background-size: 60%;
-          opacity: 0.3;
-        }
-      }
-    }
-  }
-  &__fixed-bar {
-    position: absolute;
-    right: 0;
-    bottom: 0.25rem;
-    display: flex;
-    &__trash {
-      width: 2rem;
-      height: 2rem;
-      margin: 0 0.25rem;
-      color: #dc3545;
-      cursor: pointer;
-    }
-    &__plus {
-      width: 2rem;
-      height: 2rem;
-      margin: 0 0.25rem;
-      color: #28a745;
-      cursor: pointer;
-      &__input {
-        display: none;
-      }
-    }
-  }
-}
-</style>
+<style lang="scss" scoped src="./photo-frame.scss"></style>

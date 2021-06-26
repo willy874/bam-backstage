@@ -20,6 +20,9 @@ new Promise((resolve, reject) => {
     const app = createApp({
       mixins: [App, Mixin],
     })
+    app.config.performance = true
+    app.config.devtools = true
+    console.log(app.config)
     app.use(router).use(store).use(DatabaesPlugin).use(AdminPlugin).use(ComponentPlugin).use(CKEditor)
     await awaitTime(1000)
     resolve(app)
