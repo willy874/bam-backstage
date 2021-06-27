@@ -9,14 +9,14 @@
           <div class="py-2">
             <TextBox :model="form" field="account">
               <template #prefix>
-                <Icon class="m-1 text-blue-400" src="Add" size="24" />
+                <Icon class="m-1 text-blue-400" src="User" size="24" />
               </template>
             </TextBox>
           </div>
           <div class="py-2">
             <TextBox :model="form" field="password">
               <template #prefix>
-                <Icon class="m-1 text-blue-400" src="Play" size="24" />
+                <Icon class="m-1 text-blue-400" src="Padlock" size="24" />
               </template>
             </TextBox>
           </div>

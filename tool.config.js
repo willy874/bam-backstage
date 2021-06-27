@@ -38,7 +38,7 @@ require('bam-auto-tool')({
     output: {
       path: 'src/models/data',
       overwrite: {
-        exclude: /\\(article|news-message)\./,
+        exclude: /\\(article)\./,
         // allow: /\\image\./
       },
     },

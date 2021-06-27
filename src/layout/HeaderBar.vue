@@ -14,10 +14,13 @@
       :style="{ transition: 'all 0.4s', maxHeight: global.headerShow ? 'calc(100vh - 48px)' : '0' }"
     >
       <div class="border py-1 bg-primary-mirror">
-        <div class="px-4 py-1 border-b">{{ user.name }}</div>
+        <div class="px-4 py-1 border-b flex items-center">
+          <Icon class="mr-2 text-blue-400" src="ProfileUser" size="24" />
+          <span>{{ user.name }}</span>
+        </div>
         <ul class="py-2 overflow-auto" style="max-height: calc((100vh - 48px) - 33px)">
           <li class="">
-            <button type="button" class="py-1 px-4 w-full text-center hover:bg-primary-500 hover:text-primary-mirror">登出</button>
+            <button type="button" class="py-1 px-4 w-full text-left hover:bg-primary-500 hover:text-primary-mirror">登出</button>
           </li>
         </ul>
       </div>

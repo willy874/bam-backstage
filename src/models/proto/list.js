@@ -1,5 +1,6 @@
 import DataModel from './data'
-import { axiosInstance } from '@/plugins/axios/request'
+import { request } from '@/plugins/axios/request'
+import { handleApiConfig } from '../utility/index'
 
 /**
  * @property {Array.<*>} data         - ListModel 管理的 Model
@@ -70,8 +71,10 @@ export default class ListModel {
         this.cache.unshift(
           new Model({
             ...p,
-            primaryKey: this.primaryKey,
             api: this.api,
+            arrayModel: this.arrayModel,
+            dayFormat: this.dayFormat,
+            primaryKey: this.primaryKey,
           })
         )
       }
@@ -92,12 +95,6 @@ export default class ListModel {
     Object.keys(entity).forEach((key) => {
       if (key === 'data') {
         this[key] = this.setData(entity.data)
-      } else if (key === 'currentPage') {
-        this[key] = entity[key] || this[key]
-      } else if (key === 'lastPage') {
-        this[key] = entity[key] || this[key]
-      } else if (key === 'perPage') {
-        this[key] = entity[key] || this[key]
       } else {
         this[key] = entity[key]
       }
@@ -111,9 +108,9 @@ export default class ListModel {
    */
   setPages(args) {
     const entity = args || {}
-    this.currentPage = entity.currentPage || this.currentPage
-    this.lastPage = entity.lastPage || this.lastPage
-    this.perPage = entity.perPage || this.perPage
+    this.currentPage = entity.currentPage || entity.current_page || this.currentPage
+    this.lastPage = entity.lastPage || entity.last_page || this.lastPage
+    this.perPage = entity.perPage || entity.per_page || this.perPage
     this.from = entity.from || this.from
     this.to = entity.to || this.to
     this.total = entity.total || this.total
@@ -126,20 +123,23 @@ export default class ListModel {
    * @returns {Promise<AxiosResponse>}
    */
   readList(options = {}) {
-    const { url, params } = options
     this.loading = true
     return new Promise((resolve, reject) => {
-      axiosInstance({
-        model: this,
-        ...options,
-      })
-        .get(url || this.api)
+      request(
+        handleApiConfig({
+          default: {
+            method: 'GET',
+            url: `${this.api}/${this[this.primaryKey]}`,
+          },
+          model: this,
+          ...options,
+        })
+      )
         .then((res) => {
-          this.query = params
+          this.query[res.config.url] = res
           this.loading = false
-          this.data = this.setData(Array.isArray(res.data) ? res.data : res.data.data)
+          this.data = this.set(Array.isArray(res.data) ? { data: res.data } : res.data)
           this.setPages(res.data)
-          res.handle = this.data
           resolve(res)
         })
         .catch((err) => {
@@ -157,14 +157,25 @@ export default class ListModel {
   readListById(id = 0, options = {}) {
     this.loading = true
     return new Promise((resolve, reject) => {
-      axiosInstance(Object.assign({ model: this }, options))
-        .get(`${this.api}/${id}`)
+      request(
+        handleApiConfig({
+          default: {
+            method: 'GET',
+            url: `${this.api}/${id}`,
+          },
+          model: this,
+          ...options,
+        })
+      )
         .then((res) => {
           this.loading = false
           res.handle = this.setData(Array.isArray(res.data) ? res.data : [res.data])[0]
           resolve(res)
         })
-        .catch(reject)
+        .catch((err) => {
+          this.loading = false
+          reject(err)
+        })
     })
   }
 }

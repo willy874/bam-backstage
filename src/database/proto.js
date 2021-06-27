@@ -1,4 +1,4 @@
-import schema from '@/config/database'
+import schema from '@/models/config/database'
 import { ListModel } from '@/models/index'
 
 export default class Database {

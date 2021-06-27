@@ -10,7 +10,7 @@
 export default [
   {
     title: '圖文選單',
-    icon: 'Edit',
+    icon: 'Image',
     children: [
       {
         title: '好友管理',
@@ -28,7 +28,7 @@ export default [
   },
   {
     title: '最新消息',
-    icon: 'Edit',
+    icon: 'News',
     route: {
       name: 'News',
     },

@@ -1,4 +1,4 @@
-import schema from '@/config/database'
+import schema from '@/models/config/database'
 import { useDialog } from '@/components/dialog/index'
 import DetailDialog from './DetailDialog.vue'
 // import Template from '@/components/dialog/Template.vue'
@@ -65,7 +65,7 @@ export default {
           .map((m, i) => {
             return {
               ...m,
-              id: i,
+              id: i + 1,
             }
           })
           .reverse(),

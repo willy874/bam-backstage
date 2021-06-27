@@ -8,6 +8,12 @@ module.exports = {
       description: '該Model的辨識索引',
     },
     {
+      name: 'uuid',
+      type: String,
+      default: '',
+      description: '該圖片的唯一碼',
+    },
+    {
       name: 'name',
       type: String,
       default: '',
@@ -18,12 +24,6 @@ module.exports = {
       type: String,
       default: '',
       description: '該圖片的檔案名稱',
-    },
-    {
-      name: 'uuid',
-      type: String,
-      default: '',
-      description: '該圖片的唯一碼',
     },
     {
       name: 'image_ext',
@@ -44,10 +44,10 @@ module.exports = {
       description: '該圖片的儲存類型',
     },
     {
-      name: 'url',
+      name: 'size',
       type: Number,
-      default: '',
-      description: '該圖片的檔案路徑',
+      default: 0,
+      description: '該圖片的檔案大小',
     },
     {
       name: 'image_alt',
@@ -65,19 +65,19 @@ module.exports = {
       name: 'image_url',
       type: String,
       default: '',
-      description: '',
+      description: '該圖片的路徑',
     },
     {
       name: 'image_base64',
       type: String,
       default: '',
-      description: '',
+      description: '該圖片的base64顯示字串',
     },
     {
       name: 'image_blob',
       type: String,
-      default: '',
-      description: '',
+      default: null,
+      description: '該圖片的二進位Blob檔',
     },
   ],
 }

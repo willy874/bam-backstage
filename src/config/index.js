@@ -1,7 +1,9 @@
 export default {
   api: {
     baseUrl: '',
-    version: '0.0.1',
+    headers: {
+      'X-Client-Version': '0.0.1',
+    },
   },
   layout: {
     asideWidth: 240,

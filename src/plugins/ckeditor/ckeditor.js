@@ -6,7 +6,7 @@
 /* global console */
 
 import { h } from 'vue'
-import { debounce } from 'lodash'
+import debounce from 'lodash/debounce'
 import config from './editor-config'
 import './build/ckeditor'
 

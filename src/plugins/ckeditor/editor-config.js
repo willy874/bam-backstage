@@ -59,7 +59,6 @@ export default {
       'italic',
       '|',
       'link',
-      'imageUpload',
       'imageInsert',
       'insertTable',
       'mediaEmbed',

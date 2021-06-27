@@ -10,8 +10,8 @@
       <div class="px-2">
         <h2 class="text-primary-mirror">最新消息</h2>
       </div>
-      <div class="px-2 leading-none">
-        <button class="text-primary-mirror" type="button" @click="close">
+      <div class="px-1 leading-none">
+        <button class="mx-1 text-primary-mirror btn-icon" type="button" @click="close">
           <Icon class="transform rotate-45" src="Add" size="16" />
         </button>
       </div>
@@ -19,35 +19,43 @@
     <main ref="main" class="p-1">
       <div class="scroll-bar px-4 py-3" style="height: calc(100vh - 140px)">
         <form @submit="submit">
-          <div class="py-2 flex">
+          <div class="py-2 sm:flex">
             <div class="flex-shrink-0" :style="{ width: `${formTitleWidth}px`, margin: `${formTitleMarginTop}px` }">標題</div>
             <div class="flex-grow">
               <TextBox type="text" :model="model" field="subject" />
+              <span class="text-red-500 text-xs" v-show="model.hasError('subject')">{{ model.hasError('subject') }}</span>
             </div>
           </div>
-          <div class="py-2 flex">
+          <div class="py-2 sm:flex">
             <div class="flex-shrink-0" :style="{ width: `${formTitleWidth}px`, margin: `${formTitleMarginTop}px` }">內容</div>
-            <!-- <TextBox type="textarea" :model="model" field="content" rows="5" /> -->
-            <div class="flex-grow w-0">
-              <keep-alive>
+            <div class="flex-grow sm:w-0">
+              <TextBox type="textarea" :model="model" field="content" rows="5" />
+              <!-- <keep-alive>
                 <Ckeditor @ready="ready" v-model="model.content" />
-              </keep-alive>
+              </keep-alive> -->
+              <span class="text-red-500 text-xs" v-show="model.hasError('content')">{{ model.hasError('content') }}</span>
             </div>
           </div>
-          <div class="py-2 flex">
+          <div class="py-2 sm:flex">
             <div class="flex-shrink-0" :style="{ width: `${formTitleWidth}px`, margin: `${formTitleMarginTop}px` }">圖片</div>
-            <PhotoFrame class="flex-grow" :model="[]" />
+            <div class="flex-grow">
+              <PhotoFrame :model="model.images" :class="{ 'is-invalid': model.hasError('images') }" />
+              <span class="text-red-500 text-xs" v-show="model.hasError('images')">{{ model.hasError('images') }}</span>
+            </div>
           </div>
-          <!-- <div>
-            <ImageBox src="http://api.tocin.bsdctw.tw/api/images/carousels/7970010B-5D10-474B-A56C-59137AA20479.jpeg" @ready="ready" />
-          </div> -->
         </form>
       </div>
     </main>
     <footer class="flex justify-between items-center rounded-b-lg border-t p-2" ref="footer">
-      <div class="px-2"></div>
       <div class="px-2">
-        <button class="btn text-primary-mirror bg-green-500 hover:bg-green-600" type="button" @click="submit">送出</button>
+        <div class="px-1 text-red-500 flex items-center" v-show="errorMessages.length">
+          <Icon src="Warning" size="24" />
+          <div class="text-sm mx-1">資料填寫有誤或不完整</div>
+        </div>
+      </div>
+      <div class="px-1 flex items-center">
+        <button class="btn mx-1 text-primary-mirror bg-gray-500 hover:bg-gray-600" type="button" @click="close">取消</button>
+        <Button class="mx-1 text-primary-mirror bg-green-500 hover:bg-green-600" type="button" :model="model" @click="submit">送出</Button>
       </div>
     </footer>
   </div>
@@ -56,12 +64,15 @@
 <script>
 import { reactive, ref } from 'vue'
 import { NewsMessageModel } from '@/models'
+import { isModelError } from '@/utility/model-handle'
+import throttle from 'lodash/throttle'
 
 export default {
   name: 'DetailDialog',
   props: ['drag', 'touch', 'props', 'id', 'popupElement', 'dialog', 'initPosition'],
   setup(props) {
     const model = reactive(new NewsMessageModel(props.props.model))
+    const errorMessages = ref([])
     const formTitleWidth = ref(80)
     const formTitleMarginTop = ref(7)
     const refs = {
@@ -74,13 +85,49 @@ export default {
       model,
       formTitleWidth,
       formTitleMarginTop,
+      errorMessages,
       ready() {
         props.initPosition()
       },
-      close: () => {
+      close: throttle(() => {
         props.dialog.closePopup(props.id)
-      },
-      submit: () => {},
+      }, 300),
+      submit: throttle((e) => {
+        e.preventDefault()
+        const modelErrorMessage = model.validate({
+          subject: {
+            presence: {
+              allowEmpty: false,
+              message: '^請填寫標題文字',
+            },
+          },
+          content: {
+            presence: {
+              allowEmpty: false,
+              message: '^請填寫內容文字',
+            },
+          },
+          images: () => {
+            if (model.images.length && model.images.every((p) => p.image_blob) && model.images.some((p) => !p.deleted)) {
+              return {}
+            }
+            return {
+              inclusion: {
+                message: '^請上傳圖片',
+              },
+            }
+          },
+        })
+        errorMessages.value = isModelError(modelErrorMessage)
+        if (errorMessages.value.length) {
+          return
+        }
+        try {
+          console.log('submit success')
+        } catch (error) {
+          console.log(error)
+        }
+      }, 1000),
     }
   },
 }

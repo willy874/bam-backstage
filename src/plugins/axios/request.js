@@ -1,6 +1,5 @@
 import Axios from 'axios'
 import config from '@/config/index'
-import { DataModel, ListModel } from '@/models/index'
 // import i18n from '../plugins/i18n'
 // const lang = i18n.getLocale()
 // const i18nMsg = i18n.messages[lang]
@@ -8,18 +7,7 @@ import { DataModel, ListModel } from '@/models/index'
 export const LoadingModels = {}
 
 export const axiosInstance = (ops = {}) => {
-  const { params, headers, baseURL } = ops
-  const axios = Axios.create({
-    baseURL: baseURL || `${config.api.baseUrl}`,
-    headers: {
-      'X-Client-Version': config.api.version,
-      ...headers,
-    },
-    params,
-    // onUploadProgress: (e) => {
-    //   console.log(e)
-    // },
-  })
+  const axios = Axios.create(config.api)
   const requestSuccess = (req) => {
     // LoadingModels 紀錄
     LoadingModels[`${req.method}:${req.baseURL}${req.url}`] = ops.promiseResult
@@ -34,9 +22,6 @@ export const axiosInstance = (ops = {}) => {
           console.log('%cRequest Error', 'color: #f00;background: #ff000011;padding: 2px 6px;border-radius: 4px;')
         }
       }
-    }
-    if (ops.model instanceof DataModel || ops.model instanceof ListModel) {
-      req.model = ops.model
     }
     return req
   }

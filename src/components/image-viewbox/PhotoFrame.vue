@@ -358,6 +358,9 @@ export default {
       dragenterItem: (e, image, index) => {
         e.preventDefault()
         e.stopPropagation()
+        filterList.value.forEach((image) => {
+          image.dragHover = false
+        })
         dragHover.value = false
         image.dragHover = true
       },

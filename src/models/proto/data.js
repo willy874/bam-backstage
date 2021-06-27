@@ -1,6 +1,7 @@
 import Validate from 'validate.js'
-import { axiosInstance } from '@/plugins/axios/request'
+import { request } from '@/plugins/axios/request'
 import '../validate/index'
+import { handleApiConfig } from '../utility/index'
 
 /**
  * @property {Number} id             - 該筆資料唯一索引
@@ -9,18 +10,22 @@ import '../validate/index'
  * @property {String} deleted_at     - 該筆資料刪除時間 YYYY/MM/DD HH:MM:ss
  * @property {Object} errors         - 目前產生的錯誤訊息
  * @property {Boolean} loading       - 目前是否為讀取中
+ * @property {Boolean} edited        - 目前是否為已編輯過狀態
+ * @property {Boolean} deleted       - 目前是否為刪除狀態
  * @property {String} mode           - ["static","edit","delete"]
  * @property {String} api            - 該 model api 的 Url
+ * @property {String} dayFormat      - 在時間參數格式化時的預設值
+ * @property {String} arrayModel     - 陣列建立時預設使用的 model
  */
 export default class DataModel {
   /** @param {*} args 若為 JSON 字串則會經過轉型 */
   constructor(args) {
-    const entity = (() => {
-      if (args) {
-        return typeof args === 'string' ? JSON.parse(args) : args
-      }
-      return {}
-    })()
+    let entity
+    try {
+      entity = typeof args === 'string' ? JSON.parse(args) : args || {}
+    } catch (error) {
+      entity = args || {}
+    }
     this.id = entity.id || 0
     this.created_at = entity.created_at || undefined
     this.updated_at = entity.updated_at || undefined
@@ -85,6 +90,29 @@ export default class DataModel {
     return this.errors || false
   }
 
+  formDataFomat(data, exclude) {
+    const fomat = (value, keys = []) => {
+      Object.keys(value).forEach((key) => {
+        const formName = [...keys, key].map((k, i) => (i ? `[${k}]` : k)).join('')
+        if (value[key] === null || isNaN(value[key]) || exclude.includes(key)) {
+          return undefined
+        } else if (value[key] instanceof Blob) {
+          formData.append(formName, value[key], value[key].name)
+        } else if (typeof value[key] === 'object') {
+          fomat(value[key], [...keys, key])
+        } else if (value[key] !== undefined && value[key] !== '') {
+          if (/^data:(\w)*\/(\w)*;base64,/.test(formName)) {
+            return
+          }
+          formData.append(formName, value[key])
+        }
+      })
+    }
+    const formData = new FormData()
+    fomat(data)
+    return formData
+  }
+
   /**
    * 設定 model property 值
    * @param {*} entity
@@ -111,67 +139,23 @@ export default class DataModel {
     return {}
   }
 
-  formDataFomat(data, exclude) {
-    const fomat = (value, keys = []) => {
-      Object.keys(value).forEach((key) => {
-        const formName = [...keys, key].map((k, i) => (i ? `[${k}]` : k)).join('')
-        if (value[key] === null || isNaN(value[key]) || exclude.includes(key)) {
-          return undefined
-        } else if (value[key] instanceof Blob) {
-          formData.append(formName, value[key], value[key].name)
-        } else if (typeof value[key] === 'object') {
-          fomat(value[key], [...keys, key])
-        } else if (value[key] !== undefined && value[key] !== '') {
-          if (/base64/.test(formName)) {
-            return
-          }
-          formData.append(formName, value[key])
-        }
-      })
-    }
-    const formData = new FormData()
-    fomat(data)
-    return formData
-  }
-
-  /**
-   *
-   * @param {*} options
-   * @param {*} options.append
-   * @param {Array.<String>} options.exclude
-   * @param {Boolean} options.isFormData 是否使用 FormData 作為傳遞數據類型
-   * @returns {*}
-   */
-  save(options = {}) {
-    const data = {}
-    const exclude = 'id,errors,loading,mode,api,edited,deleted,primaryKey,dayFormat,created_at,created_user,updated_at,updated_user,deleted_at,deleted_user,'
-      .split(',')
-      .concat(options.exclude || [])
-    Object.keys(this).forEach((key) => {
-      if (!exclude.includes(key)) {
-        data[key] = this[key]
-      }
-      if (this[key] instanceof DataModel) {
-        data[key] = this[key].save(options)
-      }
-    })
-    if (options.isFormData) {
-      if (options.method === 'PUT') data._method = 'PUT'
-      return this.formDataFomat(data, exclude)
-    }
-    return Object.assign(data, options.append)
+  save() {
+    return this
   }
 
   readData(options = {}) {
     this.loading = true
     return new Promise((resolve, reject) => {
-      axiosInstance(
-        Object.assign(options, {
+      request(
+        handleApiConfig({
+          default: {
+            method: 'GET',
+            url: `${this.api}/${this[this.primaryKey]}`,
+          },
           model: this,
-          ...options.config,
+          ...options,
         })
       )
-        .get(`${this.api}/${this[this.primaryKey]}`)
         .then((res) => {
           this.loading = false
           this.set(res.data)
@@ -186,28 +170,17 @@ export default class DataModel {
 
   createData(options = {}) {
     this.loading = true
-    if (options.isFormData) {
-      options.config = {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      }
-    }
-    if (this.middlewareToBackend) this.middlewareToBackend()
     return new Promise((resolve, reject) => {
-      axiosInstance(
-        Object.assign(options, {
+      request(
+        handleApiConfig({
+          default: {
+            method: 'POST',
+            url: `${this.api}`,
+          },
           model: this,
-          ...options.config,
+          ...options,
         })
       )
-        .post(
-          `${this.api}`,
-          this.save({
-            method: 'POST',
-            ...options,
-          })
-        )
         .then((res) => {
           this.loading = false
           this.set(res.data)
@@ -222,20 +195,14 @@ export default class DataModel {
 
   updateData(options = {}) {
     this.loading = true
-    const id = this[this.primaryKey]
-    const method = options.isFormData ? 'post' : 'put'
-    if (this.middlewareToBackend) this.middlewareToBackend()
     return new Promise((resolve, reject) => {
-      const axiosRequest = axiosInstance(
-        Object.assign(options, {
+      request(
+        handleApiConfig({
+          default: {
+            method: 'PUT',
+            url: `${this.api}/${this[this.primaryKey]}`,
+          },
           model: this,
-          ...options.config,
-        })
-      )
-      axiosRequest[method](
-        `${this.api}/${id}`,
-        this.save({
-          method: 'PUT',
           ...options,
         })
       )
@@ -252,15 +219,17 @@ export default class DataModel {
 
   deleteData(options = {}) {
     this.loading = true
-    const id = this[this.primaryKey]
     return new Promise((resolve, reject) => {
-      axiosInstance(
-        Object.assign(options, {
+      request(
+        handleApiConfig({
+          default: {
+            method: 'DELETE',
+            url: `${this.api}/${this[this.primaryKey]}`,
+          },
           model: this,
-          ...options.config,
+          ...options,
         })
       )
-        .delete(`${this.api}/${id}`, this)
         .then((res) => {
           this.loading = false
           resolve(res)

@@ -6,7 +6,7 @@ module.exports = {
       name: 'images',
       type: Array,
       itemType: 'ImageModel',
-      default: '[]',
+      default: [],
       description: '該筆文章的圖片',
     },
     {
