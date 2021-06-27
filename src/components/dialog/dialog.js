@@ -10,16 +10,10 @@ export default class Dialog {
     this.popupCache = null
   }
 
-  popup(view, options) {
+  popup(view, options = {}) {
     document.body.style.overflow = 'hidden'
-    const popup =
-      view instanceof Popup
-        ? view
-        : new Popup({
-            ...options,
-            dialog: this,
-            view,
-          })
+    const popup = view instanceof Popup ? view : new Popup({ ...options, view })
+    popup.dialog = this
     this.popups.push(popup)
     return new Promise((resolve) => {
       popup.onClose = (attrs) => {

@@ -139,7 +139,7 @@ export default class DataModel {
     return {}
   }
 
-  save() {
+  async save() {
     return this
   }
 

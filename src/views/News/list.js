@@ -2,10 +2,11 @@ import schema from '@/models/config/database'
 import { useDialog } from '@/components/dialog/index'
 import DetailDialog from './DetailDialog.vue'
 // import Template from '@/components/dialog/Template.vue'
+import AddModelButton from '@/container/AddModelButton.vue'
 
 export default {
   routeTitle: '最新消息列表',
-  modelSchema: schema.Articles,
+  modelSchema: schema.NewsMessages,
   dataTable: {
     options: [
       { title: 'No.', field: 'id', width: '80px', align: 'center' },
@@ -27,30 +28,35 @@ export default {
       },
       { title: '顯示/隱藏', field: (item) => (item.status ? '顯示' : '隱藏'), width: '100px', align: 'center' },
     ],
-    clickTr: async (model) => {
+    clickTr: async (model, index, { listData }) => {
       const dialog = useDialog()
       // await dialog.popup(Template)
-      dialog.popup(DetailDialog, {
+      const popup = await dialog.popup(DetailDialog, {
         onBackgroundClick: () => {},
         width: '768px',
         props: {
           model,
         },
       })
+      if (popup.props.model.deleted) {
+        listData.data.splice(index, 1)
+      }
     },
     clickTd: (...args) => {
       // console.log('clickTd', args)
     },
   },
+  detailPage: DetailDialog,
+  headerBar: [AddModelButton],
   setupTest: ({ setupResult }) => {
-    const list = setupResult.dataTableProps.list
-    list.loading = true
+    const model = setupResult.dataTableProps.model
+    model.loading = true
 
     // 假資料測試
     setTimeout(() => {
-      list.loading = false
-      list.set({
-        data: Array(30)
+      model.loading = false
+      model.set({
+        data: Array(60)
           .fill({
             id: 1,
             subject: '測試標題',

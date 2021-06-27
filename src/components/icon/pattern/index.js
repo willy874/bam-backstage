@@ -13,19 +13,4 @@ import ProfileUser from './profile-user.js'
 import User from './user.js'
 import Warning from './warning.js'
 
-export {
-  Add,
-  ArrowSolid,
-  Arrow,
-  Delete,
-  Edit,
-  GearOption,
-  Home,
-  Image,
-  News,
-  Padlock,
-  Play,
-  ProfileUser,
-  User,
-  Warning,
-}
+export { Add, ArrowSolid, Arrow, Delete, Edit, GearOption, Home, Image, News, Padlock, Play, ProfileUser, User, Warning }

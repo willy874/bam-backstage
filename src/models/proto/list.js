@@ -20,12 +20,12 @@ import { handleApiConfig } from '../utility/index'
  */
 export default class ListModel {
   constructor(args) {
-    const entity = (() => {
-      if (args) {
-        return typeof args === 'string' ? JSON.parse(args) : args
-      }
-      return {}
-    })()
+    let entity
+    try {
+      entity = typeof args === 'string' ? JSON.parse(args) : args || {}
+    } catch (error) {
+      entity = args || {}
+    }
     const Model = entity.model || DataModel
     this.data = (entity.data && entity.data.map((p) => new Model(p))) || []
     this.loading = entity.loading || false
@@ -37,7 +37,7 @@ export default class ListModel {
     this.total = entity.total || 0
     this.path = entity.path || ''
     this.cache = entity.cache || []
-    this.query = entity.query || null
+    this.query = entity.query || {}
     Object.defineProperty(this, 'modelType', {
       value: Model,
       enumerable: false,

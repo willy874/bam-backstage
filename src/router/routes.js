@@ -34,15 +34,6 @@ const routes = [
         component: ArticleListView,
         props: NewsListProps,
       },
-      {
-        name: 'NewsDetail',
-        path: ':id',
-        component: {
-          render() {
-            return h('div', 'Detail')
-          },
-        },
-      },
     ],
   },
   {

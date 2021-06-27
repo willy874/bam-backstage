@@ -22,14 +22,14 @@
           <div class="py-2 sm:flex">
             <div class="flex-shrink-0" :style="{ width: `${formTitleWidth}px`, margin: `${formTitleMarginTop}px` }">標題</div>
             <div class="flex-grow">
-              <TextBox type="text" :model="model" field="subject" />
+              <TextBox type="text" :model="model" field="subject" placeholder="請輸入標題" />
               <span class="text-red-500 text-xs" v-show="model.hasError('subject')">{{ model.hasError('subject') }}</span>
             </div>
           </div>
           <div class="py-2 sm:flex">
             <div class="flex-shrink-0" :style="{ width: `${formTitleWidth}px`, margin: `${formTitleMarginTop}px` }">內容</div>
             <div class="flex-grow sm:w-0">
-              <TextBox type="textarea" :model="model" field="content" rows="5" />
+              <TextBox type="textarea" :model="model" field="content" rows="5" placeholder="請輸入內文" />
               <!-- <keep-alive>
                 <Ckeditor @ready="ready" v-model="model.content" />
               </keep-alive> -->
@@ -54,6 +54,7 @@
         </div>
       </div>
       <div class="px-1 flex items-center">
+        <button v-if="model.id" class="btn mx-1 text-primary-mirror bg-red-500 hover:bg-red-600" type="button" @click="deleteModel">刪除</button>
         <button class="btn mx-1 text-primary-mirror bg-gray-500 hover:bg-gray-600" type="button" @click="close">取消</button>
         <Button class="mx-1 text-primary-mirror bg-green-500 hover:bg-green-600" type="button" :model="model" @click="submit">送出</Button>
       </div>
@@ -65,6 +66,7 @@
 import { reactive, ref } from 'vue'
 import { NewsMessageModel } from '@/models'
 import { isModelError } from '@/utility/model-handle'
+import swAlert from '@/utility/alert'
 import throttle from 'lodash/throttle'
 
 export default {
@@ -72,6 +74,7 @@ export default {
   props: ['drag', 'touch', 'props', 'id', 'popupElement', 'dialog', 'initPosition'],
   setup(props) {
     const model = reactive(new NewsMessageModel(props.props.model))
+    const popupProps = reactive(props.props)
     const errorMessages = ref([])
     const formTitleWidth = ref(80)
     const formTitleMarginTop = ref(7)
@@ -79,6 +82,30 @@ export default {
       header: ref(null),
       main: ref(null),
       footer: ref(null),
+    }
+    const validateRules = {
+      subject: {
+        presence: {
+          allowEmpty: false,
+          message: '^請填寫標題文字',
+        },
+      },
+      content: {
+        presence: {
+          allowEmpty: false,
+          message: '^請填寫內容文字',
+        },
+      },
+      images: () => {
+        if (model.images.length && model.images.every((p) => p.image_blob || p.deleted)) {
+          return {}
+        }
+        return {
+          inclusion: {
+            message: '^請上傳圖片',
+          },
+        }
+      },
     }
     return {
       ...refs,
@@ -92,38 +119,34 @@ export default {
       close: throttle(() => {
         props.dialog.closePopup(props.id)
       }, 300),
-      submit: throttle((e) => {
+      deleteModel: async () => {
+        const swalResult = await swAlert.delete()
+        try {
+          if (swalResult.isConfirmed) {
+            // await popupProps.model.deleteData()
+            popupProps.model.deleted = true
+            props.dialog.closePopup(props.id)
+          }
+        } catch (error) {
+          console.log(error)
+        }
+      },
+      submit: throttle(async (e) => {
         e.preventDefault()
-        const modelErrorMessage = model.validate({
-          subject: {
-            presence: {
-              allowEmpty: false,
-              message: '^請填寫標題文字',
-            },
-          },
-          content: {
-            presence: {
-              allowEmpty: false,
-              message: '^請填寫內容文字',
-            },
-          },
-          images: () => {
-            if (model.images.length && model.images.every((p) => p.image_blob) && model.images.some((p) => !p.deleted)) {
-              return {}
-            }
-            return {
-              inclusion: {
-                message: '^請上傳圖片',
-              },
-            }
-          },
-        })
+        const modelErrorMessage = model.validate(validateRules)
         errorMessages.value = isModelError(modelErrorMessage)
         if (errorMessages.value.length) {
           return
         }
         try {
-          console.log('submit success')
+          // 依據 id 是否為有數字欄決定新增或修改
+          if (model.id === 0) {
+            await model.createData()
+            popupProps.model = model
+          } else {
+            await model.updateData()
+            popupProps.model.set(model)
+          }
         } catch (error) {
           console.log(error)
         }

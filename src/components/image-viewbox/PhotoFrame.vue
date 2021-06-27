@@ -134,7 +134,15 @@ export default {
 <path d="m176 448c8.836 0 16-7.164 16-16v-208c0-8.836-7.164-16-16-16s-16 7.164-16 16v208c0 8.836 7.163 16 16 16z"/>
 </svg>`
     const selecteList = reactive(props.selecteList)
-    const list = reactive(props.model instanceof ListModel ? props.model : new ListModel({ data: props.model, model: ImageModel }))
+    const list = (() => {
+      if (props.model instanceof ListModel) {
+        return reactive(props.model)
+      } else {
+        const result = reactive(new ListModel({ data: props.model, model: ImageModel }))
+        result.data = props.model
+        return result
+      }
+    })()
     const filterList = computed(() => list.data.filter((p) => !p.deleted))
     const refs = {
       create: ref(null),

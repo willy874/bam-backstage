@@ -15,7 +15,9 @@
               }"
             >
               <div class="datatable__table__th__block">
-                <div v-if="typeof table.field === 'object' && table.title.render" :is="table.title" v-bind="{ listData, listIndex: -1, ...table.props }"></div>
+                <div v-if="typeof table.field === 'object' && table.title.render">
+                  <component :is="table.title" v-bind="{ listData, filterList, listIndex: -1, ...table.props }"></component>
+                </div>
                 <div v-else v-html="table.title"></div>
               </div>
             </div>
@@ -23,11 +25,11 @@
         </div>
         <div class="datatable__container__body" ref="body" @scroll="scrollBody">
           <div
-            v-for="(data, index) in listData.data"
+            v-for="(data, index) in filterList.data"
             class="datatable__table__tr"
             :key="data.id"
             :style="{ gridTemplateColumns: widthTemplate, cursor: clickTr ? 'pointer' : 'auto' }"
-            @click="clickTrEvent(listData.data[index], index, listData, tables)"
+            @click="clickTrEvent(filterList.data[index], index, { listData, filterList, tables })"
           >
             <div
               class="datatable__table__td"
@@ -39,30 +41,41 @@
                 ...table.columnStyle,
                 ...table.bodyStyle,
               }"
-              @click="clickTdEvent(listData.data[index], index, listData, table.props)"
+              @click="clickTdEvent(filterList.data[index], index, { listData, filterList, ...table.props })"
             >
-              <template
-                v-if="typeof table.field === 'object' && table.field.render"
-                :is="table.field"
-                v-bind="{ listIndex: index, listData, ...table.props }"
+              <template v-if="typeof table.field === 'object' && table.field.render">
+                <component :is="table.field" v-bind="{ listIndex: index, listData, filterList, ...table.props }"></component
               ></template>
-              <div
-                v-else
-                class="datatable__table__td__block"
-                :style="{ webkitLineClamp: table.lineClamp || 2 }"
-                v-html="content(table.field, index, listData)"
-              ></div>
+              <div v-else class="datatable__table__td__block" :style="{ webkitLineClamp: table.lineClamp || 2 }" v-html="content(table.field, index)"></div>
             </div>
           </div>
-          <div v-if="list.loading" class="datatable__table__loading">
+          <div v-if="listData.loading" class="datatable__table__loading">
             <slot name="loading" v-if="$slots.loading"></slot>
             <div v-else class="datatable__table__loading__animation"></div>
           </div>
         </div>
         <div class="datatable__container__foot">
           <div class="datatable__table__tr">
-            <slot v-if="$slots.footer" name="footer"></slot>
-            <FooterBar v-bind="{ setFilterList, listData: list, ajax }" />
+            <div class="datatable__table-foot">
+              <div class="datatable__table-foot__left-text">總共{{ listTotal }}筆</div>
+              <div class="datatable__table-foot__right-text">
+                <div class="datatable__table-foot__right-text__per-page">
+                  <select v-model="perPage" @change="changePerPage">
+                    <option :value="10">顯示10筆</option>
+                    <option :value="25">顯示25筆</option>
+                    <option :value="50">顯示50筆</option>
+                    <option :value="100">顯示100筆</option>
+                    <option :value="250">顯示250筆</option>
+                  </select>
+                </div>
+                <div class="datatable__table-foot__right-text__current-page">
+                  <select v-model="currentPage" @change="changeCurrentPage">
+                    <option v-for="i in listLastPage" :key="i" :value="i">第{{ i }}頁</option>
+                  </select>
+                </div>
+                <div class="datatable__table-foot__right-text__last-page">共{{ listLastPage }}頁</div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -74,7 +87,6 @@
 import { ref, reactive, computed, isReactive } from 'vue'
 import { v4 as uuid } from 'uuid'
 import { ListModel } from '@/models/index'
-import FooterBar from './FooterBar.vue'
 
 /**
  * @type {Tables}
@@ -93,19 +105,20 @@ import FooterBar from './FooterBar.vue'
  *
  * @param {Array<Tables>} tables 要放入的設定
  * @param {ListModel} list 要解算為 table 的 ListModel
- * @param {Function} clickTr
- * @param {Function} clickTd
+ * @param {Function} clickTr 點擊整列事件
+ * @param {Function} clickTd 點擊單欄事件
+ * @param {Boolean} ajax 是否使用 API 更新資料
  */
 export default {
   name: 'DataTable',
   props: {
+    model: {
+      type: ListModel,
+      default: () => new ListModel(),
+    },
     options: {
       type: Array,
       default: () => [],
-    },
-    list: {
-      type: ListModel,
-      default: () => new ListModel(),
     },
     clickTr: {
       type: Function,
@@ -129,20 +142,29 @@ export default {
         }
       })
     )
-    const listData = isReactive(props.list) ? props.list : reactive(props.list)
-    const filterList = ref((list) => list)
-    const setFilterList = (handle) => {
-      filterList.value = handle
-    }
-    const handleList = computed(() => {
-      return filterList.value(
-        new ListModel({
-          model: listData.modelType,
-          api: listData.api,
-          primaryKey: listData.primaryKey,
-          ...listData,
+    const listData = isReactive(props.model) ? props.model : reactive(props.model)
+    const perPage = ref(listData.perPage || 10)
+    const currentPage = ref(listData.currentPage || 1)
+    const listTotal = computed(() => (props.ajax ? listData.total : listData.data.length))
+    const listCurrentPage = computed(() => (props.ajax ? listData.currentPage : listData.currentPage || 1))
+    const listPerPage = computed(() => (props.ajax ? listData.perPage : listData.perPage || perPage.value))
+    const listLastPage = computed(() => (props.ajax ? listData.lastPage : Math.ceil(listTotal.value / listPerPage.value)))
+    const filterList = computed(() => {
+      const list = new ListModel({
+        model: listData.modelType,
+        api: listData.api,
+        primaryKey: listData.primaryKey,
+        ...listData,
+      })
+      if (props.ajax) {
+        return list
+      } else {
+        return list.set({
+          data: list.data.filter((m, i) => {
+            return (listCurrentPage.value - 1) * listPerPage.value <= i && i < listCurrentPage.value * listPerPage.value
+          }),
         })
-      )
+      }
     })
     const widthTemplate = computed(() => {
       return tables
@@ -166,35 +188,50 @@ export default {
       clickTrEvent: props.clickTr || (() => {}),
       clickTdEvent: props.clickTd || (() => {}),
       tables,
-      listData: handleList,
+      listData,
+      filterList,
       widthTemplate,
-      setFilterList,
+      perPage,
+      currentPage,
+      listTotal,
+      listCurrentPage,
+      listPerPage,
+      listLastPage,
+      changePerPage: () => {
+        if (props.ajax) {
+          listData.readList({
+            params: {
+              page: currentPage.value,
+              per_page: perPage.value,
+            },
+          })
+        } else {
+          currentPage.value = 1
+        }
+      },
+      changeCurrentPage: () => {
+        if (props.ajax) {
+          listData.readList({
+            params: {
+              page: currentPage.value,
+              per_page: perPage.value,
+            },
+          })
+        }
+      },
       scrollBody: (e) => {
         head.value.scrollTo(e.target.scrollLeft, 0)
       },
-      widthType: (width) => {
-        switch (true) {
-          case width === 'grow':
-            return { flexGrow: 1, flexShrink: 1 }
-          case /%|rem|px/.test(width):
-            return { width }
-          default:
-            return { width: 0 }
-        }
-      },
-      content: (field, index, list) => {
+      content: (field, index) => {
         if (typeof field === 'string') {
-          return list.data[index][field]
+          return filterList.value.data[index][field]
         }
         if (typeof field === 'function') {
-          return field(list.data[index], index, list)
+          return field(filterList.value.data[index], index, { listData, filterList })
         }
         return ''
       },
     }
-  },
-  components: {
-    FooterBar,
   },
 }
 </script>
@@ -351,6 +388,63 @@ export default {
   }
   to {
     transform: rotate(360deg);
+  }
+}
+
+.datatable__table-foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.25rem 1rem;
+  &__left-text {
+    display: flex;
+    align-items: center;
+    padding-top: 0.25rem;
+    padding-right: 1rem;
+    padding-bottom: 0.25rem;
+    padding-left: 0.75rem;
+  }
+  &__right-text {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    &__per-page {
+      padding-top: 0.25rem;
+      padding-right: 1rem;
+      padding-bottom: 0.25rem;
+    }
+    &__current-page {
+      padding-top: 0.25rem;
+      padding-right: 1rem;
+      padding-bottom: 0.25rem;
+    }
+    &__last-page {
+      display: flex;
+      padding-top: 0.25rem;
+      padding-bottom: 0.25rem;
+      padding-left: 0.75rem;
+    }
+
+    select {
+      padding: 0.25rem 1.75rem 0.25rem 0.75rem;
+      font-size: 14px;
+      line-height: 1.5;
+      cursor: pointer;
+      background-color: transparent;
+      background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23343a40' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e");
+      background-repeat: no-repeat;
+      background-position: right 0.25rem center;
+      background-size: 16px 12px;
+      border: 1px solid transparent;
+      border-radius: 0.25rem;
+      appearance: none;
+      &:focus {
+        border: 1px solid #86b7fe;
+        outline: 0;
+        box-shadow: 0 0 0.4rem 0 #86b7fe;
+      }
+    }
   }
 }
 </style>

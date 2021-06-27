@@ -2,18 +2,21 @@
   <PageLayout>
     <template #header>
       <div class="py-2 px-4">
-        <div class="flex shadow">
+        <div class="flex items-center shadow">
           <div class="px-4 py-2">
             <Breadcrumb />
           </div>
-          <div class="flex items-end py-1"></div>
+          <div class="flex flex-grow justify-end p-1">
+            <div class="px-1" v-for="plugin in headerBar" :key="plugin.name">
+              <component v-bind="headerProps" :is="plugin"></component>
+            </div>
+          </div>
         </div>
       </div>
     </template>
     <div class="flex-grow flex flex-col py-2 px-4">
       <DataTable v-bind="dataTableProps" class="shadow-lg">
         <template #loading v-if="dataTableLoading" :is="dataTableLoading"></template>
-        <template #footer v-if="dataTableFooter" :is="dataTableFooter"></template>
       </DataTable>
     </div>
     <template #footer v-if="pageFooter" :is="pageFooter"></template>
@@ -38,6 +41,10 @@ export default {
         model: ArticleModel,
       }),
     },
+    headerBar: {
+      type: Array,
+      default: () => [],
+    },
     pageHeater: {
       type: Object,
       default: () => null,
@@ -54,7 +61,7 @@ export default {
       type: Object,
       default: () => null,
     },
-    dataTableFooter: {
+    detailPage: {
       type: Object,
       default: () => null,
     },
@@ -67,10 +74,14 @@ export default {
     const listModelData = reactive(new ListModel(props.modelSchema))
     const dataTableProps = reactive({
       ...props.dataTable,
-      list: listModelData,
+      model: listModelData,
     })
 
     const setupResult = {
+      headerProps: {
+        ...props,
+        listModelData,
+      },
       dataTableProps,
     }
 
