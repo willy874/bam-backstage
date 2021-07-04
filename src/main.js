@@ -29,3 +29,31 @@ new Promise((resolve, reject) => {
 }).then((app) => {
   app.mount('#app')
 })
+
+// import('./plugins/axios/request').then((module) => {
+//   module
+//     .axiosInstance()
+//     .post(
+//       'login',
+//       {},
+//       {
+//         baseURL: 'http://api.poseidon.bsdctw.tw/api/backstage/',
+//       }
+//     )
+//     .then((res) => {
+//       console.log('response')
+//     })
+// })
+// import('./plugins/axios/request').then((module) => {
+//   module
+//     .axiosInstance()
+//     .get('navbars?test=123456', {
+//       baseURL: 'http://api.tocin.bsdctw.tw/api/web/',
+//       params: {
+//         page: 1,
+//       },
+//     })
+//     .then((res) => {
+//       console.log('response')
+//     })
+// })

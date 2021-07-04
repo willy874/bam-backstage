@@ -217,6 +217,8 @@ export default {
               per_page: perPage.value,
             },
           })
+        } else {
+          listData.currentPage = currentPage.value
         }
       },
       scrollBody: (e) => {

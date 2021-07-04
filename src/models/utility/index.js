@@ -1,13 +1,13 @@
 import globalConfig from '@/config/index'
 
 export const handleApiConfig = (options = {}) => {
-  const { model, baseUrl, method, url, data, headers, _method, params } = options
+  const { model, baseURL, method, url, data, headers, _method, params } = options
   const config = {}
   config.headers = {
     ...globalConfig.api.headers,
     ...headers,
   }
-  if (baseUrl || baseUrl === '') config.baseUrl = baseUrl
+  if (baseURL || baseURL === '') config.baseURL = baseURL
   if (params) config.params = params
   if (url) {
     config.url = url
@@ -22,7 +22,7 @@ export const handleApiConfig = (options = {}) => {
       })
     }
   } else {
-    config.data = model.save(options)
+    config.data = model.requesHandler(options)
   }
   if (method) {
     config.method = method

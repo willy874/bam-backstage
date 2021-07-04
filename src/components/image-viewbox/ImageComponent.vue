@@ -21,6 +21,10 @@ export default {
       type: [String, Promise],
       default: import('./default-image.jpg'),
     },
+    cors: {
+      type: Boolean,
+      default: true,
+    },
   },
   setup(props, context) {
     const renderCheck = (el, count) => {
@@ -56,7 +60,11 @@ export default {
     }
     const handleImage = async (image) => {
       if (image.image_url) {
-        source.value = await handleUrl(image)
+        if (props.cors) {
+          source.value = image.image_url
+        } else {
+          source.value = await handleUrl(image)
+        }
       } else if (image.image_base64) {
         source.value = image.image_base64
       } else if (image.image_blob) {

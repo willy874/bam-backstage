@@ -1,5 +1,5 @@
 import DataModel from './data'
-import { request } from '@/plugins/axios/request'
+import { axiosInstance } from '@/plugins/axios/request'
 import { handleApiConfig } from '../utility/index'
 
 /**
@@ -49,6 +49,11 @@ export default class ListModel {
       enumerable: false,
       writable: true,
     })
+    Object.defineProperty(this, 'dayFormat', {
+      value: entity.dayFormat || 'YYYY/MM/DD HH:mm:ss',
+      enumerable: false,
+      writable: true,
+    })
     Object.defineProperty(this, 'primaryKey', {
       value: entity.primaryKey || 'id',
       enumerable: false,
@@ -61,44 +66,30 @@ export default class ListModel {
    * @param {Array.<DataModel>} data
    * @returns {DataModel} 快取內的資料包
    */
-  setData(data = []) {
-    const Model = this.modelType
-    data.forEach((p) => {
-      const targetModel = this.cache.find((m) => Number(m[this.primaryKey]) === Number(p[this.primaryKey]))
-      if (targetModel) {
-        targetModel.set(p)
+  setData(data = [], options = {}) {
+    const ModelType = this.modelType
+    this.data = data.map((target) => {
+      if (target instanceof ModelType) {
+        return target
       } else {
-        this.cache.unshift(
-          new Model({
-            ...p,
-            api: this.api,
-            arrayModel: this.arrayModel,
-            dayFormat: this.dayFormat,
-            primaryKey: this.primaryKey,
-          })
-        )
+        const model = new ModelType({
+          api: this.api,
+          primaryKey: this.primaryKey,
+          dayFormat: this.dayFormat,
+        })
+        return model.set(model.responseHandler(target, options))
       }
     })
-    const model = this.cache.filter((p) => {
-      return data.find((m) => {
-        return Number(m[this.primaryKey]) === Number(p[this.primaryKey])
-      })
-    })
-    return model
+    return this
   }
 
   /**
    * 設定 model property 值
    * @param {*} entity
    */
-  set(entity) {
-    Object.keys(entity).forEach((key) => {
-      if (key === 'data') {
-        this[key] = this.setData(entity.data)
-      } else {
-        this[key] = entity[key]
-      }
-    })
+  set(entity, options = {}) {
+    this.setData(entity.data, options)
+    this.setPages(entity)
     return this
   }
 
@@ -115,6 +106,7 @@ export default class ListModel {
     this.to = entity.to || this.to
     this.total = entity.total || this.total
     this.path = entity.path || this.path
+    return this
   }
 
   /**
@@ -124,8 +116,17 @@ export default class ListModel {
    */
   readList(options = {}) {
     this.loading = true
+    const axiosRequest = axiosInstance({
+      requesHandler(req) {
+        const cacheResponse = this.query[req.responseURL]
+        if (cacheResponse) {
+          const listModel = Array.isArray(cacheResponse.data) ? { data: cacheResponse.data } : cacheResponse.data
+          this.set(listModel, options)
+        }
+      },
+    })
     return new Promise((resolve, reject) => {
-      request(
+      axiosRequest(
         handleApiConfig({
           default: {
             method: 'GET',
@@ -136,40 +137,10 @@ export default class ListModel {
         })
       )
         .then((res) => {
-          this.query[res.config.url] = res
+          this.query[res.request.responseURL] = res
           this.loading = false
-          this.data = this.set(Array.isArray(res.data) ? { data: res.data } : res.data)
-          this.setPages(res.data)
-          resolve(res)
-        })
-        .catch((err) => {
-          this.loading = false
-          reject(err)
-        })
-    })
-  }
-
-  /**
-   * 讀取關於該 ListModel 指定 id 的 API 資料
-   * @param {*} options
-   * @returns {Promise<AxiosResponse>}
-   */
-  readListById(id = 0, options = {}) {
-    this.loading = true
-    return new Promise((resolve, reject) => {
-      request(
-        handleApiConfig({
-          default: {
-            method: 'GET',
-            url: `${this.api}/${id}`,
-          },
-          model: this,
-          ...options,
-        })
-      )
-        .then((res) => {
-          this.loading = false
-          res.handle = this.setData(Array.isArray(res.data) ? res.data : [res.data])[0]
+          const listModel = Array.isArray(res.data) ? { data: res.data } : res.data
+          this.set(listModel, options)
           resolve(res)
         })
         .catch((err) => {

@@ -139,8 +139,12 @@ export default class DataModel {
     return {}
   }
 
-  async save() {
+  requesHandler(options) {
     return this
+  }
+
+  responseHandler(resData, options) {
+    return resData
   }
 
   readData(options = {}) {
@@ -158,7 +162,7 @@ export default class DataModel {
       )
         .then((res) => {
           this.loading = false
-          this.set(res.data)
+          this.set(this.responseHandler(res.data), options)
           resolve(res)
         })
         .catch((err) => {
@@ -183,7 +187,7 @@ export default class DataModel {
       )
         .then((res) => {
           this.loading = false
-          this.set(res.data)
+          this.set(this.responseHandler(res.data), options)
           resolve(res)
         })
         .catch((err) => {

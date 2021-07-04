@@ -56,7 +56,7 @@
       <div class="px-1 flex items-center">
         <button v-if="model.id" class="btn mx-1 text-primary-mirror bg-red-500 hover:bg-red-600" type="button" @click="deleteModel">刪除</button>
         <button class="btn mx-1 text-primary-mirror bg-gray-500 hover:bg-gray-600" type="button" @click="close">取消</button>
-        <Button class="mx-1 text-primary-mirror bg-green-500 hover:bg-green-600" type="button" :model="model" @click="submit">送出</Button>
+        <SubmitButton class="mx-1 text-primary-mirror bg-green-500 hover:bg-green-600" type="button" :model="model" @click="submit">送出</SubmitButton>
       </div>
     </footer>
   </div>
@@ -64,7 +64,7 @@
 
 <script>
 import { reactive, ref } from 'vue'
-import { NewsMessageModel } from '@/models'
+import { NewsMessageModel } from '@/models/index'
 import { isModelError } from '@/utility/model-handle'
 import swAlert from '@/utility/alert'
 import throttle from 'lodash/throttle'
@@ -97,7 +97,8 @@ export default {
         },
       },
       images: () => {
-        if (model.images.length && model.images.every((p) => p.image_blob || p.deleted)) {
+        const publishImages = model.images.filter((p) => !p.deleted)
+        if (publishImages.length && publishImages.every((p) => p.image_blob)) {
           return {}
         }
         return {

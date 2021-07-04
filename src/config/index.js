@@ -1,6 +1,6 @@
 export default {
   api: {
-    baseUrl: '',
+    baseURL: '',
     headers: {
       'X-Client-Version': '0.0.1',
     },

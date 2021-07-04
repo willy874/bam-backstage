@@ -1,4 +1,4 @@
-import { ArticleModel, NewsMessageModel } from '@/models/index'
+import { ArticleModel, NewsMessageModel, MemberModel } from '@/models/index'
 
 export default {
   Articles: {
@@ -6,5 +6,8 @@ export default {
   },
   NewsMessages: {
     model: NewsMessageModel,
+  },
+  Members: {
+    model: MemberModel,
   },
 }

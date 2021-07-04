@@ -4,7 +4,7 @@ import { DataTablePlugin } from './data-table/index'
 import { BreadcrumbPlugin } from './breadcrumb/index'
 import { DialogPlugin } from './dialog/index'
 import { ImagePlugin } from './image-viewbox/index'
-import { ButtonPlugin } from './button/index'
+import { SubmitButtonPlugin } from './submit-button/index'
 
 const ComponentPlugin = {
   install(app) {
@@ -14,7 +14,7 @@ const ComponentPlugin = {
     app.use(BreadcrumbPlugin)
     app.use(DialogPlugin)
     app.use(ImagePlugin)
-    app.use(ButtonPlugin)
+    app.use(SubmitButtonPlugin)
   },
 }
 
