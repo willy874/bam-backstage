@@ -23,7 +23,7 @@
     <div class="flex flex-grow relative">
       <Aside>
         <template #header>
-          <div class="px-1 py-2" v-show="global.windowInnerWidth > deviceSwitch">
+          <div class="p-2" v-show="global.windowInnerWidth > deviceSwitch">
             <Navbtn state-name="asideShow" commit="setAsideShow" class="text-primary-mirror" />
           </div>
         </template>
@@ -35,15 +35,13 @@
         </template>
       </Aside>
       <main class="h-full flex-grow relative">
-        <div class="absolute inset-0 overflow-auto flex flex-col">
-          <RouterView v-slot="{ Component, route }">
-            <transition :name="route.meta.transition || 'fade'">
-              <keep-alive>
-                <component :is="Component" :key="route.name" />
-              </keep-alive>
-            </transition>
-          </RouterView>
-        </div>
+        <RouterView v-slot="{ Component, route }">
+          <transition :name="route.meta.transition || 'fade'">
+            <keep-alive>
+              <component :is="Component" :key="route.name" />
+            </keep-alive>
+          </transition>
+        </RouterView>
       </main>
     </div>
   </div>

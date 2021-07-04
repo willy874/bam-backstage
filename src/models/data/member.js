@@ -18,7 +18,6 @@ import { DataModel } from '../index'
  * @property {String} email 使用者的電子郵件
  * @property {String} phone_number 使用者的電話號碼
  * @property {String} address 使用者的地址
- * @property {String} data 使用者相關資料
  */
 export default class MemberModel extends DataModel {
   constructor(args) {
@@ -39,7 +38,6 @@ export default class MemberModel extends DataModel {
     this.email = entity.email || ''
     this.phone_number = entity.phone_number || ''
     this.address = entity.address || ''
-    this.data = entity.data || ''
     // proto set
     this.api = entity.api || 'member'
   }

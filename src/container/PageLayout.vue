@@ -1,14 +1,16 @@
 <template>
-  <div class="flex-grow flex flex-col py-2">
-    <header v-if="$slots.header">
-      <slot name="header"></slot>
-    </header>
-    <div class="flex-grow flex flex-col">
-      <slot name="default"></slot>
+  <div class="absolute inset-0 overflow-auto flex flex-col">
+    <div class="flex-grow flex flex-col py-2">
+      <header v-if="$slots.header">
+        <slot name="header"></slot>
+      </header>
+      <div class="flex-grow flex flex-col">
+        <slot name="default"></slot>
+      </div>
+      <footer v-if="$slots.footer">
+        <slot name="footer"></slot>
+      </footer>
     </div>
-    <footer v-if="$slots.footer">
-      <slot name="footer"></slot>
-    </footer>
   </div>
 </template>
 

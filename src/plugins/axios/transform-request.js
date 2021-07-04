@@ -1,4 +1,4 @@
-import * as utils from './utils'
+import * as utils from 'axios/lib/utils'
 
 function normalizeHeaderName(headers, normalizedName) {
   utils.forEach(headers, (value, name) => {

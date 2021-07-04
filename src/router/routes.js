@@ -1,6 +1,7 @@
 import ArticleView from '../views/Article/Index.vue'
 import ArticleListView from '../views/Article/List.vue'
 import NewsListProps from '../views/News/list'
+import MemberListProps from '../views/Member/list'
 import { h } from 'vue'
 
 const routes = [
@@ -37,32 +38,25 @@ const routes = [
     ],
   },
   {
-    name: 'Friend',
-    path: '/friend',
+    name: 'Member',
+    path: '/member',
+    redirect: '/member/list',
     component: ArticleView,
-    props: {},
+    props: {
+      routeTitle: '會員專區',
+    },
     children: [
       {
-        path: '',
-        component: {
-          render() {
-            return h('div', 'List')
-          },
-        },
-      },
-      {
-        path: ':id',
-        component: {
-          render() {
-            return h('div', 'Detail')
-          },
-        },
+        name: 'MemberList',
+        path: 'list',
+        component: ArticleListView,
+        props: MemberListProps,
       },
     ],
   },
   {
-    name: 'Member',
-    path: '/member',
+    name: 'Friend',
+    path: '/friend',
     component: ArticleView,
     props: {},
     children: [

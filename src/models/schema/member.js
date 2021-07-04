@@ -92,11 +92,5 @@ module.exports = {
       default: '',
       description: '使用者的地址',
     },
-    {
-      name: 'data',
-      type: String,
-      default: '',
-      description: '使用者相關資料',
-    },
   ],
 }

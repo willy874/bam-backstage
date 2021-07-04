@@ -4,9 +4,6 @@ import requestSuccess from './request-success'
 import requesError from './reques-error'
 import responseSuccess from './response-success'
 import responseError from './response-error'
-// import i18n from '../plugins/i18n'
-// const lang = i18n.getLocale()
-// const i18nMsg = i18n.messages[lang]
 
 export const LoadingModels = {}
 

@@ -9,28 +9,17 @@
  */
 export default [
   {
-    title: '圖文選單',
-    icon: 'Image',
-    children: [
-      {
-        title: '好友管理',
-        route: {
-          name: 'Friend',
-        },
-      },
-      {
-        title: '會員管理',
-        route: {
-          name: 'Member',
-        },
-      },
-    ],
-  },
-  {
     title: '最新消息',
     icon: 'News',
     route: {
       name: 'News',
+    },
+  },
+  {
+    title: '會員專區',
+    icon: 'User',
+    route: {
+      name: 'Member',
     },
   },
 ]
