@@ -6,8 +6,10 @@ export default {
   },
   NewsMessages: {
     model: NewsMessageModel,
+    api: 'news',
   },
   Members: {
     model: MemberModel,
+    api: 'members',
   },
 }

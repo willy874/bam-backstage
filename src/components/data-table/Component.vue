@@ -57,8 +57,8 @@
         <div class="datatable__container__foot">
           <div class="datatable__table__tr">
             <div class="datatable__table-foot">
-              <div class="datatable__table-foot__left-text">總共{{ listTotal }}筆</div>
-              <div class="datatable__table-foot__right-text">
+              <div v-if="filterList.total" class="datatable__table-foot__left-text">總共{{ filterList.total }}筆</div>
+              <div v-if="filterList.lastPage" class="datatable__table-foot__right-text">
                 <div class="datatable__table-foot__right-text__per-page">
                   <select v-model="perPage" @change="changePerPage">
                     <option :value="10">顯示10筆</option>
@@ -70,10 +70,10 @@
                 </div>
                 <div class="datatable__table-foot__right-text__current-page">
                   <select v-model="currentPage" @change="changeCurrentPage">
-                    <option v-for="i in listLastPage" :key="i" :value="i">第{{ i }}頁</option>
+                    <option v-for="i in filterList.lastPage" :key="i" :value="i">第{{ i }}頁</option>
                   </select>
                 </div>
-                <div class="datatable__table-foot__right-text__last-page">共{{ listLastPage }}頁</div>
+                <div class="datatable__table-foot__right-text__last-page">共{{ filterList.lastPage }}頁</div>
               </div>
             </div>
           </div>
@@ -108,6 +108,7 @@ import { ListModel } from '@/models/index'
  * @param {Function} clickTr 點擊整列事件
  * @param {Function} clickTd 點擊單欄事件
  * @param {Boolean} ajax 是否使用 API 更新資料
+ * @param {Function} filter 在沒有使用 ajax 的情況下執行過濾
  */
 export default {
   name: 'DataTable',
@@ -132,6 +133,10 @@ export default {
       type: Boolean,
       default: false,
     },
+    filter: {
+      type: Function,
+      default: (data) => data,
+    },
   },
   setup(props, context) {
     const tables = reactive(
@@ -151,13 +156,19 @@ export default {
     const listLastPage = computed(() => (props.ajax ? listData.lastPage : Math.ceil(listTotal.value / listPerPage.value)))
     const filterList = computed(() => {
       const list = new ListModel({
+        ...listData,
         model: listData.modelType,
         api: listData.api,
         primaryKey: listData.primaryKey,
-        ...listData,
+        total: listTotal.value,
+        currentPage: listCurrentPage.value,
+        perPage: listPerPage.value,
+        lastPage: listLastPage.value,
       })
       if (props.ajax) {
         return list
+      } else if (props.filter) {
+        return props.filter(list)
       } else {
         return list.set({
           data: list.data.filter((m, i) => {

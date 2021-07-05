@@ -29,7 +29,7 @@
 </template>
 
 <script>
-import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { ref, reactive, computed, onMounted, onUnmounted } from 'vue'
 import { useStore } from 'vuex'
 import { useAdmin } from '@/admin/index'
 import Navbtn from './Navbtn.vue'
@@ -43,7 +43,11 @@ export default {
   },
   setup() {
     const admin = useAdmin()
-    const { user } = admin
+    const user = reactive(
+      admin.user || {
+        name: '',
+      }
+    )
     const getBarWidth = () => window.innerWidth - (240 + 73)
     const barWidth = ref(getBarWidth())
     const resizeEvent = () => {

@@ -19,10 +19,10 @@ export default function (options) {
       request: options.promiseResult,
     }
     // Token 檢查系統
-    if (localStorage.getItem('token')) {
+    const token = localStorage.getItem('token')
+    if (token) {
       try {
-        const token = JSON.parse(localStorage.getItem('token'))
-        req.headers.Authorization = `${token.token_type} ${token.access_token}`
+        req.headers.Authorization = `Bearer ${token}`
         // req.headers.Language = lang
       } catch (e) {
         if (process.env.NODE_ENV === 'development') {

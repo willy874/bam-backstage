@@ -49,16 +49,15 @@ export default class ListModel {
       enumerable: false,
       writable: true,
     })
-    Object.defineProperty(this, 'dayFormat', {
-      value: entity.dayFormat || 'YYYY/MM/DD HH:mm:ss',
-      enumerable: false,
-      writable: true,
-    })
     Object.defineProperty(this, 'primaryKey', {
       value: entity.primaryKey || 'id',
       enumerable: false,
       writable: true,
     })
+  }
+
+  requesHandler(options) {
+    return []
   }
 
   /**
@@ -73,9 +72,7 @@ export default class ListModel {
         return target
       } else {
         const model = new ModelType({
-          api: this.api,
           primaryKey: this.primaryKey,
-          dayFormat: this.dayFormat,
         })
         return model.set(model.responseHandler(target, options))
       }
@@ -88,8 +85,10 @@ export default class ListModel {
    * @param {*} entity
    */
   set(entity, options = {}) {
-    this.setData(entity.data, options)
-    this.setPages(entity)
+    if (entity) {
+      this.setData(entity.data, options)
+      this.setPages(entity)
+    }
     return this
   }
 
@@ -130,7 +129,7 @@ export default class ListModel {
         handleApiConfig({
           default: {
             method: 'GET',
-            url: `${this.api}/${this[this.primaryKey]}`,
+            url: `${this.api}`,
           },
           model: this,
           ...options,

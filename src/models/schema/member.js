@@ -12,19 +12,7 @@ module.exports = {
       name: 'name',
       type: String,
       default: '',
-      description: '使用者名稱',
-    },
-    {
-      name: 'display_name',
-      type: String,
-      default: '',
       description: 'LINE 的使用者顯示名稱',
-    },
-    {
-      name: 'picture_url',
-      type: String,
-      default: '',
-      description: 'LINE 的圖片顯示網址',
     },
     {
       name: 'status_message',
@@ -54,7 +42,7 @@ module.exports = {
       name: 'image_url',
       type: String,
       default: '',
-      description: '使用者照片',
+      description: 'LINE 的使用者照片',
     },
     {
       name: 'state',
@@ -71,7 +59,7 @@ module.exports = {
     {
       name: 'gender',
       type: Number,
-      default: 1,
+      default: null,
       description: '使用者的性別',
     },
     {

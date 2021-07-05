@@ -22,7 +22,11 @@ export const handleApiConfig = (options = {}) => {
       })
     }
   } else {
-    config.data = model.requesHandler(options)
+    if (options.requesHandler) {
+      config.data = options.requesHandler(model)
+    } else {
+      config.data = model.requesHandler(options)
+    }
   }
   if (method) {
     config.method = method

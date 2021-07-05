@@ -162,7 +162,8 @@ export default class DataModel {
       )
         .then((res) => {
           this.loading = false
-          this.set(this.responseHandler(res.data), options)
+          const handleData = options.responseHandler ? options.responseHandler(res.data) : this.responseHandler(res.data, options)
+          this.set(handleData, options)
           resolve(res)
         })
         .catch((err) => {
@@ -187,7 +188,8 @@ export default class DataModel {
       )
         .then((res) => {
           this.loading = false
-          this.set(this.responseHandler(res.data), options)
+          const handleData = options.responseHandler ? options.responseHandler.call(this, res.data) : this.responseHandler(res.data, options)
+          this.set(handleData, options)
           resolve(res)
         })
         .catch((err) => {

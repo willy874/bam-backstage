@@ -7,7 +7,7 @@
         </div>
         <div>
           <div class="py-2">
-            <TextBox :model="form" field="account">
+            <TextBox :model="form" field="username">
               <template #prefix>
                 <Icon class="m-1 text-blue-400" src="User" size="24" />
               </template>
@@ -31,37 +31,17 @@
 
 <script>
 import { reactive } from 'vue'
-import { useRouter } from 'vue-router'
-
-const response = {
-  data: {
-    id: 1,
-    name: 'admin',
-  },
-}
+import { useAdmin } from '@/admin/index'
 
 export default {
   setup() {
-    const router = useRouter()
+    const admin = useAdmin()
     const form = reactive({
-      account: 'admin',
+      username: 'admin',
       password: 'password',
     })
-    const login = () => {
-      new Promise((resolve, reject) => {
-        if (form.account === 'admin' && form.password === 'password') {
-          resolve(response)
-        } else {
-          reject(new Error('帳號或密碼錯誤'))
-        }
-      })
-        .then((res) => {
-          console.log(res)
-          router.push('/')
-        })
-        .catch((err) => {
-          console.log(err)
-        })
+    const login = async () => {
+      await admin.login(form)
     }
     return { form, login, background: '#fff' }
   },

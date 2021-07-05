@@ -85,12 +85,13 @@ export default {
       dataTableProps,
     }
 
-    // 攔截回傳，資料檢測。
-    props.setupTest({
-      props,
-      context,
-      setupResult,
-    })
+    try {
+      listModelData.readList()
+    } catch (error) {
+      if (process.env.NODE_ENV === 'development') {
+        console.log('[ArticleList] Error: readList')
+      }
+    }
 
     return setupResult
   },

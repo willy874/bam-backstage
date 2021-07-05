@@ -20,14 +20,14 @@
       <div class="scroll-bar px-4 py-3" style="height: calc(100vh - 140px)">
         <form @submit="submit">
           <div class="py-2 sm:flex">
-            <div class="flex-shrink-0" :style="{ width: `${formTitleWidth}px`, margin: `${formTitleMarginTop}px` }">標題</div>
+            <div class="flex-shrink-0" :style="{ width: `${formTitleWidth}px`, marginTop: `${formTitleMarginTop}px` }">標題</div>
             <div class="flex-grow">
               <TextBox type="text" :model="model" field="subject" placeholder="請輸入標題" />
               <span class="text-red-500 text-xs" v-show="model.hasError('subject')">{{ model.hasError('subject') }}</span>
             </div>
           </div>
           <div class="py-2 sm:flex">
-            <div class="flex-shrink-0" :style="{ width: `${formTitleWidth}px`, margin: `${formTitleMarginTop}px` }">內容</div>
+            <div class="flex-shrink-0" :style="{ width: `${formTitleWidth}px`, marginTop: `${formTitleMarginTop}px` }">內容</div>
             <div class="flex-grow sm:w-0">
               <TextBox type="textarea" :model="model" field="content" rows="5" placeholder="請輸入內文" />
               <!-- <keep-alive>
@@ -37,7 +37,7 @@
             </div>
           </div>
           <div class="py-2 sm:flex">
-            <div class="flex-shrink-0" :style="{ width: `${formTitleWidth}px`, margin: `${formTitleMarginTop}px` }">圖片</div>
+            <div class="flex-shrink-0" :style="{ width: `${formTitleWidth}px`, marginTop: `${formTitleMarginTop}px` }">圖片</div>
             <div class="flex-grow">
               <PhotoFrame :model="model.images" :class="{ 'is-invalid': model.hasError('images') }" />
               <span class="text-red-500 text-xs" v-show="model.hasError('images')">{{ model.hasError('images') }}</span>
@@ -148,8 +148,11 @@ export default {
             await model.updateData()
             popupProps.model.set(model)
           }
+          props.dialog.closePopup(props.id)
         } catch (error) {
-          console.log(error)
+          if (process.env.NODE_ENV === 'development') {
+            console.log('[News DetailDialog] Error: submit', error)
+          }
         }
       }, 1000),
     }
