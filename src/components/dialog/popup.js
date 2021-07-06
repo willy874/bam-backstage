@@ -1,3 +1,4 @@
+import { markRaw } from 'vue'
 import { v4 as uuidv4 } from 'uuid'
 
 /**
@@ -14,7 +15,7 @@ export default class Popup {
     const entity = args || {}
     this.id = entity.id || uuidv4()
     this.dialog = entity.dialog
-    this.view = entity.view
+    this.view = markRaw(entity.view)
     this.width = entity.width || 0
     this.height = entity.height || 0
     this.zIndexLock = entity.zIndexLock || false

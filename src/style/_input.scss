@@ -1,0 +1,27 @@
+.input-radio-btn {
+  display: flex;
+  input {
+    display: none;
+    &:checked ~ label {
+      color: #fff;
+      background-color:  rgba(23, 162, 184);
+      &:hover {
+        color: #fff;
+        background-color:  rgba(19, 132, 150);
+      }
+    }
+  }
+  label {
+    padding: 0.25rem 1rem;
+    margin: 0.125rem;
+    color: #555;
+    cursor: pointer;
+    background-color:  transparent;
+    border-width: 1px;
+    border-radius: 0.25rem;
+    &:hover {
+      color: #fff;
+      background-color:  rgba(23, 162, 184);
+    }
+  }
+}

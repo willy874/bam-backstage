@@ -1,85 +1,48 @@
 <template>
-  <div class="d-flex flex-center w-100">
-    <RouterLink class="btn-icon" :to="routeTo" title="查看詳細">
-      <Icon pattern="Loupe" size="24" />
-    </RouterLink>
-    <button type="button" class="btn-icon" v-if="authDelete" @click="clickDelete" title="刪除">
-      <Icon pattern="Trash" size="24" />
-    </button>
+  <div class="datatable__options" @click.stop>
+    <div v-for="plugin in plugins" :key="plugin.name">
+      <component :is="refComponent(plugin)" v-bind="$props"></component>
+    </div>
   </div>
 </template>
 
 <script>
+import { ListModel, DataModel } from '@/models/index'
+
 export default {
   name: 'TableOptions',
+  inheritAttrs: false,
   props: {
-    authDelete: {
-      type: Boolean,
-      default: false,
-    },
-    detailRoute: {
-      type: String,
-      default: '',
-    },
-    listIndex: {
-      type: Number,
-      required: true,
+    model: {
+      type: DataModel,
     },
     listData: {
-      type: Object,
-      required: true,
+      type: ListModel,
     },
-    orderDelete: {
-      type: Function,
+    filterList: {
+      type: ListModel,
     },
-    pageId: {
-      type: [Number, String],
-    },
-    imgId: {
-      type: [Number, String],
-    },
-    deleteCheck: {
-      type: Function,
-      default: () => false,
+    plugins: {
+      type: Array,
     },
   },
-  computed: {
-    routeTo() {
-      const params = {
-        id: this.listData.data[this.listIndex].id,
-      }
-      if (this.pageId) {
-        params.id = this.pageId
-        params.img = this.listData.data[this.listIndex].id
-      }
-      if (this.imgId) {
-        params.img = this.imgId
-      }
-      return { name: this.detailRoute, params, query: this.$route.query }
-    },
-  },
-  methods: {
-    async clickDelete(e) {
-      const model = this.listData.data[this.listIndex]
-      const index = this.listIndex
-      const list = this.listData
-      if (this.deleteCheck(model, index, list)) {
-        this.$swal.fire({
-          title: '無法刪除該筆資料',
-          icon: 'error',
-        })
-        return
-      }
-      if (this.orderDelete) {
-        this.orderDelete(e, model, index, list)
-      } else {
-        const swalResult = await this.$alert.delete()
-        if (swalResult.isConfirmed) {
-          await model.deleteData()
-          list.data.splice(index, 1)
+  setup(props) {
+    return {
+      refComponent: (component) => {
+        return {
+          ...component
         }
       }
-    },
+    }
   },
 }
 </script>
+<style lang="scss" scoped>
+.datatable__options {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  cursor: auto;
+}
+</style>

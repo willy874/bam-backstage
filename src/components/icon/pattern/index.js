@@ -13,7 +13,10 @@ import MaleSymbol from './male-symbol.js'
 import News from './news.js'
 import Padlock from './padlock.js'
 import Play from './play.js'
+import PointSymbol from './point-symbol.js'
+import Product from './product.js'
 import ProfileUser from './profile-user.js'
+import Trash from './trash.js'
 import User from './user.js'
 import Warning from './warning.js'
 
@@ -33,7 +36,10 @@ export {
   News,
   Padlock,
   Play,
+  PointSymbol,
+  Product,
   ProfileUser,
+  Trash,
   User,
   Warning,
 }

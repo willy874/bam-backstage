@@ -23,12 +23,12 @@ export default class MemberModel extends DataModel {
     const entity = args || {}
     this.id = entity.id || ''
     this.name = entity.name || ''
-    this.status_message = entity.status_message || 1
+    this.status_message = entity.status_message || ''
     this.userid = entity.userid || ''
     this.line_status = entity.line_status || 0
     this.points = entity.points || 0
     this.image_url = entity.image_url || ''
-    this.state = entity.state || 1
+    this.state = entity.state || 0
     this.real_name = entity.real_name || ''
     this.gender = entity.gender || null
     this.email = entity.email || ''

@@ -7,6 +7,7 @@ import AddModelButton from '@/container/AddModelButton.vue'
 export default {
   routeTitle: '最新消息列表',
   modelSchema: schema.NewsMessages,
+  modelName: 'NewsMessages',
   dataTable: {
     options: [
       { title: 'No.', field: 'id', width: '80px', align: 'center' },

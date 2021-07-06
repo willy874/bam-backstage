@@ -1,8 +1,7 @@
 module.exports = {
   extends: 'DataModel',
   description: '產品相關資訊。',
-  tebles: [
-    {
+  tebles: [{
       name: 'name',
       type: String,
       default: '',
@@ -29,13 +28,13 @@ module.exports = {
     {
       name: 'state',
       type: Number,
-      default: 1,
+      default: 0,
       description: '產品的狀態',
     },
     {
       name: 'category_id',
       type: Number,
-      default: 0,
+      default: null,
       description: '產品所屬的類型 ID',
     },
     {

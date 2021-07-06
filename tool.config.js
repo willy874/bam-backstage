@@ -3,8 +3,7 @@
 
 require('bam-auto-tool')({
   index: {
-    input: [
-      {
+    input: [{
         path: 'src/models/data',
         suffix: 'Model',
       },
@@ -38,7 +37,7 @@ require('bam-auto-tool')({
     output: {
       path: 'src/models/data',
       overwrite: {
-        exclude: /\\(article|member)\./,
+        exclude: /\\(article)\./,
         // allow: /\\image\./
       },
     },

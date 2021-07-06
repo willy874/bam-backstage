@@ -20,7 +20,7 @@
         </div>
         <ul class="py-2 overflow-auto" style="max-height: calc((100vh - 48px) - 33px)">
           <li class="">
-            <button type="button" class="py-1 px-4 w-full text-left hover:bg-primary-500 hover:text-primary-mirror">登出</button>
+            <button type="button" class="py-1 px-4 w-full text-left hover:bg-primary-500 hover:text-primary-mirror" @click="logout">登出</button>
           </li>
         </ul>
       </div>
@@ -68,6 +68,9 @@ export default {
       barWidth,
       filterBtn,
       user,
+      logout: () => {
+        admin.logout()
+      },
     }
   },
   components: {

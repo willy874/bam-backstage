@@ -19,8 +19,8 @@ export default class ProductModel extends DataModel {
     this.description = entity.description || ''
     this.price = entity.price || 0
     this.stock = entity.stock || 0
-    this.state = entity.state || 1
-    this.category_id = entity.category_id || 0
+    this.state = entity.state || 0
+    this.category_id = entity.category_id || null
     this.product_category = new ProductCategoryModel(entity.product_category)
     // proto set
     this.api = entity.api || 'product'

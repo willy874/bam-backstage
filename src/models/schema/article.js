@@ -1,8 +1,7 @@
 module.exports = {
   extends: 'DataModel',
   description: '',
-  tebles: [
-    {
+  tebles: [{
       name: 'subject',
       type: String,
       default: '',

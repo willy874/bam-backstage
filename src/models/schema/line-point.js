@@ -1,8 +1,7 @@
 module.exports = {
   extends: 'DataModel',
   description: 'Line 點數相關資訊。',
-  tebles: [
-    {
+  tebles: [{
       name: 'product_id',
       type: Number,
       default: 0,
@@ -17,7 +16,7 @@ module.exports = {
     {
       name: 'state',
       type: Number,
-      default: 1,
+      default: 0,
       description: '該點數資訊的狀態',
     },
   ],

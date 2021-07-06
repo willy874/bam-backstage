@@ -6,6 +6,7 @@
 </template>
 
 <script>
+import { markRaw } from 'vue'
 import { useDialog } from '@/components/dialog/index'
 
 const DialogTemplate = {
@@ -16,7 +17,7 @@ const DialogTemplate = {
     return {
       open: () => {
         console.log(props)
-        dialog.popup(DialogTemplate, {})
+        dialog.popup(markRaw(DialogTemplate), {})
       },
     }
   },

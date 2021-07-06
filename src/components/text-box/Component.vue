@@ -118,7 +118,7 @@ export default {
           context.emit('change', e)
         },
         value: modelValue.value,
-        type: type.value === 'textarea' ? type.value : false,
+        type: type.value === 'textarea' ? false : type.value,
       })
     return () =>
       h(

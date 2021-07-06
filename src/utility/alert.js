@@ -1,6 +1,7 @@
 import Swal from 'sweetalert2'
 
 export default {
+  Swal,
   delete: (count = 0) => {
     return Swal.fire({
       title: count > 1 ? `是否要刪除已選擇的${count}筆資料?` : '是否要刪除該筆資料?',

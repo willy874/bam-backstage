@@ -1,5 +1,5 @@
 <script>
-import { h, onMounted, ref } from 'vue'
+import { h, onMounted, ref, shallowRef } from 'vue'
 import Popup from './popup'
 import DialogComponent from './DialogComponent.vue'
 
@@ -16,11 +16,7 @@ export default {
   },
   setup(props) {
     const popup = props.popup
-    // 解除 Proxy 代理
-    const PopupView = {}
-    Object.keys(popup.view).forEach((key) => {
-      PopupView[key] = popup.view[key]
-    })
+    const PopupView = shallowRef(popup.view)
     const dialog = DialogComponent.dialog
     const popupItem = ref({})
     onMounted(() => {
@@ -93,11 +89,11 @@ export default {
             width: popup.width ? '100%' : 'auto',
             maxHeight: popup.height || '100vh',
             height: popup.height ? '100%' : 'auto',
-            zIndex: (popup.index + 1) * 1,
+            zIndex: (props.index + 1) * 1,
           },
         },
         [
-          h(PopupView, {
+          h(PopupView.value, {
             id: popup.id,
             dialog: dialog,
             popupElement: popupItem.value,
@@ -129,7 +125,6 @@ export default {
 <style lang="scss" scoped>
 .dialog__popup {
   position: absolute;
-  overflow: auto;
   transition: opacity 0.3s;
   &::-webkit-scrollbar {
     width: 5px;

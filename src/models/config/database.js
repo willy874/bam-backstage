@@ -1,4 +1,4 @@
-import { ArticleModel, NewsMessageModel, MemberModel } from '@/models/index'
+import { ArticleModel, NewsMessageModel, MemberModel, ProductModel, ProductCategoryModel, LinePointModel } from '@/models/index'
 
 export default {
   Articles: {
@@ -11,5 +11,17 @@ export default {
   Members: {
     model: MemberModel,
     api: 'members',
+  },
+  Products: {
+    model: ProductModel,
+    api: 'products',
+  },
+  ProductCategories: {
+    model: ProductCategoryModel,
+    api: 'product-categories',
+  },
+  LinePoints: {
+    model: LinePointModel,
+    api: 'line-points',
   },
 }

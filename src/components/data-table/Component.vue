@@ -16,7 +16,7 @@
             >
               <div class="datatable__table__th__block">
                 <div v-if="typeof table.field === 'object' && table.title.render">
-                  <component :is="table.title" v-bind="{ listData, filterList, listIndex: -1, ...table.props }"></component>
+                  <component :is="refComponent(table.title)" v-bind="{ listData, filterList, listIndex: -1, ...table.props }"></component>
                 </div>
                 <div v-else v-html="table.title"></div>
               </div>
@@ -44,8 +44,8 @@
               @click="clickTdEvent(filterList.data[index], index, { listData, filterList, ...table.props })"
             >
               <template v-if="typeof table.field === 'object' && table.field.render">
-                <component :is="table.field" v-bind="{ listIndex: index, listData, filterList, ...table.props }"></component
-              ></template>
+                <component :is="refComponent(table.field)" v-bind="{ model: filterList.data[index], listData: model, filterList, ...table.props }"></component>
+              </template>
               <div v-else class="datatable__table__td__block" :style="{ webkitLineClamp: table.lineClamp || 2 }" v-html="content(table.field, index)"></div>
             </div>
           </div>
@@ -84,7 +84,7 @@
 </template>
 
 <script>
-import { ref, reactive, computed, isReactive } from 'vue'
+import { ref, reactive, computed, isReactive, markRaw } from 'vue'
 import { v4 as uuid } from 'uuid'
 import { ListModel } from '@/models/index'
 
@@ -244,6 +244,11 @@ export default {
         }
         return ''
       },
+      refComponent: (component) => {
+        return {
+          ...component
+        }
+      }
     }
   },
 }

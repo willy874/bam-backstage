@@ -2,6 +2,7 @@ import ArticleView from '../views/Article/Index.vue'
 import ArticleListView from '../views/Article/List.vue'
 import NewsListProps from '../views/News/list'
 import MemberListProps from '../views/Member/list'
+import ProductListProps from '../views/Product/list'
 import { h } from 'vue'
 
 const routes = [
@@ -55,6 +56,91 @@ const routes = [
     ],
   },
   {
+    name: 'Product',
+    path: '/product',
+    redirect: '/product/list',
+    component: ArticleView,
+    props: {
+      routeTitle: '商品管理',
+    },
+    children: [
+      {
+        name: 'ProductList',
+        path: 'list',
+        component: ArticleListView,
+        props: ProductListProps,
+      },
+    ],
+  },
+  {
+    name: 'Group',
+    path: '/group',
+    redirect: '/group/list',
+    component: ArticleView,
+    props: {
+      routeTitle: '分眾管理',
+    },
+    children: [
+      {
+        name: 'GrouptList',
+        path: 'list',
+        component: ArticleListView,
+        // props: MemberListProps,
+      },
+    ],
+  },
+  {
+    name: 'Asset',
+    path: '/asset',
+    redirect: '/asset/list',
+    component: ArticleView,
+    props: {
+      routeTitle: '資源管理',
+    },
+    children: [
+      {
+        name: 'AssetList',
+        path: 'list',
+        component: ArticleListView,
+        // props: MemberListProps,
+      },
+    ],
+  },
+  {
+    name: 'Service',
+    path: '/service',
+    redirect: '/service/list',
+    component: ArticleView,
+    props: {
+      routeTitle: '服務管理',
+    },
+    children: [
+      {
+        name: 'ServiceList',
+        path: 'list',
+        component: ArticleListView,
+        // props: MemberListProps,
+      },
+    ],
+  },
+  {
+    name: 'Order',
+    path: '/order',
+    redirect: '/order/list',
+    component: ArticleView,
+    props: {
+      routeTitle: '訂單管理',
+    },
+    children: [
+      {
+        name: 'OrderList',
+        path: 'list',
+        component: ArticleListView,
+        // props: MemberListProps,
+      },
+    ],
+  },
+  {
     name: 'Friend',
     path: '/friend',
     component: ArticleView,
@@ -75,6 +161,23 @@ const routes = [
             return h('div', 'Detail')
           },
         },
+      },
+    ],
+  },
+  {
+    name: 'Setting',
+    path: '/setting',
+    redirect: '/setting/list',
+    component: ArticleView,
+    props: {
+      routeTitle: '系統管理',
+    },
+    children: [
+      {
+        name: 'SettingList',
+        path: 'list',
+        component: ArticleListView,
+        // props: MemberListProps,
       },
     ],
   },

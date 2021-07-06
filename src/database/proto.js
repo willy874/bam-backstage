@@ -8,16 +8,18 @@ export default class Database {
     this.store = entity.store
     this.auth = entity.auth || []
     this.created = entity.created || (() => {})
+    this.allow = true
     // 初始化
     this.data = {}
     Promise.all(
       Object.keys(this.data).map((key) => {
-        if (this.auth.includes(key)) {
+        if (this.auth.includes(key) || this.allow) {
           this.data[key] = null
           return Promise.resolve()
         } else {
           this.data[key] = new ListModel(schema[key])
-          return this.data[key].readList()
+          // this.data[key].readList()
+          return Promise.resolve()
         }
       })
     ).then(this.created)
@@ -26,9 +28,10 @@ export default class Database {
   async login() {
     return await Promise.all(
       Object.keys(schema).map((key) => {
-        if (this.auth.includes(key)) {
+        if (this.auth.includes(key) || this.allow) {
           this.data[key] = new ListModel(schema[key])
-          return this.data[key].readList()
+          // this.data[key].readList()
+          return Promise.resolve()
         } else {
           return Promise.resolve()
         }

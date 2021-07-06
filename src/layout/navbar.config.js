@@ -22,4 +22,11 @@ export default [
       name: 'Member',
     },
   },
+  {
+    title: '商品管理',
+    icon: 'Product',
+    route: {
+      name: 'Product',
+    },
+  },
 ]

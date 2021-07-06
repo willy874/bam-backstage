@@ -26,7 +26,8 @@
 <script>
 import { reactive } from 'vue'
 import PageLayout from '@/container/PageLayout.vue'
-import { ListModel, ArticleModel } from '@/models/index'
+import { ArticleModel } from '@/models/index'
+import { useDatabase } from '@/database/index'
 
 export default {
   name: 'ArticleList',
@@ -40,6 +41,10 @@ export default {
       default: () => ({
         model: ArticleModel,
       }),
+    },
+    modelName: {
+      type: String,
+      default: '',
     },
     headerBar: {
       type: Array,
@@ -71,7 +76,8 @@ export default {
     },
   },
   setup(props, context) {
-    const listModelData = reactive(new ListModel(props.modelSchema))
+    const database = useDatabase()
+    const listModelData = reactive(database.data[props.modelName])
     const dataTableProps = reactive({
       ...props.dataTable,
       model: listModelData,

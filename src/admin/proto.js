@@ -1,5 +1,7 @@
+import { useDatabase } from '@/database/index'
 import { request } from '@/plugins/axios/request'
 import config from '@/config/index'
+
 export default class Admin {
   constructor(args) {
     const entity = args || {}
@@ -21,9 +23,11 @@ export default class Admin {
     const currentUrl = config.publicURL ? location.pathname.replace(config.publicURL, '') : location.pathname
     const lastPage = localStorage.getItem('lastPage')
     const tokenData = localStorage.getItem('token')
+    const database = useDatabase()
     if (tokenData) {
       try {
         this.user = (await request.get('admin/profile')).data
+        database.login()
         if (lastPage) {
           this.router.replace(lastPage)
         } else if (currentUrl && !['/login'].includes(currentUrl)) {
@@ -51,7 +55,9 @@ export default class Admin {
   }
 
   logout() {
-    request.post('logout')
+    this.user = null
+    localStorage.removeItem('token')
+    this.router.replace('/login')
   }
 
   getAuth(name) {

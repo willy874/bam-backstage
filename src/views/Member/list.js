@@ -4,6 +4,7 @@ import DetailDialog from './DetailDialog.vue'
 
 export default {
   routeTitle: '會員專區列表',
+  modelName: 'Members',
   modelSchema: schema.Members,
   dataTable: {
     options: [
@@ -45,9 +46,9 @@ export default {
         field: (item) => {
           switch (item.state) {
             case 0:
-              return '<span style="color: rgba(156, 163, 175)">封鎖</span>'
+              return '<span style="color: rgb(156, 163, 175)">封鎖</span>'
             case 1:
-              return '<span style="color: rgba(52, 211, 153)">正常</span>'
+              return '<span style="color: rgb(52, 211, 153)">正常</span>'
             default:
               return ''
           }

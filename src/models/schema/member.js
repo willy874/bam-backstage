@@ -1,8 +1,7 @@
 module.exports = {
   extends: 'DataModel',
   description: '使用者相關資訊。',
-  tebles: [
-    {
+  tebles: [{
       name: 'id',
       type: String,
       default: '',
@@ -17,7 +16,7 @@ module.exports = {
     {
       name: 'status_message',
       type: String,
-      default: 1,
+      default: '',
       description: 'LINE 狀態訊息',
     },
     {
@@ -47,7 +46,7 @@ module.exports = {
     {
       name: 'state',
       type: String,
-      default: 1,
+      default: 0,
       description: '使用者啟用停用',
     },
     {
