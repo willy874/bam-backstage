@@ -15,10 +15,9 @@
 </template>
 
 <script>
-import { reactive } from 'vue'
+import { reactive, onMounted } from 'vue'
 import dayjs from 'dayjs'
 import throttle from 'lodash/throttle'
-import { ListModel, LinePointModel } from '@/models/index'
 import DialogLayout from '@/container/DialogLayout.vue'
 
 export default {
@@ -29,6 +28,9 @@ export default {
   },
   setup(props) {
     const model = props.props.model
+    onMounted(() => {
+      model.readList()
+    })
     const productId = props.props.productId
     const dataTableProps = reactive({
       options: [
@@ -38,11 +40,7 @@ export default {
         { title: '狀態', field: (item) => item.state ? '已使用' : '未使用', width: '60px', align: 'center' },
       ],
       filter (list) {
-        return new ListModel({
-          model: LinePointModel,
-          ...list,
-          data: list.data.filter(p => p.product_id === productId)
-        })
+        return list.setData(list.data.filter(p => p.product_id === productId))
       },
       model,
     })

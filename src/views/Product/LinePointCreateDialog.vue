@@ -83,9 +83,7 @@ export default {
       addModel: throttle(async () => {
         listData.data.push(
           new LinePointModel({
-            id: uuid(),
-            product_id: props.props.model.id,
-            state: 0
+            id: uuid()
           })
         )
         await nextTick()
@@ -111,7 +109,17 @@ export default {
         try {
           listData.loading = true
           await Promise.all(
-            listData.data.map(async (model) => await model.createData())
+            listData.data.map(async (model) => {
+              return await model.createData({
+                requesHandler(model) {
+                  return {
+                    product_id: props.props.model.id,
+                    number: model.number,
+                    state: 0
+                  }
+                }
+              })
+            })
           )
           listData.loading = false
           popupProps.LinePoints = listData
