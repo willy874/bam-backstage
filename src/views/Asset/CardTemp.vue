@@ -6,7 +6,7 @@
           class="pt-1/1 relative border-2 rounded-lg focus:outline-none focus:border-primary-500 focus:border-opacity-50"
           tabindex="0"
           @click="clickItem(image)"
-          @keydown.enter="clickItem(image)"
+          @keydown="keydownItem(image)"
         >
           <div class="absolute inset-0 px-4 py-2 flex flex-col">
             <div class="flex-grow bg-cover bg-no-repeat bg-center mb-2 rounded" :style="{ backgroundImage: `url(${convUrl(image)})` }"></div>
@@ -48,7 +48,7 @@ export default {
     }
     const grid = ref(1)
     const columnWidth = ref('100%')
-    const mathWidth = () => {
+    const checkWidth = () => {
       const width = refs.root.value.offsetWidth
       switch (true) {
         case width > 1536:
@@ -57,19 +57,16 @@ export default {
         case width > 1024:
           grid.value = 5
           break
-        case width > 640:
+        case width > 768:
           grid.value = 4
           break
-        case width > 500:
+        case width > 576:
           grid.value = 3
           break
         default:
           grid.value = 2
           break
       }
-    }
-    const checkWidth = () => {
-      mathWidth()
       columnWidth.value = `${100 / grid.value}%`
     }
     onMounted(() => {
@@ -84,13 +81,16 @@ export default {
     return {
       ...refs,
       setRefsItem: (index) => {
-        return (el) => {
-          if (el) listData.data[index].ref = el
+        return (ref) => {
+          if (ref) listData.data[index].ref = ref
         }
       },
       listData,
       columnWidth,
       clickItem(image) {
+        console.log(image)
+      },
+      keydownItem(image) {
         console.log(image)
       },
       dblclickNameText: async (image) => {

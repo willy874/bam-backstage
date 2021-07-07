@@ -27,10 +27,3 @@ export const throttle = (func, delay) => {
     }
   }
 }
-
-
-export const awaitTime = async (t) => {
-  return new Promise((resolve) => {
-    setTimeout(resolve, t)
-  })
-}

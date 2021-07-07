@@ -1,16 +1,25 @@
-import { createApp } from 'vue'
+import {
+  createApp
+} from 'vue'
 import router from './router/index'
 import store from './store/index'
-import { AdminPlugin, useAdmin } from './admin/index'
-import { DatabaesPlugin } from './database/index'
+import {
+  AdminPlugin,
+  useAdmin
+} from './admin/index'
+import {
+  DatabaesPlugin
+} from './database/index'
 import ComponentPlugin from './components/index'
 import CKEditor from './plugins/ckeditor/index'
 import App from './App.vue'
 import Mixin from './utility/mixin'
 import './style/index.css'
+// import './test'
 
 new Promise((resolve, reject) => {
-  ;(async function () {
+  ;
+  (async function () {
     const app = createApp({
       mixins: [App, Mixin],
     })

@@ -1,17 +1,17 @@
 <template>
   <DialogLayout v-bind="$props" title="新增 Line Point">
     <form @submit="submit">
-      <div class="py-2 -mx-2 sm:flex" v-for="(model, index) in listData.data" :key="model.id">
+      <div class="py-2 -mx-2 sm:flex" v-for="(model, index) in listData.data" :key="model.id" :ref="setRefsItem(index)">
         <div class="flex-shrink-0 px-2 w-20" :style="{ marginTop: `${formTitleMarginTop}px` }">
           <span>序號</span>
           <span v-if="listData.data.length > 1">{{ index + 1 }}</span>
         </div>
         <div class="flex-grow">
-          <TextBox type="text" :model="model" field="number" placeholder="請輸入序號" />
+          <TextBox type="text" :model="model" field="number" placeholder="請輸入序號" @keydown.enter="addModel" @keydown.delete="deleteModel(index)" />
           <span class="text-red-500 text-xs" v-show="model.hasError('number')">{{ model.hasError('number') }}</span>
         </div>
         <div class="flex-shrink-0 px-2">
-          <button type="button" class="btn-icon text-red-500 hover:text-red-600" @click="deleteModel(index)">
+          <button tabindex="-1" type="button" class="btn-icon text-red-500 hover:text-red-600" @click="deleteModel(index)">
             <Icon src="Trash" size="24" />
           </button>
         </div>
@@ -83,19 +83,26 @@ export default {
       listData,
       formTitleMarginTop,
       errorMessages,
+      setRefsItem: (index) => {
+        return (ref) => {
+          if (ref) listData.data[index].ref = ref
+        }
+      },
       addModel: throttle(async () => {
-        listData.data.push(
+        const index = listData.data.push(
           new LinePointModel({
             id: uuid(),
           })
         )
         await nextTick()
         props.initPosition()
+        listData.data[index - 1].ref.querySelector('input').focus()
       }, 300),
       deleteModel: throttle(async (index) => {
         listData.data.splice(index, 1)
         await nextTick()
         props.initPosition()
+        listData.data[index - 1].ref.querySelector('input').focus()
       }, 300),
       close: throttle(() => {
         props.dialog.closePopup(props.id)
@@ -111,7 +118,7 @@ export default {
         }
         try {
           listData.loading = true
-          await request.post('line-points', {
+          const res = await request.post('line-points', {
             product_id: props.props.model.id,
             points: listData.data.map((model) => {
               return {
@@ -120,27 +127,35 @@ export default {
               }
             }),
           })
+          const duplicate = res.data.duplicate
+          const success = res.data.success
+          const fail = res.data.fail
           listData.loading = false
           popupProps.LinePoints = listData
-          await Swal.fire({
-            title: '序號驗證成功',
-            icon: 'success',
-          })
+          if (fail) {
+            await Swal.fire({
+              title: success ? '序號上傳部分失敗' : '序號上傳失敗',
+              icon: success ? 'warning' : 'error',
+              html: `<div>${success}筆成功，${fail}筆失敗<div>` + (duplicate.length ? `<div>${duplicate.join(', ')} 已使用過。<div>` : ''),
+            })
+          } else {
+            await Swal.fire({
+              title: '序號上傳成功',
+              icon: 'success',
+            })
+          }
           props.dialog.closePopup(props.id)
         } catch (error) {
-          listData.loading = false
           if (process.env.NODE_ENV === 'development') {
             console.log('[Product LinePointDialog] Error: submit')
             console.dir(error)
           }
-          // const res = error.response
-          // if (res && res.data) {
-          // // 特化回饋訊息
-          // }
-          Swal.error({
+          listData.loading = false
+          await Swal.error({
             icon: 'error',
             title: '上傳失敗',
           })
+          props.dialog.closePopup(props.id)
         }
       }, 1000),
     }
