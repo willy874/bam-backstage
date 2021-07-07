@@ -3,10 +3,13 @@ import ArticleListView from '../views/Article/List.vue'
 import NewsListProps from '../views/News/list'
 import MemberListProps from '../views/Member/list'
 import ProductListProps from '../views/Product/list'
-import { h } from 'vue'
+import AssetListView from '../views/Asset/List.vue'
+import AssetImageProps from '../views/Asset/image.js'
+import {
+  h
+} from 'vue'
 
-const routes = [
-  {
+const routes = [{
     name: 'Home',
     path: '/',
     component: () => import('../views/Dashboard/Index.vue'),
@@ -29,14 +32,12 @@ const routes = [
     props: {
       routeTitle: '最新消息',
     },
-    children: [
-      {
-        name: 'NewsList',
-        path: 'list',
-        component: ArticleListView,
-        props: NewsListProps,
-      },
-    ],
+    children: [{
+      name: 'NewsList',
+      path: 'list',
+      component: ArticleListView,
+      props: NewsListProps,
+    }, ],
   },
   {
     name: 'Member',
@@ -46,14 +47,12 @@ const routes = [
     props: {
       routeTitle: '會員專區',
     },
-    children: [
-      {
-        name: 'MemberList',
-        path: 'list',
-        component: ArticleListView,
-        props: MemberListProps,
-      },
-    ],
+    children: [{
+      name: 'MemberList',
+      path: 'list',
+      component: ArticleListView,
+      props: MemberListProps,
+    }, ],
   },
   {
     name: 'Product',
@@ -63,14 +62,12 @@ const routes = [
     props: {
       routeTitle: '商品管理',
     },
-    children: [
-      {
-        name: 'ProductList',
-        path: 'list',
-        component: ArticleListView,
-        props: ProductListProps,
-      },
-    ],
+    children: [{
+      name: 'ProductList',
+      path: 'list',
+      component: ArticleListView,
+      props: ProductListProps,
+    }, ],
   },
   {
     name: 'Group',
@@ -80,31 +77,27 @@ const routes = [
     props: {
       routeTitle: '分眾管理',
     },
-    children: [
-      {
-        name: 'GrouptList',
-        path: 'list',
-        component: ArticleListView,
-        // props: MemberListProps,
-      },
-    ],
+    children: [{
+      name: 'GrouptList',
+      path: 'list',
+      component: ArticleListView,
+      // props: MemberListProps,
+    }, ],
   },
   {
     name: 'Asset',
     path: '/asset',
-    redirect: '/asset/list',
+    redirect: '/asset/image',
     component: ArticleView,
     props: {
       routeTitle: '資源管理',
     },
-    children: [
-      {
-        name: 'AssetList',
-        path: 'list',
-        component: ArticleListView,
-        // props: MemberListProps,
-      },
-    ],
+    children: [{
+      name: 'AssetList',
+      path: 'image',
+      props: AssetImageProps,
+      component: AssetListView,
+    }, ],
   },
   {
     name: 'Service',
@@ -114,14 +107,12 @@ const routes = [
     props: {
       routeTitle: '服務管理',
     },
-    children: [
-      {
-        name: 'ServiceList',
-        path: 'list',
-        component: ArticleListView,
-        // props: MemberListProps,
-      },
-    ],
+    children: [{
+      name: 'ServiceList',
+      path: 'list',
+      component: ArticleListView,
+      // props: MemberListProps,
+    }, ],
   },
   {
     name: 'Order',
@@ -131,22 +122,19 @@ const routes = [
     props: {
       routeTitle: '訂單管理',
     },
-    children: [
-      {
-        name: 'OrderList',
-        path: 'list',
-        component: ArticleListView,
-        // props: MemberListProps,
-      },
-    ],
+    children: [{
+      name: 'OrderList',
+      path: 'list',
+      component: ArticleListView,
+      // props: MemberListProps,
+    }, ],
   },
   {
     name: 'Friend',
     path: '/friend',
     component: ArticleView,
     props: {},
-    children: [
-      {
+    children: [{
         path: '',
         component: {
           render() {
@@ -172,14 +160,12 @@ const routes = [
     props: {
       routeTitle: '系統管理',
     },
-    children: [
-      {
-        name: 'SettingList',
-        path: 'list',
-        component: ArticleListView,
-        // props: MemberListProps,
-      },
-    ],
+    children: [{
+      name: 'SettingList',
+      path: 'list',
+      component: ArticleListView,
+      // props: MemberListProps,
+    }, ],
   },
 ]
 

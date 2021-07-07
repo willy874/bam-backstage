@@ -6,6 +6,12 @@ export default {
       'X-Client-Version': '0.0.1',
     },
   },
+  asset: {
+    baseURL: 'http://127.0.0.1:3010/media/',
+    headers: {
+      'X-Client-Version': '0.0.1',
+    },
+  },
   layout: {
     asideWidth: 240,
     deviceSwitch: 768,

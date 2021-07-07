@@ -55,16 +55,18 @@ export default {
     DialogLayout,
   },
   setup(props) {
-    const listData = reactive(new ListModel({
-      model: LinePointModel,
-      data: [
-        new LinePointModel({
-          id: uuid(),
-          product_id: props.props.model.id,
-          state: 1
-        })
-      ]
-    }))
+    const listData = reactive(
+      new ListModel({
+        model: LinePointModel,
+        data: [
+          new LinePointModel({
+            id: uuid(),
+            product_id: props.props.model.id,
+            state: 1,
+          }),
+        ],
+      })
+    )
     const popupProps = reactive(props.props)
     const errorMessages = ref([])
     const formTitleMarginTop = ref(7)
@@ -83,7 +85,7 @@ export default {
       addModel: throttle(async () => {
         listData.data.push(
           new LinePointModel({
-            id: uuid()
+            id: uuid(),
           })
         )
         await nextTick()
@@ -99,7 +101,7 @@ export default {
       }, 300),
       submit: throttle(async (e) => {
         e.preventDefault()
-        const modelErrorMessages = listData.data.map(model => model.validate(validateRules))
+        const modelErrorMessages = listData.data.map((model) => model.validate(validateRules))
         errorMessages.value = isModelError(...modelErrorMessages)
         if (errorMessages.value.length) {
           await nextTick()
@@ -115,9 +117,9 @@ export default {
                   return {
                     product_id: props.props.model.id,
                     number: model.number,
-                    state: 0
+                    state: 0,
                   }
-                }
+                },
               })
             })
           )

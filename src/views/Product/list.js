@@ -4,7 +4,7 @@ import {
 } from '@/components/dialog/index'
 import DetailDialog from './DetailDialog.vue'
 import TableOptions from '@/components/data-table/TableOptions.vue'
-import AddModelButton from '@/container/AddModelButton.vue'
+import AddModelButton from '@/container/button/AddModel.vue'
 import LinePointButton from './LinePointButton.vue'
 
 export default {

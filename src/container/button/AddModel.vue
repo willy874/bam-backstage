@@ -10,7 +10,6 @@
 import { reactive, isReactive, markRaw } from 'vue'
 import { ListModel } from '@/models/index'
 import { useDialog } from '@/components/dialog/index'
-
 export default {
   name: 'AddModelButton',
   inheritAttrs: false,

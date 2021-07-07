@@ -1,5 +1,7 @@
 import schema from '@/models/config/database'
-import { ListModel } from '@/models/index'
+import {
+  ListModel
+} from '@/models/index'
 
 export default class Database {
   constructor(args) {
@@ -9,6 +11,7 @@ export default class Database {
     this.auth = entity.auth || []
     this.created = entity.created || (() => {})
     this.allow = true
+    this.createLoad = false
     // 初始化
     this.data = {}
     Promise.all(
@@ -18,7 +21,9 @@ export default class Database {
           return Promise.resolve()
         } else {
           this.data[key] = new ListModel(schema[key])
-          // this.data[key].readList()
+          if (this.createLoad) {
+            return this.data[key].readList()
+          }
           return Promise.resolve()
         }
       })
@@ -30,7 +35,9 @@ export default class Database {
       Object.keys(schema).map((key) => {
         if (this.auth.includes(key) || this.allow) {
           this.data[key] = new ListModel(schema[key])
-          // this.data[key].readList()
+          if (this.createLoad) {
+            return this.data[key].readList()
+          }
           return Promise.resolve()
         } else {
           return Promise.resolve()

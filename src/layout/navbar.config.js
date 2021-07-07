@@ -7,8 +7,7 @@
  * @property {Route} Navbar.route 使用 VueRouter 傳遞
  * @property {Array<Navbar>} Navbar.children
  */
-export default [
-  {
+export default [{
     title: '最新消息',
     icon: 'News',
     route: {
@@ -27,6 +26,13 @@ export default [
     icon: 'Product',
     route: {
       name: 'Product',
+    },
+  },
+  {
+    title: '資源管理',
+    icon: 'Image',
+    route: {
+      name: 'Asset',
     },
   },
 ]

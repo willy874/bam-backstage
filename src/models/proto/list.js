@@ -1,6 +1,13 @@
 import DataModel from './data'
-import { axiosInstance } from '@/plugins/axios/request'
-import { handleApiConfig } from '../utility/index'
+import axios from 'axios'
+import config from '@/config/index'
+import {
+  axiosInstance,
+  getAbstractRequest
+} from '@/plugins/axios/request'
+import {
+  handleApiConfig
+} from '../utility/index'
 
 /**
  * @property {Array.<*>} data         - ListModel 管理的 Model
@@ -119,26 +126,60 @@ export default class ListModel {
       requesHandler(req) {
         const cacheResponse = this.query[req.responseURL]
         if (cacheResponse) {
-          const listModel = Array.isArray(cacheResponse.data) ? { data: cacheResponse.data } : cacheResponse.data
+          const listModel = Array.isArray(cacheResponse.data) ? {
+            data: cacheResponse.data
+          } : cacheResponse.data
           this.set(listModel, options)
         }
       },
     })
     return new Promise((resolve, reject) => {
       axiosRequest(
-        handleApiConfig({
-          default: {
-            method: 'GET',
-            url: `${this.api}`,
-          },
-          model: this,
-          ...options,
-        })
-      )
+          handleApiConfig({
+            default: {
+              method: 'GET',
+              url: `${this.api}`,
+            },
+            model: this,
+            ...options,
+          })
+        )
         .then((res) => {
           this.query[res.request.responseURL] = res
           this.loading = false
-          const listModel = Array.isArray(res.data) ? { data: res.data } : res.data
+          const listModel = Array.isArray(res.data) ? {
+            data: res.data
+          } : res.data
+          this.set(listModel, options)
+          resolve(res)
+        })
+        .catch((err) => {
+          this.loading = false
+          reject(err)
+        })
+    })
+  }
+
+  assetReadList(options = {}) {
+    this.loading = true
+    const Instance = axios.create(config.asset)
+    const axiosRequest = getAbstractRequest(Instance, {})
+    return new Promise((resolve, reject) => {
+      axiosRequest(
+          handleApiConfig({
+            default: {
+              method: 'GET',
+              url: `${this.api}`,
+            },
+            model: this,
+            ...options,
+          })
+        )
+        .then((res) => {
+          this.loading = false
+          const listModel = Array.isArray(res.data) ? {
+            data: res.data
+          } : res.data
           this.set(listModel, options)
           resolve(res)
         })

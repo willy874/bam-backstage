@@ -31,6 +31,9 @@ import { useDatabase } from '@/database/index'
 
 export default {
   name: 'ArticleList',
+  components: {
+    PageLayout,
+  },
   props: {
     routeTitle: {
       type: String,
@@ -100,9 +103,6 @@ export default {
     }
 
     return setupResult
-  },
-  components: {
-    PageLayout,
   },
 }
 </script>

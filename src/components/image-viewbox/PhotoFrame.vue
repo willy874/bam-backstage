@@ -13,7 +13,7 @@
       <div
         class="photo-frame__container__item"
         v-for="(image, index) in filterList"
-        :key="image.uuid"
+        :key="image.id"
         :style="{
           flexBasis: columnWidth,
           maxWidth: columnWidth,
@@ -216,8 +216,7 @@ export default {
         .map((f, index) => {
           const filename = new FileName(f.name)
           const image = new ImageModel({
-            id: 0,
-            uuid: uuid(),
+            id: uuid(),
             name: f.name,
             image_name: filename.name,
             image_ext: filename.ext,

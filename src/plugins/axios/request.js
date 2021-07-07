@@ -8,19 +8,12 @@ import responseError from './response-error'
 export const LoadingModels = {}
 
 /**
- *
- * @param {*} options
- * @param {*} options.LoadingModels
- * @param {Function} options.requestSuccess
- * @param {Function} options.requesError
- * @param {Function} options.responseSuccess
- * @param {Function} options.responseError
- * @param {Function} options.responseResolve
- * @param {Function} options.responseReject
+ * 
+ * @param {InstanceAxios} axios 
+ * @param {*} options 
  * @returns {AxiosRequest}
  */
-export const axiosInstance = (options = {}) => {
-  const axios = Axios.create(config.api)
+export const getAbstractRequest = (axios, options = {}) => {
   options.LoadingModels = LoadingModels
   axios.interceptors.request.use(requestSuccess(options), requesError(options))
   axios.interceptors.response.use(responseSuccess(options), responseError(options))
@@ -41,6 +34,23 @@ export const axiosInstance = (options = {}) => {
     }
   })
   return AxiosRequest
+}
+
+/**
+ *
+ * @param {*} options
+ * @param {*} options.LoadingModels
+ * @param {Function} options.requestSuccess
+ * @param {Function} options.requesError
+ * @param {Function} options.responseSuccess
+ * @param {Function} options.responseError
+ * @param {Function} options.responseResolve
+ * @param {Function} options.responseReject
+ * @returns {AxiosRequest}
+ */
+export const axiosInstance = (options = {}) => {
+  const axios = Axios.create(config.api)
+  return getAbstractRequest(axios, options)
 }
 
 /**

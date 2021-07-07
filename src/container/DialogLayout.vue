@@ -1,5 +1,5 @@
 <template>
-  <div class="bg-white rounded-lg shadow-2xl">
+  <div data-name="DialogLayout" class="bg-white rounded-lg shadow-2xl">
     <header
       ref="header"
       class="flex justify-between items-center border-b bg-primary-500 p-2"
