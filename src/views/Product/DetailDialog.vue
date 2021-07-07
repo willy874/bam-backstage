@@ -43,7 +43,9 @@
           <div class="flex-grow">
             <div class="p-2">
               <select v-model="model.category_id">
-                <option v-for="productCategory in ProductCategories.data" :key="productCategory.id" :value="productCategory.id">{{ productCategory.name }}</option>
+                <option v-for="productCategory in ProductCategories.data" :key="productCategory.id" :value="productCategory.id">
+                  {{ productCategory.name }}
+                </option>
               </select>
             </div>
             <span class="text-red-500 text-xs" v-show="model.hasError('category_id')">{{ model.hasError('category_id') }}</span>
@@ -92,7 +94,7 @@ import { reactive, ref, onMounted, nextTick } from 'vue'
 import throttle from 'lodash/throttle'
 import { ProductModel } from '@/models/index'
 import { isModelError } from '@/utility/model-handle'
-import swAlert from '@/utility/alert'
+import Swal from '@/utility/alert'
 import { useDialog } from '@/components/dialog/index'
 import DialogLayout from '@/container/DialogLayout.vue'
 import { useDatabase } from '@/database/index'
@@ -164,7 +166,7 @@ export default {
         props.dialog.closePopup(props.id)
       }, 300),
       deleteModel: async () => {
-        const swalResult = await swAlert.delete()
+        const swalResult = await Swal.delete()
         try {
           if (swalResult.isConfirmed) {
             await popupProps.model.deleteData()
@@ -198,7 +200,7 @@ export default {
                   category_id: model.category_id,
                   state: model.state,
                 }
-                if (!isLinePoint(model))  result.stock = model.stock
+                if (!isLinePoint(model)) result.stock = model.stock
                 return result
               },
             })
@@ -207,19 +209,24 @@ export default {
           props.dialog.closePopup(props.id)
         } catch (error) {
           if (process.env.NODE_ENV === 'development') {
-            console.log('[Product DetailDialog] Error: submit', error)
+            console.log('%c[Product DetailDialog] Error: submit', 'color: #f00;background: #ff000011;padding: 2px 6px;border-radius: 4px;')
+            console.dir(error)
           }
+          Swal.error({
+            icon: 'error',
+            title: '儲存失敗',
+          })
         }
       }, 1000),
       addLinePoint: throttle(async () => {
         const popup = await dialog.popup(LinePointCreateDialog, {
           width: '576px',
           props: {
-            model
+            model,
           },
         })
         if (popup.props.LinePoints) {
-          popup.props.LinePoints.data.forEach(data => {
+          popup.props.LinePoints.data.forEach((data) => {
             LinePoints.data.push(data)
           })
         }
@@ -229,10 +236,10 @@ export default {
           width: '576px',
           props: {
             model: LinePoints,
-            productId: model.id
+            productId: model.id,
           },
         })
-      }, 300)
+      }, 300),
     }
   },
 }

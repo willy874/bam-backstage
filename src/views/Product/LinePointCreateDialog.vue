@@ -42,11 +42,12 @@
 <script>
 import { reactive, ref, nextTick } from 'vue'
 import { v4 as uuid } from 'uuid'
-import Swal from 'sweetalert2'
+import Swal from '@/utility/alert'
 import throttle from 'lodash/throttle'
 import { ListModel, LinePointModel } from '@/models/index'
 import { isModelError } from '@/utility/model-handle'
 import DialogLayout from '@/container/DialogLayout.vue'
+import { request } from '@/plugins/axios/request'
 
 export default {
   name: 'LinePointCreateDialog',
@@ -110,19 +111,15 @@ export default {
         }
         try {
           listData.loading = true
-          await Promise.all(
-            listData.data.map(async (model) => {
-              return await model.createData({
-                requesHandler(model) {
-                  return {
-                    product_id: props.props.model.id,
-                    number: model.number,
-                    state: 0,
-                  }
-                },
-              })
-            })
-          )
+          await request.post('line-points', {
+            product_id: props.props.model.id,
+            points: listData.data.map((model) => {
+              return {
+                number: model.number,
+                state: model.state,
+              }
+            }),
+          })
           listData.loading = false
           popupProps.LinePoints = listData
           await Swal.fire({
@@ -133,8 +130,17 @@ export default {
         } catch (error) {
           listData.loading = false
           if (process.env.NODE_ENV === 'development') {
-            console.log('[Product LinePointDialog] Error: submit', error)
+            console.log('[Product LinePointDialog] Error: submit')
+            console.dir(error)
           }
+          // const res = error.response
+          // if (res && res.data) {
+          // // 特化回饋訊息
+          // }
+          Swal.error({
+            icon: 'error',
+            title: '上傳失敗',
+          })
         }
       }, 1000),
     }

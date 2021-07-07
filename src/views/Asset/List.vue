@@ -15,9 +15,7 @@
       </div>
     </template>
     <div class="flex-grow flex flex-col py-2 px-4">
-      <div class="shadow-lg flex-grow py-4 rounded-lg">
-        <CardTemp v-bind="$props" :list-model="listModelData"></CardTemp>
-      </div>
+      <CardTemp v-bind="$props" :list-model="listModelData"></CardTemp>
     </div>
     <template #footer></template>
   </PageLayout>

@@ -1,6 +1,7 @@
 <template>
   <div
     class="bg-primary-500 h-full flex-shrink-0 border-r z-10 transform"
+    @transitionend="transitionend"
     :style="{
       transition: 'all 0.3s',
       willChange: 'auto',
@@ -44,6 +45,17 @@ export default {
       asideWidth: ref(config.layout.asideWidth),
       deviceSwitch: ref(config.layout.deviceSwitch),
       global: ref(store.state.global),
+      transitionend: (e) => {
+        if (e.propertyName === 'width') {
+          class ToggleAsideEvent extends TransitionEvent {}
+          window.dispatchEvent(
+            new ToggleAsideEvent('toggleAsideEnd', {
+              bubbles: false,
+              cancelable: false,
+            })
+          )
+        }
+      },
     }
   },
   components: {

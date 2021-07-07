@@ -66,7 +66,7 @@
 import { reactive, ref } from 'vue'
 import { NewsMessageModel } from '@/models/index'
 import { isModelError } from '@/utility/model-handle'
-import swAlert from '@/utility/alert'
+import Swal from '@/utility/alert'
 import throttle from 'lodash/throttle'
 
 export default {
@@ -121,7 +121,7 @@ export default {
         props.dialog.closePopup(props.id)
       }, 300),
       deleteModel: async () => {
-        const swalResult = await swAlert.delete()
+        const swalResult = await Swal.delete()
         try {
           if (swalResult.isConfirmed) {
             // await popupProps.model.deleteData()
@@ -151,8 +151,13 @@ export default {
           props.dialog.closePopup(props.id)
         } catch (error) {
           if (process.env.NODE_ENV === 'development') {
-            console.log('[News DetailDialog] Error: submit', error)
+            console.log('%c[News DetailDialog] Error: submit', 'color: #f00;background: #ff000011;padding: 2px 6px;border-radius: 4px;')
+            console.dir(error)
           }
+          Swal.error({
+            icon: 'error',
+            title: '儲存失敗',
+          })
         }
       }, 1000),
     }

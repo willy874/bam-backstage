@@ -22,6 +22,12 @@ export default {
       state.windowInnerHeight = window.innerHeight
     },
     setAsideShow(state, value) {
+      window.dispatchEvent(
+        new Event('toggleAside', {
+          bubbles: false,
+          cancelable: false,
+        })
+      )
       if (typeof value === 'boolean') {
         state.asideShow = value
       } else {

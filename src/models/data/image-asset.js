@@ -32,7 +32,12 @@ export default class ImageAssetModel extends ImageModel {
         .then(async (res) => {
           this.loading = false
           this.image_blob = await res.blob()
-          resolve(res)
+          const reader = new FileReader()
+          reader.onload = (e) => {
+            this.image_base64 = e.target.result
+            resolve(res)
+          }
+          reader.readAsDataURL(this.image_blob)
         })
         .catch((err) => {
           this.loading = false

@@ -111,6 +111,7 @@ import throttle from 'lodash/throttle'
 import { MemberModel } from '@/models/index'
 import { isModelError } from '@/utility/model-handle'
 import DialogLayout from '@/container/DialogLayout.vue'
+import Swal from '@/utility/alert'
 
 export default {
   name: 'DetailDialog',
@@ -202,8 +203,13 @@ export default {
           props.dialog.closePopup(props.id)
         } catch (error) {
           if (process.env.NODE_ENV === 'development') {
-            console.log('[Member DetailDialog] Error: submit', error)
+            console.log('%c[Member DetailDialog] Error: submit', 'color: #f00;background: #ff000011;padding: 2px 6px;border-radius: 4px;')
+            console.dir(error)
           }
+          Swal.error({
+            icon: 'error',
+            title: '儲存失敗',
+          })
         }
       }, 1000),
       convState(code) {
