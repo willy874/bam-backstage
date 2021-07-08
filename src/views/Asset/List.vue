@@ -1,30 +1,37 @@
 <template>
   <PageLayout>
     <template #header>
-      <div class="py-2 px-4">
-        <div class="flex items-center shadow">
-          <div class="px-4 py-2">
-            <Breadcrumb />
-          </div>
-          <div class="flex flex-grow justify-end p-1">
-            <div class="px-1" v-for="plugin in headerBar" :key="plugin.name">
-              <component v-bind="headerProps" :is="plugin"></component>
+      <div>
+        <div class="py-2 px-4">
+          <div class="flex items-center shadow">
+            <div class="px-4 py-2">
+              <Breadcrumb />
+            </div>
+            <div class="flex flex-grow justify-end p-1">
+              <div class="px-1" v-for="plugin in headerBar" :key="plugin.name">
+                <component v-bind="headerProps" :is="plugin"></component>
+              </div>
             </div>
           </div>
         </div>
+        <SearchBar v-bind="searchBarProps" />
       </div>
     </template>
-    <div class="flex-grow flex flex-col py-2 px-4">
-      <CardTemp v-bind="$props" :list-model="listModelData"></CardTemp>
+    <div class="absolute inset-0 flex flex-col py-2 px-4">
+      <CardTemp v-bind="tempProps"></CardTemp>
     </div>
     <template #footer></template>
   </PageLayout>
 </template>
 
 <script>
-import { reactive, onMounted } from 'vue'
+import { ref, reactive, onMounted } from 'vue'
+import { FileName, Observable } from 'bam-utility-plugins'
+import dayjs from 'dayjs'
+import { useDatabase } from '@/database/index'
+import { DataModel } from '@/models/index'
 import PageLayout from '@/container/PageLayout.vue'
-import { ListModel, ImageAssetModel } from '@/models/index'
+import SearchBar from '@/container/SearchBar.vue'
 import CardTemp from './CardTemp.vue'
 
 export default {
@@ -32,6 +39,7 @@ export default {
   components: {
     PageLayout,
     CardTemp,
+    SearchBar,
   },
   props: {
     routeTitle: {
@@ -49,23 +57,91 @@ export default {
       type: Array,
       default: () => [],
     },
+    fileLimit: {
+      type: Number,
+      default: 0,
+    },
+    fileLength: {
+      type: Number,
+      default: 0,
+    },
+    fileType: {
+      type: String,
+      default: '*',
+    },
+    uploadChange: {
+      type: Function,
+    },
   },
-  setup() {
-    const listModelData = reactive(
-      new ListModel({
-        model: ImageAssetModel,
-        api: 'images',
-      })
-    )
+  setup(props) {
+    class SearchModel extends DataModel {
+      constructor() {
+        super()
+        this.keyword = ''
+      }
+    }
+    const database = useDatabase()
+    const listData = reactive(database.data[props.modelName])
+    const searchBar = ref(false)
+    const filterOptions = reactive(new SearchModel())
+    const reflashData = async () => {
+      await listData.assetReadList()
+      await Promise.allSettled(listData.data.map(async (model) => await model.readData()))
+    }
     onMounted(async () => {
-      await listModelData.assetReadList()
-      await Promise.allSettled(listModelData.data.map(async (model) => await model.readImage()))
+      await reflashData()
     })
+    const uploadChange = (files) => {
+      const Model = props.modelSchema.model
+      const fileList = files.map((fileBlob) => {
+        const filename = new FileName(fileBlob.name)
+        return new Model({
+          name: fileBlob.name,
+          size: fileBlob.size,
+          type: fileBlob.type,
+          image_name: filename.name,
+          image_ext: filename.ext,
+          blob: fileBlob,
+          image_blob: fileBlob,
+          created_at: dayjs().format('YYYY/MM/DD HH:mm:ss'),
+          updated_at: dayjs().format('YYYY/MM/DD HH:mm:ss'),
+        })
+      })
+      const observable = new Observable((subscriber) => {
+        fileList.forEach((model) => {
+          subscriber.next(async () => {
+            await model.createData()
+          })
+        })
+        subscriber.complete(async () => {
+          await reflashData
+        })
+      })
+      observable.run()
+    }
 
-    const headerProps = {}
+    const headerProps = {
+      ...props,
+      listModelData: listData,
+      uploadChange,
+      searchBar,
+      filterOptions,
+    }
+    const tempProps = {
+      ...props,
+      listModelData: listData,
+      uploadChange,
+      filterOptions,
+    }
+    const searchBarProps = {
+      searchBar,
+      filterOptions,
+    }
     return {
-      listModelData,
+      listData,
       headerProps,
+      tempProps,
+      searchBarProps,
     }
   },
 }

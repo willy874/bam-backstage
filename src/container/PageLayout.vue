@@ -1,13 +1,13 @@
 <template>
-  <div data-name="PageLayout" class="absolute inset-0 overflow-auto flex flex-col">
-    <div class="flex-grow flex flex-col py-2">
-      <header v-if="$slots.header">
+  <div data-name="PageLayout" class="absolute inset-0 flex flex-col">
+    <div class="flex flex-col flex-grow py-2">
+      <header class="flex-shrink-0" v-if="$slots.header">
         <slot name="header"></slot>
       </header>
-      <div class="flex-grow flex flex-col">
+      <div class="flex-grow flex flex-col overflow-auto relative">
         <slot name="default"></slot>
       </div>
-      <footer v-if="$slots.footer">
+      <footer class="flex-shrink-0" v-if="$slots.footer">
         <slot name="footer"></slot>
       </footer>
     </div>

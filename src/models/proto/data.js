@@ -1,7 +1,11 @@
 import Validate from 'validate.js'
-import { request } from '@/plugins/axios/request'
+import {
+  request
+} from '@/plugins/axios/request'
 import '../validate/index'
-import { handleApiConfig } from '../utility/index'
+import {
+  handleApiConfig
+} from '../utility/index'
 
 /**
  * @property {Number} id             - 該筆資料唯一索引
@@ -122,11 +126,17 @@ export default class DataModel {
     Object.keys(entity).forEach((key) => {
       if (this[key] instanceof DataModel) {
         const Model = this[key].constructor
-        this[key] = new Model({ ...entity[key], api: this.api })
+        this[key] = new Model({
+          ...entity[key],
+          api: this.api
+        })
       } else if (Array.isArray(this[key]) && Object.keys(this.arrayModel).includes(key)) {
         const Model = this.arrayModel[key]
         this[key] = entity[key].map((p) => {
-          return new Model({ ...p, api: this.api })
+          return new Model({
+            ...p,
+            api: this.api
+          })
         })
       } else if (!exclude.includes(key)) {
         this[key] = entity[key]
@@ -151,15 +161,15 @@ export default class DataModel {
     this.loading = true
     return new Promise((resolve, reject) => {
       request(
-        handleApiConfig({
-          default: {
-            method: 'GET',
-            url: `${this.api}/${this[this.primaryKey]}`,
-          },
-          model: this,
-          ...options,
-        })
-      )
+          handleApiConfig({
+            default: {
+              method: 'GET',
+              url: `${this.api}/${this[this.primaryKey]}`,
+            },
+            model: this,
+            ...options,
+          })
+        )
         .then((res) => {
           this.loading = false
           const handleData = options.responseHandler ? options.responseHandler(res.data) : this.responseHandler(res.data, options)
@@ -177,15 +187,15 @@ export default class DataModel {
     this.loading = true
     return new Promise((resolve, reject) => {
       request(
-        handleApiConfig({
-          default: {
-            method: 'POST',
-            url: `${this.api}`,
-          },
-          model: this,
-          ...options,
-        })
-      )
+          handleApiConfig({
+            default: {
+              method: 'POST',
+              url: `${this.api}`,
+            },
+            model: this,
+            ...options,
+          })
+        )
         .then((res) => {
           this.loading = false
           const handleData = options.responseHandler ? options.responseHandler.call(this, res.data) : this.responseHandler(res.data, options)
@@ -203,15 +213,15 @@ export default class DataModel {
     this.loading = true
     return new Promise((resolve, reject) => {
       request(
-        handleApiConfig({
-          default: {
-            method: 'PUT',
-            url: `${this.api}/${this[this.primaryKey]}`,
-          },
-          model: this,
-          ...options,
-        })
-      )
+          handleApiConfig({
+            default: {
+              method: 'PUT',
+              url: `${this.api}/${this[this.primaryKey]}`,
+            },
+            model: this,
+            ...options,
+          })
+        )
         .then((res) => {
           this.loading = false
           resolve(res)
@@ -227,15 +237,15 @@ export default class DataModel {
     this.loading = true
     return new Promise((resolve, reject) => {
       request(
-        handleApiConfig({
-          default: {
-            method: 'DELETE',
-            url: `${this.api}/${this[this.primaryKey]}`,
-          },
-          model: this,
-          ...options,
-        })
-      )
+          handleApiConfig({
+            default: {
+              method: 'DELETE',
+              url: `${this.api}/${this[this.primaryKey]}`,
+            },
+            model: this,
+            ...options,
+          })
+        )
         .then((res) => {
           this.loading = false
           resolve(res)

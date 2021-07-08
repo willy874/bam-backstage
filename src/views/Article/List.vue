@@ -14,7 +14,7 @@
         </div>
       </div>
     </template>
-    <div class="flex-grow flex flex-col py-2 px-4">
+    <div class="absolute inset-0 flex flex-col py-2 px-4">
       <DataTable v-bind="dataTableProps" class="shadow-lg">
         <template #loading v-if="dataTableLoading" :is="dataTableLoading"></template>
       </DataTable>
@@ -31,6 +31,7 @@ import { useDatabase } from '@/database/index'
 
 export default {
   name: 'ArticleList',
+  inheritAttrs: false,
   components: {
     PageLayout,
   },

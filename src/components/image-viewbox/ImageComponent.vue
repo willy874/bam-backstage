@@ -91,7 +91,7 @@ export default {
       const ImageCache = useImageCache()
       const url = image.image_url
       if (ImageCache.has(url)) {
-        return ImageCache.get(url)
+        return URL.createObjectURL(ImageCache.get(url))
       }
       const res = await fetch(url)
       if (res.ok) {
@@ -109,12 +109,13 @@ export default {
     const model = createImageModel(props.src)
     const imgElement = ref(null)
     const source = ref('')
-
-    onMounted(async () => {
+    const updateData = async () => {
       await handleImage(model)
       await renderCheck(imgElement.value, 60)
       context.emit('ready')
-    })
+      console.log('watch')
+    }
+    onMounted(updateData)
     return () => {
       if (props.display === 'background' || props.display === 'bg') {
         return h('div', {

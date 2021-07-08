@@ -1,4 +1,12 @@
-import { ArticleModel, NewsMessageModel, MemberModel, ProductModel, ProductCategoryModel, LinePointModel } from '@/models/index'
+import {
+  ArticleModel,
+  NewsMessageModel,
+  MemberModel,
+  ProductModel,
+  ProductCategoryModel,
+  LinePointModel,
+  ImageAssetModel
+} from '@/models/index'
 
 export default {
   Articles: {
@@ -24,4 +32,8 @@ export default {
     model: LinePointModel,
     api: 'line-points',
   },
+  ImageAssets: {
+    model: ImageAssetModel,
+    api: 'images',
+  }
 }

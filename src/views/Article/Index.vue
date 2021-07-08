@@ -11,6 +11,7 @@ import PageLayout from '@/container/PageLayout.vue'
 
 export default {
   name: 'Article',
+  inheritAttrs: false,
   components: {
     PageLayout,
   },

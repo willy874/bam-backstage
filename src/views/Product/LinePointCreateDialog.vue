@@ -7,7 +7,7 @@
           <span v-if="listData.data.length > 1">{{ index + 1 }}</span>
         </div>
         <div class="flex-grow">
-          <TextBox type="text" :model="model" field="number" placeholder="請輸入序號" @keydown.enter="addModel" @keydown.delete="deleteModel(index)" />
+          <TextBox type="text" :model="model" field="number" placeholder="請輸入序號" />
           <span class="text-red-500 text-xs" v-show="model.hasError('number')">{{ model.hasError('number') }}</span>
         </div>
         <div class="flex-shrink-0 px-2">
@@ -16,10 +16,14 @@
           </button>
         </div>
       </div>
-      <div class="text-right">
-        <button type="button" class="btn-icon text-primary-500 hover:text-primary-600" @click="addModel">
-          <Icon src="Add" size="24" />
-        </button>
+      <div class="flex justify-between">
+        <div></div>
+        <div>
+          <button type="button" class="btn-icon text-primary-500 hover:text-primary-600" @click="addModel">
+            <Icon src="Add" size="24" />
+          </button>
+          <button class="hidden" type="submit"></button>
+        </div>
       </div>
     </form>
     <template #footer>
@@ -42,8 +46,8 @@
 <script>
 import { reactive, ref, nextTick } from 'vue'
 import { v4 as uuid } from 'uuid'
-import Swal from '@/utility/alert'
 import throttle from 'lodash/throttle'
+import Swal from '@/utility/alert'
 import { ListModel, LinePointModel } from '@/models/index'
 import { isModelError } from '@/utility/model-handle'
 import DialogLayout from '@/container/DialogLayout.vue'

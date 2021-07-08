@@ -35,10 +35,10 @@
     height: 10px;
   }
   &::-webkit-scrollbar-track {
-    background: #ccc;
+    border-radius: 0.5rem;
   }
   &::-webkit-scrollbar-thumb {
-    background: #999;
+    background: #888;
     border-radius: 0.5rem;
   }
   &::-webkit-scrollbar-button {
@@ -50,7 +50,8 @@
     border-radius: 50%;
   }
   &::-webkit-scrollbar-track-piece {
-    background: #eee;
+    background: #bbb;
+    border-radius: 0.5rem;
   }
 }
 

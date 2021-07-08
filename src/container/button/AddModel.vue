@@ -1,6 +1,6 @@
 <template>
   <div>
-    <button class="btn-icon text-primary-500 hover:text-primary-600" @click="click">
+    <button type="button" class="btn-icon text-primary-500 hover:text-primary-600" @click="click">
       <Icon src="Add" size="24" />
     </button>
   </div>

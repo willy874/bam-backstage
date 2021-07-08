@@ -67,6 +67,10 @@ export default class ListModel {
     return []
   }
 
+  responseHandler(resData, options) {
+    return resData
+  }
+
   /**
    * 設定data的資料，並存到快取內
    * @param {Array.<DataModel>} data
@@ -81,7 +85,7 @@ export default class ListModel {
         const model = new ModelType({
           primaryKey: this.primaryKey,
         })
-        return model.set(model.responseHandler(target, options))
+        return model.set(target)
       }
     })
     return this
@@ -180,7 +184,7 @@ export default class ListModel {
           const listModel = Array.isArray(res.data) ? {
             data: res.data
           } : res.data
-          this.set(listModel, options)
+          this.set(this.responseHandler(listModel, options), options)
           resolve(res)
         })
         .catch((err) => {

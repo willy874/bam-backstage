@@ -4,7 +4,7 @@ export default class ImageCache {
   }
 
   get(url) {
-    return URL.createObjectURL(this.cache[url])
+    return this.cache[url]
   }
 
   has(url) {
@@ -14,8 +14,10 @@ export default class ImageCache {
   set(url, data) {
     if (data instanceof Blob) {
       this.cache[url] = data
+    } else if (/^data:(\w)*\/(\w)*;base64,/.test(data)) {
+      this.cache[url] = data
     } else {
-      return Promise.resolve(data)
+      return data
     }
   }
 

@@ -16,6 +16,7 @@ import Play from './play.js'
 import PointSymbol from './point-symbol.js'
 import Product from './product.js'
 import ProfileUser from './profile-user.js'
+import Search from './search.js'
 import Trash from './trash.js'
 import User from './user.js'
 import Warning from './warning.js'
@@ -39,6 +40,7 @@ export {
   PointSymbol,
   Product,
   ProfileUser,
+  Search,
   Trash,
   User,
   Warning,
