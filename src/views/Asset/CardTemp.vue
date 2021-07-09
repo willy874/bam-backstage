@@ -308,7 +308,13 @@ export default {
       },
       changeNameText: async (image) => {
         try {
-          const res = await image.updateData()
+          const res = await image.updateData({
+            requesHandler(model) {
+              return {
+                name: model.name,
+              }
+            },
+          })
           if (res.isAxiosError) {
             throw res.message
           }

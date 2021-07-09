@@ -116,11 +116,56 @@ export default class ImageModel extends FileModel {
     })
   }
 
-  async updateData() {
-    await awaitTime(100)
+  async updateData(options = {}) {
+    this.loading = true
+    const Instance = axios.create(config.asset)
+    const axiosRequest = getAbstractRequest(Instance, {})
+    return new Promise((resolve, reject) => {
+      axiosRequest(
+          handleApiConfig({
+            default: {
+              method: 'PUT',
+              url: `${this.api}/${this[this.primaryKey]}`,
+            },
+            model: this,
+            ...options,
+          })
+        )
+        .then((res) => {
+          this.loading = false
+          resolve(res)
+        })
+        .catch((err) => {
+          this.loading = false
+          reject(err)
+        })
+    })
   }
 
-  async deleteData() {
-    await awaitTime(100)
+  async deleteData(options = {}) {
+    this.loading = true
+    const Instance = axios.create(config.asset)
+    const axiosRequest = getAbstractRequest(Instance, {})
+    return new Promise((resolve, reject) => {
+      axiosRequest(
+          handleApiConfig({
+            default: {
+              method: 'DELETE',
+              url: `${this.api}/${this[this.primaryKey]}`,
+            },
+            model: this,
+            requesHandler: () => ({}),
+            ...options,
+          })
+        )
+        .then((res) => {
+          this.loading = false
+          resolve(res)
+        })
+        .catch((err) => {
+          this.loading = false
+          reject(err)
+        })
+    })
   }
 }

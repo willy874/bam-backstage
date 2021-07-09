@@ -29,7 +29,7 @@
           @click.stop="clickImageItem($event, index)"
           :class="{ 'photo-frame__container__item__block--active': isActive(image) || image.dragHover }"
         >
-          <ImageBox :src="image" display="background" class="photo-frame__container__item__block__image" />
+          <div class="photo-frame__container__item__block__image" :style="{ backgroundImage: `url(${image.image_base64})` }"></div>
           <div class="photo-frame__container__item__block__close" v-html="closeIcon" @click.stop="deleteImage($event, image)"></div>
         </div>
         <input class="photo-frame__container__item__input" type="file" @change="changeFileInput($event, image, index)" />

@@ -76,10 +76,10 @@
           <PhotoFrame
             :model="imageList"
             :model-handler="modelHandler"
-            file-length="10"
-            @loadImage="initPosition"
+            file-length="3"
             :plugins="photoFramePlugin"
             :class="{ 'is-invalid': model.hasError('images') }"
+            @loadImage="initPosition"
           />
           <span class="text-red-500 text-xs" v-show="model.hasError('images')">{{ model.hasError('images') }}</span>
         </div>
@@ -183,17 +183,17 @@ export default {
           message: '^請選擇產品類型',
         },
       },
-      images: () => {
-        const publishImages = model.images.filter((p) => !p.deleted)
-        if (publishImages.length && publishImages.every((p) => p.image_blob)) {
-          return {}
-        }
-        return {
-          inclusion: {
-            message: '^請上傳圖片',
-          },
-        }
-      },
+      // images: () => {
+      //   const publishImages = model.images.filter((p) => !p.deleted)
+      //   if (publishImages.length && publishImages.every((p) => p.image_blob)) {
+      //     return {}
+      //   }
+      //   return {
+      //     inclusion: {
+      //       message: '^請上傳圖片',
+      //     },
+      //   }
+      // },
     }
     const isLinePoint = (model) => model.category_id === 1
     return {
@@ -207,22 +207,21 @@ export default {
       photoFramePlugin: [ImageFolderButton],
       errorMessages,
       modelHandler: async (image) => {
-        // try {
-        //   const res = await image.createData()
-        //   if (res.isAxiosError) {
-        //     throw res.message
-        //   }
-        // } catch (error) {
-        //   if (process.env.NODE_ENV === 'development') {
-        //     console.log('%c[Product DetailDialog] Error: modelHandler > createData', 'color: #f00;background: #ff000011;padding: 2px 6px;border-radius: 4px;')
-        //     console.dir(error)
-        //   }
-        // }
+        try {
+          const res = await image.createData()
+          if (res.isAxiosError) {
+            throw res.message
+          }
+        } catch (error) {
+          if (process.env.NODE_ENV === 'development') {
+            console.log('%c[Product DetailDialog] Error: modelHandler > createData', 'color: #f00;background: #ff000011;padding: 2px 6px;border-radius: 4px;')
+            console.dir(error)
+          }
+        }
         return new ProductImageModel({
           ...image,
-          // id: res.data,
-          // image_id: res.data,
-          image_id: image.id,
+          id: res.data.id,
+          image_id: res.data.id,
         })
       },
       close: throttle(() => {
@@ -265,7 +264,9 @@ export default {
                   price: model.price,
                   category_id: model.category_id,
                   state: model.state,
-                  images: model.images.filter((p) => !p.deleted).map((p) => p.image_id),
+                }
+                if (model.images.some((img) => img.edited)) {
+                  result.images = model.images.filter((p) => !p.deleted).map((p) => p.id)
                 }
                 if (!isLinePoint(model)) result.stock = model.stock
                 return result

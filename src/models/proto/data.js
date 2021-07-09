@@ -135,7 +135,6 @@ export default class DataModel {
         this[key] = entity[key].map((p) => {
           return new Model({
             ...p,
-            api: this.api
           })
         })
       } else if (!exclude.includes(key)) {

@@ -53,6 +53,7 @@ export default {
             alert('上傳檔案數量超過上限')
           } else {
             selectedImages.forEach((image) => {
+              image.edited = true
               listModelData.data.push(image)
             })
           }

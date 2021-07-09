@@ -109,6 +109,15 @@ export default {
     const model = createImageModel(props.src)
     const imgElement = ref(null)
     const source = ref('')
+    const sourceHandler = (image) => {
+      if (image.image_base64) {
+        return image.image_base64
+      }
+      if (image.image_url) {
+        return image.image_url
+      }
+      return source.value
+    }
     const updateData = async () => {
       await handleImage(model)
       await renderCheck(imgElement.value, 60)
@@ -116,19 +125,20 @@ export default {
     }
     onMounted(updateData)
     return () => {
+      console.log(model)
       if (props.display === 'background' || props.display === 'bg') {
         return h('div', {
           ...context.attrs,
           class: 'image-box',
           style: {
-            backgroundImage: `url(${source.value})`,
+            backgroundImage: `url(${sourceHandler(model)})`,
           },
         })
       } else {
         return h('img', {
           ref: imgElement,
           class: 'image-box',
-          src: source.value,
+          src: sourceHandler(model),
           ...context.attrs,
         })
       }
