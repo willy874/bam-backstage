@@ -1,4 +1,8 @@
-import { DataModel, ProductCategoryModel } from '../index'
+import {
+  DataModel,
+  ProductCategoryModel,
+  ProductImageModel
+} from '../index'
 
 /**
  * @extends DataModel
@@ -22,6 +26,8 @@ export default class ProductModel extends DataModel {
     this.state = entity.state || 0
     this.category_id = entity.category_id || null
     this.product_category = new ProductCategoryModel(entity.product_category)
+    this.images = entity.images ? entity.images.map(p => new ProductImageModel(p)) : []
+    this.arrayModel.images = ProductImageModel
     // proto set
     this.api = entity.api || 'product'
   }

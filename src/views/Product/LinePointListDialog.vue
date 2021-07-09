@@ -28,19 +28,19 @@ export default {
   },
   setup(props) {
     const model = props.props.model
-    onMounted(() => {
-      model.readList()
-    })
     const productId = props.props.productId
+    onMounted(() => {
+      model.readList({ params: { product_id: productId } })
+    })
     const dataTableProps = reactive({
       options: [
         { title: 'No.', field: (item, index) => index + 1, width: '60px', align: 'center' },
         { title: '建立日期', field: (item) => dayjs(item.created_at).format('YYYY/MM/DD HH:mm:ss'), width: '200px', align: 'center' },
         { title: '序號', field: 'number', width: 1, columnStyle: { minWidth: '180px' }, bodyStyle: { padding: '0 0.5rem' } },
-        { title: '狀態', field: (item) => item.state ? '已使用' : '未使用', width: '60px', align: 'center' },
+        { title: '狀態', field: (item) => (item.state ? '已使用' : '未使用'), width: '60px', align: 'center' },
       ],
-      filter (list) {
-        return list.setData(list.data.filter(p => p.product_id === productId))
+      filter(list) {
+        return list.setData(list.data.filter((p) => p.product_id === productId))
       },
       model,
     })
@@ -48,8 +48,8 @@ export default {
       dataTableProps,
       close: throttle(() => {
         props.dialog.closePopup(props.id)
-      }, 300)
+      }, 300),
     }
-  }
+  },
 }
 </script>

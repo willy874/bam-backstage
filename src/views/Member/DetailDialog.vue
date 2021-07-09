@@ -183,10 +183,13 @@ export default {
         }
         try {
           if (model.id === 0 || model.id === '') {
-            await model.createData()
+            const res = await model.createData()
+            if (res.isAxiosError) {
+              throw res.message
+            }
             popupProps.model = model
           } else {
-            await model.updateData({
+            const res = await model.updateData({
               requesHandler(model) {
                 return {
                   real_name: model.real_name,
@@ -198,6 +201,9 @@ export default {
                 }
               },
             })
+            if (res.isAxiosError) {
+              throw res.message
+            }
             popupProps.model.set(model)
           }
           props.dialog.closePopup(props.id)

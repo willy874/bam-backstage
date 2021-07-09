@@ -46,7 +46,10 @@ export default {
           const observable = new Observable((subscriber) => {
             selectList.value.forEach((model) => {
               subscriber.next(async () => {
-                await model.deleteData()
+                const res = await model.deleteData()
+                if (res.isAxiosError) {
+                  throw res.message
+                }
                 deleteIndex.value++
                 const indexOf = listModelData.data.map((m) => m.id).indexOf(model.id)
                 deleteList.concat(listModelData.data.splice(indexOf, 1))

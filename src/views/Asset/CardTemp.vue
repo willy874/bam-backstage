@@ -183,7 +183,10 @@ export default {
         const swalResult = await Swal.delete()
         if (swalResult.isConfirmed) {
           try {
-            await image.deleteData()
+            const res = await image.deleteData()
+            if (res.isAxiosError) {
+              throw res.message
+            }
             listData.data.splice(index, 1)
           } catch (error) {
             if (process.env.NODE_ENV === 'development') {
@@ -267,7 +270,10 @@ export default {
       },
       changeNameText: async (image) => {
         try {
-          await image.updateData()
+          const res = await image.updateData()
+          if (res.isAxiosError) {
+            throw res.message
+          }
         } catch (error) {
           image.name = textValue.value
           if (process.env.NODE_ENV === 'development') {

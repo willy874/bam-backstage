@@ -70,6 +70,19 @@
           </div>
         </div>
       </div>
+      <div class="py-2 sm:flex">
+        <div class="flex-shrink-0 w-20" :style="{ marginTop: `${formTitleMarginTop}px` }">圖片</div>
+        <div class="flex-grow">
+          <PhotoFrame
+            :model="imageList"
+            :model-handler="modelHandler"
+            file-length="10"
+            @loadImage="initPosition"
+            :class="{ 'is-invalid': model.hasError('images') }"
+          />
+          <span class="text-red-500 text-xs" v-show="model.hasError('images')">{{ model.hasError('images') }}</span>
+        </div>
+      </div>
     </form>
     <template #footer>
       <div class="flex justify-between items-center rounded-b-lg border-t p-2">
@@ -92,7 +105,7 @@
 <script>
 import { reactive, ref, onMounted, nextTick } from 'vue'
 import throttle from 'lodash/throttle'
-import { ProductModel } from '@/models/index'
+import { ListModel, ProductModel, ProductImageModel } from '@/models/index'
 import { isModelError } from '@/utility/model-handle'
 import Swal from '@/utility/alert'
 import { useDialog } from '@/components/dialog/index'
@@ -109,12 +122,28 @@ export default {
   },
   setup(props) {
     const model = reactive(new ProductModel(props.props.model))
+    const imageList = reactive(
+      new ListModel({
+        model: ProductImageModel,
+        data: model.images,
+      })
+    )
     const ProductCategories = reactive(useDatabase().data.ProductCategories)
     const LinePoints = reactive(useDatabase().data.LinePoints)
     onMounted(async () => {
-      model.readData()
+      await model.readData()
       ProductCategories.readList()
       LinePoints.readList()
+      const allResponse = await Promise.allSettled(model.images.map(async (image) => await image.readData()))
+      // 清除無效圖片
+      allResponse
+        .map((res, index) => (res.value ? false : model.images[index].id))
+        .filter((p) => p !== false)
+        .forEach((id) => {
+          const index = model.images.map((p) => Number(p.id)).indexOf(Number(id))
+          model.images.splice(index, 1)
+        })
+      imageList.data = model.images
     })
     const dialog = useDialog()
     const popupProps = reactive(props.props)
@@ -152,16 +181,34 @@ export default {
           message: '^請選擇產品類型',
         },
       },
+      images: () => {
+        const publishImages = model.images.filter((p) => !p.deleted)
+        if (publishImages.length && publishImages.every((p) => p.image_blob)) {
+          return {}
+        }
+        return {
+          inclusion: {
+            message: '^請上傳圖片',
+          },
+        }
+      },
     }
     const isLinePoint = (model) => model.category_id === 1
     return {
       model,
+      imageList,
       ProductCategories,
       LinePoints,
       windowShow,
       formTitleMarginTop,
       isLinePoint,
       errorMessages,
+      modelHandler: async (image) => {
+        return new ProductImageModel({
+          ...image,
+          image_id: image.id,
+        })
+      },
       close: throttle(() => {
         props.dialog.closePopup(props.id)
       }, 300),
@@ -169,7 +216,10 @@ export default {
         const swalResult = await Swal.delete()
         try {
           if (swalResult.isConfirmed) {
-            await popupProps.model.deleteData()
+            const res = await popupProps.model.deleteData()
+            if (res.isAxiosError) {
+              throw res.message
+            }
             popupProps.model.deleted = true
             props.dialog.closePopup(props.id)
           }
@@ -191,7 +241,7 @@ export default {
             await model.createData()
             popupProps.model = model
           } else {
-            await model.updateData({
+            const res = await model.updateData({
               requesHandler(model) {
                 const result = {
                   name: model.name,
@@ -199,11 +249,15 @@ export default {
                   price: model.price,
                   category_id: model.category_id,
                   state: model.state,
+                  images: model.images.filter((p) => !p.deleted).map((p) => p.image_id),
                 }
                 if (!isLinePoint(model)) result.stock = model.stock
                 return result
               },
             })
+            if (res.isAxiosError) {
+              throw res.message
+            }
             popupProps.model.set(model)
           }
           props.dialog.closePopup(props.id)

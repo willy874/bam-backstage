@@ -25,9 +25,7 @@ export default function (options) {
       }
     }
     if (options.responseError) options.responseError(err)
-    if (options.responseReject) {
-      return options.responseReject(err)
-    }
+    if (options.responseReject) options.responseReject(err)
     return err
   }
 }

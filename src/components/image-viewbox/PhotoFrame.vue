@@ -58,7 +58,7 @@
 </template>
 
 <script>
-import { reactive, ref, computed, onMounted, onUnmounted } from 'vue'
+import { reactive, ref, computed, onMounted, onUnmounted, nextTick } from 'vue'
 import { v4 as uuid } from 'uuid'
 import { ListModel, ImageModel } from '@/models/index'
 import { FileName } from 'bam-utility-plugins'
@@ -119,8 +119,12 @@ export default {
       type: String,
       default: addIcon,
     },
+    modelHandler: {
+      type: Function,
+      default: async (model) => model,
+    },
   },
-  setup(props) {
+  setup(props, context) {
     const plusIcon = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 448" fill="currentColor">
 <path d="m408 184h-136c-4.417969 0-8-3.582031-8-8v-136c0-22.089844-17.910156-40-40-40s-40 17.910156-40 40v136c0 4.417969-3.582031 8-8 8h-136c-22.089844 0-40 17.910156-40 40s17.910156 40 40 40h136c4.417969 0 8 3.582031 8 8v136c0 22.089844 17.910156 40 40 40s40-17.910156 40-40v-136c0-4.417969 3.582031-8 8-8h136c22.089844 0 40-17.910156 40-40s-17.910156-40-40-40zm0 0"/>
 </svg>`
@@ -138,7 +142,7 @@ export default {
       if (props.model instanceof ListModel) {
         return reactive(props.model)
       } else {
-        const result = reactive(new ListModel({ data: props.model, model: ImageModel }))
+        const result = reactive(new ListModel({ data: [], model: ImageModel }))
         result.data = props.model
         return result
       }
@@ -212,8 +216,8 @@ export default {
       }
       // 建立 ImageModel
       resetSelect(0)
-      fileList
-        .map((f, index) => {
+      Promise.all(
+        fileList.map(async (f, index) => {
           const filename = new FileName(f.name)
           const image = new ImageModel({
             id: uuid(),
@@ -228,24 +232,28 @@ export default {
             image_blob: fileList[index],
             edited: true,
           })
-          return image
+          return await props.modelHandler(image)
         })
-        .forEach((image) => {
+      ).then((allResponse) => {
+        allResponse.forEach((image) => {
           if (fileList.length === 1 && (imageIndex || imageIndex === 0)) {
             filterList.value[imageIndex].set(image)
           } else {
             list.data.push(image)
           }
           const reader = new FileReader()
-          reader.onload = (e) => {
+          reader.onload = async (e) => {
             image.image_base64 = e.target.result
+            await nextTick()
+            context.emit('loadImage', allResponse)
           }
           reader.readAsDataURL(image.image_blob)
         })
-      filterList.value.forEach((image, index) => {
-        image.sort = index
+        filterList.value.forEach((image, index) => {
+          image.sort = index
+        })
+        list.data.sort((a, b) => a.sort - b.sort)
       })
-      list.data.sort((a, b) => a.sort - b.sort)
     }
     const columnWidth = ref('50%')
     const checkWidth = () => {
@@ -351,12 +359,10 @@ export default {
       dragenter: (e) => {
         e.preventDefault()
         e.stopPropagation()
-        if (refs.root.value === e.target || refs.container.value === e.target) {
-          dragHover.value = true
-          filterList.value.forEach((image) => {
-            image.dragHover = false
-          })
-        }
+        dragHover.value = true
+        filterList.value.forEach((image) => {
+          image.dragHover = false
+        })
       },
       dragleaveItem: (e, image, index) => {
         e.preventDefault()

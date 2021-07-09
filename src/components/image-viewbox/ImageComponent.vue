@@ -10,7 +10,7 @@ export default {
       default: 'image',
     },
     src: {
-      type: [ImageModel, String],
+      type: [Object, String],
       default: '',
     },
     errorImage: {
@@ -113,7 +113,6 @@ export default {
       await handleImage(model)
       await renderCheck(imgElement.value, 60)
       context.emit('ready')
-      console.log('watch')
     }
     onMounted(updateData)
     return () => {

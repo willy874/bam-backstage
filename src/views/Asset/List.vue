@@ -89,7 +89,15 @@ export default {
     const reflashData = async () => {
       try {
         await listData.assetReadList()
-        await Promise.allSettled(listData.data.map(async (model) => await model.readData()))
+        const allResponse = await Promise.allSettled(listData.data.map(async (model) => await model.readData()))
+        // 清除無效圖片
+        allResponse
+          .map((res, index) => (res.value ? false : listData.data[index].id))
+          .filter((p) => p !== false)
+          .forEach((id) => {
+            const index = listData.data.map((p) => Number(p.id)).indexOf(Number(id))
+            listData.data.splice(index, 1)
+          })
       } catch (error) {
         if (process.env.NODE_ENV === 'development') {
           console.log('%c[AssetList] Error: assetReadList', 'color: #f00;background: #ff000011;padding: 2px 6px;border-radius: 4px;')

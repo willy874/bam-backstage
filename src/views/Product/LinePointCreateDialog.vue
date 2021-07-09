@@ -131,6 +131,9 @@ export default {
               }
             }),
           })
+          if (res.isAxiosError) {
+            throw res.message
+          }
           const duplicate = res.data.duplicate
           const success = res.data.success
           const fail = res.data.fail
@@ -148,7 +151,6 @@ export default {
               icon: 'success',
             })
           }
-          props.dialog.closePopup(props.id)
         } catch (error) {
           if (process.env.NODE_ENV === 'development') {
             console.log('[Product LinePointDialog] Error: submit')
@@ -159,8 +161,8 @@ export default {
             icon: 'error',
             title: '上傳失敗',
           })
-          props.dialog.closePopup(props.id)
         }
+        props.dialog.closePopup(props.id)
       }, 1000),
     }
   },

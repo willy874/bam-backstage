@@ -30,7 +30,11 @@ export default class Admin {
     const database = useDatabase()
     if (tokenData) {
       try {
-        this.user = (await request.get('admin/profile')).data
+        const res = await request.get('admin/profile')
+        if (res.isAxiosError) {
+          throw res.message
+        }
+        this.user = res.data
         database.login()
         if (lastPage) {
           this.router.replace(lastPage)
