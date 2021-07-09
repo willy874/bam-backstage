@@ -5,7 +5,7 @@
     :style="{
       transition: 'all 0.3s',
       willChange: 'auto',
-      width: !global.asideShow && global.windowInnerWidth > deviceSwitch ? `${global.iconWidth + 16}px` : `${asideWidth}px`,
+      width: !global.asideShow && global.windowInnerWidth > deviceSwitch ? `${global.iconWidth + 20}px` : `${asideWidth}px`,
       position: global.windowInnerWidth < deviceSwitch ? 'fixed' : 'relative',
       '--tw-translate-x': global.windowInnerWidth < deviceSwitch && !global.asideShow ? `-100%` : 0,
     }"

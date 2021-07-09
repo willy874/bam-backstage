@@ -1,5 +1,9 @@
-import { useDatabase } from '@/database/index'
-import { request } from '@/plugins/axios/request'
+import {
+  useDatabase
+} from '@/database/index'
+import {
+  request
+} from '@/plugins/axios/request'
 import config from '@/config/index'
 
 export default class Admin {
@@ -39,6 +43,10 @@ export default class Admin {
         }
         localStorage.removeItem('lastPage')
       } catch (error) {
+        if (process.env.NODE_ENV === 'development') {
+          console.log('%c[admin/proto] Error: autoLogin', 'color: #f00;background: #ff000011;padding: 2px 6px;border-radius: 4px;')
+          console.dir(error)
+        }
         if (error.request.status === 401 || error.request.status === 403) {
           localStorage.removeItem('token')
           if (currentUrl !== '/login') {

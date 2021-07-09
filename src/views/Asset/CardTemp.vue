@@ -2,13 +2,23 @@
   <div class="shadow-lg flex-grow flex flex-col rounded-lg border border-opacity-5 relative">
     <div class="absolute inset-0 flex-grow flex flex-col p-2">
       <div class="flex-grow overflow-auto scroll-bar">
-        <div class="flex flex-wrap" ref="root">
+        <div
+          class="flex flex-wrap"
+          :class="{ 'bg-primary-500 bg-opacity-10': dragHover }"
+          ref="root"
+          @drop="drop"
+          @dragover="dragover"
+          @dragenter="dragenter"
+          @dragleave="dragleave"
+        >
           <div class="p-2 transition" v-for="(image, index) in filterList.data" :ref="setRefsItem(index)" :key="image.id" :style="{ width: columnWidth }">
             <div
               class="pt-1/1 relative border-2 rounded-lg focus:outline-none focus:border-primary-500 border-opacity-50"
               :class="{ 'shadow-focus': image.selected }"
               :tabindex="index + 1"
-              @click="clickItem($event, image, index)"
+              @focus="focusItem($event, image)"
+              @blur="blurItem"
+              @click.stop="clickItem($event, image, index)"
               @keydown="keydownItem($event, image, index)"
             >
               <div class="absolute inset-0 px-4 py-2 flex flex-col">
@@ -20,13 +30,31 @@
                 <div class="flex-shrink-0 h-12" @click="clickStop">
                   <textarea
                     v-if="image.mode === 'edit'"
-                    @blur="blurNameText(image)"
-                    @change="changeNameText(image)"
+                    v-model="image.name"
                     class="w-full focus:outline-none focus:border-primary-500 border rounded resize-none"
                     rows="2"
-                    v-model="image.name"
+                    @keydown.stop
+                    @blur="blurNameText(image)"
+                    @change="changeNameText(image)"
                   ></textarea>
                   <div v-else class="line-clamp-2 border border-transparent" @dblclick="dblclickNameText(image)">{{ image.name }}</div>
+                </div>
+              </div>
+              <div class="absolute top-2 right-2" v-show="focusImage === image">
+                <div
+                  class="
+                    btn-icon
+                    bg-gray-200 bg-opacity-60
+                    hover:bg-opacity-100
+                    text-red-500 text-opacity-60
+                    hover:text-opacity-100
+                    p-1
+                    rounded-full
+                    cursor-pointer
+                  "
+                  @click="deleteImage($event, image, index)"
+                >
+                  <Icon src="Add" class="transform rotate-45" size="24" />
                 </div>
               </div>
             </div>
@@ -39,11 +67,12 @@
 
 <script>
 import { ref, onMounted, onUnmounted, reactive, nextTick, computed } from 'vue'
+import throttle from 'lodash/throttle'
 import { ListModel } from '@/models/index'
 import defaultImage from '@/components/image-viewbox/default-image.jpg'
 import { useDialog } from '@/components/dialog/index'
 import LightBoxDialog from '@/container/LightBoxDialog.vue'
-import throttle from 'lodash/throttle'
+import Swal from '@/utility/alert'
 
 export default {
   name: 'AssetCardTemp',
@@ -66,9 +95,11 @@ export default {
     const dialog = useDialog()
     const listData = reactive(props.listModelData)
     const filterList = computed(() => {
-      return new ListModel({
+      const list = new ListModel({
         ...props.modelSchema,
         ...listData,
+      })
+      return list.set({
         data: listData.data.filter((p) => {
           const keywordRegExp = props.filterOptions.keyword ? new RegExp(props.filterOptions.keyword) : null
           if (keywordRegExp) return keywordRegExp.test(p.name)
@@ -79,7 +110,10 @@ export default {
     const refs = {
       root: ref(null),
     }
-    const grid = ref(1)
+    const dragHover = ref(false)
+    const focusImage = ref(null)
+    const textValue = ref('')
+    const grid = ref(8)
     const columnWidth = ref('100%')
     const checkWidth = () => {
       const width = refs.root.value.offsetWidth
@@ -124,6 +158,8 @@ export default {
     }
     return {
       ...refs,
+      dragHover,
+      focusImage,
       setRefsItem: (index) => {
         return (ref) => {
           if (ref) filterList.value.data[index].ref = ref
@@ -142,7 +178,21 @@ export default {
             })
           }
         }
-      }, 300),
+      }, 200),
+      deleteImage: throttle(async (e, image, index) => {
+        const swalResult = await Swal.delete()
+        if (swalResult.isConfirmed) {
+          try {
+            await image.deleteData()
+            listData.data.splice(index, 1)
+          } catch (error) {
+            if (process.env.NODE_ENV === 'development') {
+              console.log('%c[AssetCardTemp] Error: deleteImage', 'color: #f00;background: #ff000011;padding: 2px 6px;border-radius: 4px;')
+              console.dir(error)
+            }
+          }
+        }
+      }, 400),
       dblclickImage(e, image, index) {
         openLightBox(e, image, index)
       },
@@ -172,14 +222,59 @@ export default {
           case 'Enter':
             openLightBox(e, image, index)
         }
-      }, 100),
+      }, 200),
       dblclickNameText: async (image) => {
         image.mode = 'edit'
         await nextTick()
         image.ref.querySelector('textarea').focus()
+        textValue.value = image.name
       },
-      changeNameText: (image) => {
-        // PUT
+      focusItem(e, image) {
+        focusImage.value = image
+      },
+      blurItem() {
+        focusImage.value = null
+      },
+      drop(e) {
+        e.preventDefault()
+        e.stopPropagation()
+        if (props.uploadChange) {
+          const filterList = Array.from(e.dataTransfer.files)
+          if (filterList.length) {
+            props.uploadChange(filterList)
+          }
+        }
+      },
+      dragover(e) {
+        e.preventDefault()
+        e.stopPropagation()
+      },
+      dragenter(e) {
+        e.preventDefault()
+        e.stopPropagation()
+        if (props.uploadChange) {
+          dragHover.value = true
+        }
+      },
+      dragleave(e) {
+        e.preventDefault()
+        e.stopPropagation()
+        if (props.uploadChange) {
+          if (!refs.root.value.contains(e.fromElement)) {
+            dragHover.value = false
+          }
+        }
+      },
+      changeNameText: async (image) => {
+        try {
+          await image.updateData()
+        } catch (error) {
+          image.name = textValue.value
+          if (process.env.NODE_ENV === 'development') {
+            console.log('%c[AssetCardTemp] Error: changeNameText', 'color: #f00;background: #ff000011;padding: 2px 6px;border-radius: 4px;')
+            console.dir(error)
+          }
+        }
       },
       blurNameText: (image) => {
         image.mode = 'static'

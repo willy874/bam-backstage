@@ -10,6 +10,12 @@ import {
 import {
   useImageCache
 } from '@/components/image-viewbox'
+import {
+  awaitTime
+} from '@/utility/async'
+
+
+
 /**
  * @extends ImageModel
  * @property {Boolean} select 該檔案是否被選取
@@ -20,7 +26,6 @@ export default class ImageAssetModel extends ImageModel {
     super(args)
     const entity = args || {}
     this.selected = entity.selected || false
-    this.preview = entity.preview || false
     this.api = entity.api || 'image'
   }
 
@@ -84,7 +89,6 @@ export default class ImageAssetModel extends ImageModel {
         )
         .then((res) => {
           this.loading = false
-          console.log(res)
           resolve(res)
         })
         .catch((err) => {
@@ -92,5 +96,13 @@ export default class ImageAssetModel extends ImageModel {
           reject(err)
         })
     })
+  }
+
+  async updateData() {
+    await awaitTime(100)
+  }
+
+  async deleteData() {
+    await awaitTime(100)
   }
 }

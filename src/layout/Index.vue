@@ -37,9 +37,7 @@
       <main class="h-full flex-grow relative">
         <RouterView v-slot="{ Component, route }">
           <transition :name="route.meta.transition || 'fade'">
-            <keep-alive>
-              <component :is="Component" :key="route.name" />
-            </keep-alive>
+            <component :is="Component" :key="route.name" />
           </transition>
         </RouterView>
       </main>

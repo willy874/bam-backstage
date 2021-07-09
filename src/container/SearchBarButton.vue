@@ -13,9 +13,8 @@ export default {
   name: 'SearchBarButton',
   inheritAttrs: false,
   props: {
-    searchBar: {
-      type: Boolean,
-      default: false,
+    searchBarShow: {
+      type: Object,
     },
     filterOptions: {
       type: Object,
@@ -24,7 +23,7 @@ export default {
   setup(props) {
     return {
       click: throttle(() => {
-        props.searchBar.value = !props.searchBar.value
+        props.searchBarShow.value = !props.searchBarShow.value
       }, 300),
     }
   },

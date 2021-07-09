@@ -21,6 +21,7 @@ export default class Database {
           return Promise.resolve()
         } else {
           this.data[key] = new ListModel(schema[key])
+          this.store.state.model[key] = this.data[key]
           if (this.createLoad) {
             return this.data[key].readList()
           }
@@ -35,6 +36,7 @@ export default class Database {
       Object.keys(schema).map((key) => {
         if (this.auth.includes(key) || this.allow) {
           this.data[key] = new ListModel(schema[key])
+          this.store.state.model[key] = this.data[key]
           if (this.createLoad) {
             return this.data[key].readList()
           }

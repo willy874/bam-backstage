@@ -13,7 +13,7 @@ export default {
     },
   },
   layout: {
-    asideWidth: 240,
+    asideWidth: 220,
     deviceSwitch: 768,
   },
 }

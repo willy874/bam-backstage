@@ -16,8 +16,9 @@ export default {
     window.addEventListener('resize', () => {
       store.commit('setWindowInnerWidth')
     })
-    document.addEventListener('click', () => {
+    document.querySelector('#app').addEventListener('click', () => {
       store.commit('setHeaderShow', false)
+      store.commit('clearImageAssetsSelected', false)
     })
   },
 }

@@ -1,11 +1,11 @@
 <template>
-  <div class="py-2 px-4" v-show="searchBar.value">
+  <div class="py-2 px-4" v-show="searchBarShow.value">
     <div class="flex justify-between items-center shadow p-1">
       <div class="p-1">
         <TextBox type="text" :model="filterOptions" field="keyword" placeholder="請輸入搜尋關鍵字" />
       </div>
       <div>
-        <button class="btn-icon text-gray-500 hover:text-gray-600" type="button" @click="searchBar.value = !searchBar.value">
+        <button class="btn-icon text-gray-500 hover:text-gray-600" type="button" @click="searchBarShow.value = !searchBarShow.value">
           <Icon class="transform rotate-45" src="Add" size="24" />
         </button>
       </div>
@@ -18,9 +18,8 @@ export default {
   name: 'SearchBar',
   inheritAttrs: false,
   props: {
-    searchBar: {
-      type: Boolean,
-      default: false,
+    searchBarShow: {
+      type: Object,
     },
     filterOptions: {
       type: Object,

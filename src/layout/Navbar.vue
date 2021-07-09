@@ -10,7 +10,7 @@
                 <div v-else :style="{ width: `${global.iconWidth}px` }"></div>
               </div>
               <div class="flex-grow px-2 overflow-hidden">
-                <RouterLink class="stretched-link whitespace-nowrap" :to="item.route">{{ item.title }}</RouterLink>
+                <RouterLink class="stretched-link whitespace-nowrap block pl-6" :to="item.route">{{ item.title }}</RouterLink>
               </div>
             </div>
             <div class="flex-shrink-0 px-1">
@@ -27,7 +27,7 @@
               <div v-else :style="{ width: `${global.iconWidth}px` }"></div>
             </div>
             <div class="flex-grow px-2 overflow-hidden">
-              <a class="stretched-link whitespace-nowrap" href="javascript:;" @click="toggleItem(item)">{{ item.title }}</a>
+              <a class="stretched-link whitespace-nowrap block pl-6" href="javascript:;" @click="toggleItem(item)">{{ item.title }}</a>
             </div>
             <div class="flex-shrink-0 px-1">
               <template v-if="item.children && item.children.length">
@@ -44,7 +44,7 @@
             </div>
             <div class="flex-grow px-2">
               <template v-if="child.route">
-                <RouterLink class="stretched-link whitespace-nowrap" :to="child.route">{{ child.title }}</RouterLink>
+                <RouterLink class="stretched-link whitespace-nowrap block pl-6" :to="child.route">{{ child.title }}</RouterLink>
               </template>
               <template v-else>
                 <a href="javascript:;">{{ child.title }}</a>

@@ -13,6 +13,14 @@ Swal.delete = (count = 0, options = {}) => {
   })
 }
 
+Swal.success = (options = {}) => {
+  return Swal.fire({
+    icon: 'success',
+    title: '發送成功',
+    ...options
+  })
+}
+
 Swal.error = (options = {}) => {
   return Swal.fire({
     icon: 'error',
