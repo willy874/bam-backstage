@@ -12,24 +12,18 @@
         </div>
       </div>
     </template>
-    <div class="shadow-lg flex-grow flex flex-col rounded-lg border border-opacity-5" style="height: 700px">
-      <div class="p-2">
-        <div class="flex-grow overflow-auto scroll-bar">
-          <div class="flex flex-wrap" ref="root">
-            <div class="p-2 transition w-1/2 sm:w-1/3" v-for="(image, index) in filterList.data" :ref="setRefsItem(index)" :key="image.id">
-              <div
-                class="pt-1/1 relative border-2 rounded-lg border-opacity-50"
-                :class="{ 'shadow-focus': image.selected }"
-                @click="clickImage($event, image, index)"
-                @dblclick="dblclickImage($event, image, index)"
-              >
-                <div class="absolute inset-0 px-4 py-2 flex flex-col">
-                  <div class="flex-grow bg-cover bg-no-repeat bg-center mb-2 rounded" :style="{ backgroundImage: `url(${convUrl(image)})` }"></div>
-                  <div class="flex-shrink-0 h-12">
-                    <div class="line-clamp-2 border border-transparent">{{ image.name }}</div>
-                  </div>
-                </div>
-              </div>
+    <div class="flex flex-wrap" style="height: 700px">
+      <div class="p-2 transition w-1/2 sm:w-1/3" v-for="(image, index) in filterList.data" :ref="setRefsItem(index)" :key="image.id">
+        <div
+          class="pt-1/1 relative border-2 rounded-lg border-opacity-50"
+          :class="{ 'shadow-focus': image.selected }"
+          @click="clickImage($event, image, index)"
+          @dblclick="dblclickImage($event, image, index)"
+        >
+          <div class="absolute inset-0 px-4 py-2 flex flex-col">
+            <div class="flex-grow bg-cover bg-no-repeat bg-center mb-2 rounded" :style="{ backgroundImage: `url(${convUrl(image)})` }"></div>
+            <div class="flex-shrink-0 h-12">
+              <div class="line-clamp-2 border border-transparent">{{ image.name }}</div>
             </div>
           </div>
         </div>

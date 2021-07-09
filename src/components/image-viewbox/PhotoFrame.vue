@@ -76,19 +76,7 @@ export default {
   name: 'PhotoFrame',
   props: {
     model: {
-      type: [Array, ListModel],
-      validator: function (value) {
-        const valid = () => {
-          if (value instanceof ListModel) {
-            return value.data.every((m) => m instanceof ImageModel)
-          } else if (value instanceof Array) {
-            return value.every((m) => m instanceof ImageModel)
-          }
-          return false
-        }
-        if (valid()) return true
-        throw new Error('[Component PhotoFrame]: Is model must be a ImageModel collection.')
-      },
+      type: ListModel,
     },
     selecteList: {
       type: Array,
@@ -149,15 +137,7 @@ export default {
 <path d="m176 448c8.836 0 16-7.164 16-16v-208c0-8.836-7.164-16-16-16s-16 7.164-16 16v208c0 8.836 7.163 16 16 16z"/>
 </svg>`
     const selecteList = reactive(props.selecteList)
-    const list = (() => {
-      if (props.model instanceof ListModel) {
-        return reactive(props.model)
-      } else {
-        const result = reactive(new ListModel({ data: [], model: ImageModel }))
-        result.data = props.model
-        return result
-      }
-    })()
+    const list = reactive(props.model)
     const filterList = computed(() => list.data.filter((p) => !p.deleted))
     const refs = {
       create: ref(null),
@@ -393,6 +373,7 @@ export default {
         listModelData: list,
         filterList,
         selecteList,
+        fileLength: props.fileLength,
       },
       refComponent: (component) => {
         return {

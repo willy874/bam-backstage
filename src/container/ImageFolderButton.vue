@@ -26,6 +26,15 @@ export default {
       type: Array,
       default: () => [],
     },
+    fileLength: {
+      type: [Number, String],
+      validator: function (value) {
+        if (Number(value) || Number(value) === 0) {
+          return true
+        }
+      },
+      default: 10,
+    },
   },
   setup(props) {
     const listModelData = isReactive(props.listModelData) ? props.listModelData : reactive(props.listModelData)
@@ -40,9 +49,13 @@ export default {
         })
         const selectedImages = popup.props.selectedImages
         if (selectedImages && selectedImages.length) {
-          selectedImages.forEach((image) => {
-            listModelData.data.push(image)
-          })
+          if (selectedImages.length + listModelData.data.length > props.fileLength) {
+            alert('上傳檔案數量超過上限')
+          } else {
+            selectedImages.forEach((image) => {
+              listModelData.data.push(image)
+            })
+          }
         }
       },
     }

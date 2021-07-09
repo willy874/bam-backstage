@@ -56,11 +56,11 @@
           <div class="flex-grow">
             <div class="flex" v-if="isLinePoint(model)">
               <div class="py-2 mx-2">{{ model.stock }}</div>
-              <button v-if="model.id" class="btn-icon mx-1 text-primary-500 hover:text-primary-600" type="button" @click="listLinePoint">
-                <Icon src="Eye" size="20" />
-              </button>
               <button v-if="model.id" class="btn-icon mx-1 text-primary-500 hover:text-primary-600" type="button" @click="addLinePoint">
-                <Icon src="PointSymbol" size="20" />
+                <Icon src="Add" size="20" />
+              </button>
+              <button v-if="model.id" class="btn-icon mx-1 text-primary-500 hover:text-primary-600" type="button" @click="listLinePoint">
+                <Icon src="List" size="20" />
               </button>
             </div>
             <template v-else>
