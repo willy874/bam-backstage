@@ -78,6 +78,7 @@
             :model-handler="modelHandler"
             file-length="10"
             @loadImage="initPosition"
+            :plugins="photoFramePlugin"
             :class="{ 'is-invalid': model.hasError('images') }"
           />
           <span class="text-red-500 text-xs" v-show="model.hasError('images')">{{ model.hasError('images') }}</span>
@@ -110,6 +111,7 @@ import { isModelError } from '@/utility/model-handle'
 import Swal from '@/utility/alert'
 import { useDialog } from '@/components/dialog/index'
 import DialogLayout from '@/container/DialogLayout.vue'
+import ImageFolderButton from '@/container/ImageFolderButton.vue'
 import { useDatabase } from '@/database/index'
 import LinePointCreateDialog from './LinePointCreateDialog.vue'
 import LinePointListDialog from './LinePointListDialog.vue'
@@ -202,6 +204,7 @@ export default {
       windowShow,
       formTitleMarginTop,
       isLinePoint,
+      photoFramePlugin: [ImageFolderButton],
       errorMessages,
       modelHandler: async (image) => {
         return new ProductImageModel({

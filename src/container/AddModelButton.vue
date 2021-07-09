@@ -7,7 +7,7 @@
 </template>
 
 <script>
-import { reactive, isReactive, markRaw } from 'vue'
+import { reactive, isReactive } from 'vue'
 import { ListModel } from '@/models/index'
 import { useDialog } from '@/components/dialog/index'
 export default {
@@ -29,7 +29,7 @@ export default {
     const listModelData = isReactive(props.listModelData) ? props.listModelData : reactive(props.listModelData)
     return {
       click: async () => {
-        const popup = await dialog.popup(markRaw(detailPage), {
+        const popup = await dialog.popup(detailPage, {
           onBackgroundClick: () => {},
           width: '768px',
         })

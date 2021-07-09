@@ -24,7 +24,7 @@
               <div class="absolute inset-0 px-4 py-2 flex flex-col">
                 <div
                   class="flex-grow bg-cover bg-no-repeat bg-center mb-2 rounded"
-                  @dblclick="dblclickImage($event, image, index)"
+                  @dblclick="openLightBox($event, image, index)"
                   :style="{ backgroundImage: `url(${convUrl(image)})` }"
                 ></div>
                 <div class="flex-shrink-0 h-12" @click="clickStop">
@@ -37,24 +37,63 @@
                     @blur="blurNameText(image)"
                     @change="changeNameText(image)"
                   ></textarea>
-                  <div v-else class="line-clamp-2 border border-transparent" @dblclick="dblclickNameText(image)">{{ image.name }}</div>
+                  <div v-else class="line-clamp-2 border border-transparent" @dblclick="editModel($event, image)">{{ image.name }}</div>
                 </div>
               </div>
-              <div class="absolute top-2 right-2" v-show="focusImage === image">
-                <div
-                  class="
-                    btn-icon
-                    bg-gray-200 bg-opacity-60
-                    hover:bg-opacity-100
-                    text-red-500 text-opacity-60
-                    hover:text-opacity-100
-                    p-1
-                    rounded-full
-                    cursor-pointer
-                  "
-                  @click="deleteImage($event, image, index)"
-                >
-                  <Icon src="Add" class="transform rotate-45" size="24" />
+              <div class="absolute top-1 right-2" v-show="focusImage === image">
+                <div class="p-1">
+                  <div
+                    class="
+                      btn-icon
+                      bg-gray-200 bg-opacity-60
+                      text-red-500 text-opacity-60
+                      hover:bg-opacity-100 hover:text-opacity-100
+                      p-2
+                      w-9
+                      h-9
+                      rounded-full
+                      cursor-pointer
+                    "
+                    @click="deleteImage($event, image, index)"
+                  >
+                    <Icon src="Add" class="transform rotate-45" size="20" />
+                  </div>
+                </div>
+                <div class="p-1">
+                  <div
+                    class="
+                      btn-icon
+                      bg-gray-200 bg-opacity-60
+                      text-blue-500 text-opacity-60
+                      hover:bg-opacity-100 hover:text-opacity-100
+                      p-2
+                      w-9
+                      h-9
+                      rounded-full
+                      cursor-pointer
+                    "
+                    @click="openLightBox($event, image, index)"
+                  >
+                    <Icon src="Eye" size="20" />
+                  </div>
+                </div>
+                <div class="p-1">
+                  <div
+                    class="
+                      btn-icon
+                      bg-gray-200 bg-opacity-60
+                      text-primary-500 text-opacity-60
+                      hover:text-opacity-100 hover:bg-opacity-100
+                      p-2
+                      w-9
+                      h-9
+                      rounded-full
+                      cursor-pointer
+                    "
+                    @click="editModel($event, image, index)"
+                  >
+                    <Icon src="Edit" size="20" />
+                  </div>
                 </div>
               </div>
             </div>
@@ -100,10 +139,17 @@ export default {
         ...listData,
       })
       return list.set({
-        data: listData.data.filter((p) => {
-          const keywordRegExp = props.filterOptions.keyword ? new RegExp(props.filterOptions.keyword) : null
-          if (keywordRegExp) return keywordRegExp.test(p.name)
-          return true
+        data: listData.data.filter((model) => {
+          try {
+            const keywordRegExp = props.filterOptions.keyword ? new RegExp(props.filterOptions.keyword) : false
+            if (keywordRegExp) {
+              return keywordRegExp.test(model.name)
+            } else {
+              return true
+            }
+          } catch (error) {
+            return true
+          }
         }),
       })
     })
@@ -158,6 +204,7 @@ export default {
     }
     return {
       ...refs,
+      openLightBox,
       dragHover,
       focusImage,
       setRefsItem: (index) => {
@@ -196,9 +243,6 @@ export default {
           }
         }
       }, 400),
-      dblclickImage(e, image, index) {
-        openLightBox(e, image, index)
-      },
       clickStop(e) {
         if (!e.ctrlKey) {
           e.stopPropagation()
@@ -226,12 +270,6 @@ export default {
             openLightBox(e, image, index)
         }
       }, 200),
-      dblclickNameText: async (image) => {
-        image.mode = 'edit'
-        await nextTick()
-        image.ref.querySelector('textarea').focus()
-        textValue.value = image.name
-      },
       focusItem(e, image) {
         focusImage.value = image
       },
@@ -281,6 +319,12 @@ export default {
             console.dir(error)
           }
         }
+      },
+      editModel: async (e, image) => {
+        image.mode = 'edit'
+        await nextTick()
+        image.ref.querySelector('textarea').focus()
+        textValue.value = image.name
       },
       blurNameText: (image) => {
         image.mode = 'static'

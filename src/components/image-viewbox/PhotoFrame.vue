@@ -49,10 +49,17 @@
         <input class="photo-frame__container__item__input" type="file" :multiple="fileLength > 1" ref="create" @change="changeFileInput" />
       </div>
     </div>
-    <div class="photo-frame__fixed-bar" v-if="filterList.length">
-      <div class="photo-frame__fixed-bar__plus" v-if="fileLength > filterList.length" @click.stop="clickCreateImage('plus')" v-html="plusIcon"></div>
-      <input class="photo-frame__fixed-bar__plus__input" type="file" multiple="true" ref="plus" @change="changeFileInput" />
-      <div class="photo-frame__fixed-bar__trash" v-if="selecteList.length" v-html="trashIcon" @click.stop="clearAll"></div>
+    <div class="photo-frame__fixed-bar">
+      <div class="photo-frame__fixed-bar__options" v-for="plugin in plugins" :key="plugin.name">
+        <component :is="refComponent(plugin)" v-bind="optionBarProps"></component>
+      </div>
+      <div class="photo-frame__fixed-bar__options" v-show="selecteList.length">
+        <div class="photo-frame__fixed-bar__options__trash" v-html="trashIcon" @click.stop="clearAll"></div>
+      </div>
+      <div class="photo-frame__fixed-bar__options" v-show="fileLength > filterList.length">
+        <input class="photo-frame__fixed-bar__options__plus__input" type="file" multiple="true" ref="plus" @change="changeFileInput" />
+        <div class="photo-frame__fixed-bar__options__plus" @click.stop="clickCreateImage('plus')" v-html="plusIcon"></div>
+      </div>
     </div>
   </div>
 </template>
@@ -122,6 +129,10 @@ export default {
     modelHandler: {
       type: Function,
       default: async (model) => model,
+    },
+    plugins: {
+      type: Array,
+      default: () => [],
     },
   },
   setup(props, context) {
@@ -230,6 +241,7 @@ export default {
             type: f.type,
             sort: 99999,
             image_blob: fileList[index],
+            mode: 'create',
             edited: true,
           })
           return await props.modelHandler(image)
@@ -376,6 +388,16 @@ export default {
         })
         dragHover.value = false
         image.dragHover = true
+      },
+      optionBarProps: {
+        listModelData: list,
+        filterList,
+        selecteList,
+      },
+      refComponent: (component) => {
+        return {
+          ...component,
+        }
       },
     }
   },

@@ -10,10 +10,10 @@
     border: 1px solid #007bff;
   }
   &--is-invalid {
-    border: 1px solid #EF4444;
+    border: 1px solid #ef4444;
   }
   &.is-invalid {
-    border: 1px solid #EF4444;
+    border: 1px solid #ef4444;
   }
   &__container {
     display: flex;
@@ -94,21 +94,20 @@
     right: 0;
     bottom: 0.25rem;
     display: flex;
-    &__trash {
+    &__options {
       width: 2rem;
       height: 2rem;
       margin: 0 0.25rem;
-      color: #dc3545;
-      cursor: pointer;
-    }
-    &__plus {
-      width: 2rem;
-      height: 2rem;
-      margin: 0 0.25rem;
-      color: #28a745;
-      cursor: pointer;
-      &__input {
-        display: none;
+      &__trash {
+        color: #dc3545;
+        cursor: pointer;
+      }
+      &__plus {
+        color: #28a745;
+        cursor: pointer;
+        &__input {
+          display: none;
+        }
       }
     }
   }

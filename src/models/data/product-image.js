@@ -12,7 +12,6 @@ export default class ProductImageModel extends ImageModel {
     this.id = entity.id || 0
     this.product_id = entity.product_id || 0
     this.image_id = entity.image_id || ''
-    this.api = entity.api || 'product-image'
     this.primaryKey = entity.primaryKey || 'image_id'
   }
 }

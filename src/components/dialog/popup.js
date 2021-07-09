@@ -1,5 +1,9 @@
-import { markRaw } from 'vue'
-import { v4 as uuidv4 } from 'uuid'
+import {
+  markRaw
+} from 'vue'
+import {
+  v4 as uuidv4
+} from 'uuid'
 
 /**
  * @property {Number} id
@@ -30,8 +34,7 @@ export default class Popup {
       (() => {
         this.close()
       })
-    this.props = Object.assign(
-      {
+    this.props = Object.assign({
         id: this.id,
       },
       entity.props
@@ -42,10 +45,10 @@ export default class Popup {
     Object.keys(options).forEach((key) => {
       this[key] = options[key]
     })
-    this.dialog.popup(this)
+    return this.dialog.popup(this)
   }
 
   close() {
-    this.dialog.closePopup(this.id)
+    return this.dialog.closePopup(this.id)
   }
 }

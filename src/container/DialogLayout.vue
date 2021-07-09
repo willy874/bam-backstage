@@ -1,5 +1,5 @@
 <template>
-  <div data-name="DialogLayout" class="bg-white rounded-lg shadow-2xl">
+  <div data-name="DialogLayout" class="bg-white rounded-lg shadow-2xl my-3">
     <header
       ref="header"
       class="flex justify-between items-center border-b bg-primary-500 p-2"
@@ -20,8 +20,11 @@
         </button>
       </div>
     </header>
+    <nav v-if="$slots.navbar" v-show="windowShow">
+      <slot name="navbar"></slot>
+    </nav>
     <main ref="main" class="p-1" v-show="windowShow">
-      <div class="scroll-bar px-4 py-3" style="max-height: calc(100vh - 140px)">
+      <div class="scroll-bar px-4 py-3" :style="{ maxHeight: 'calc(100vh - 140px)', ...mainStyle }">
         <slot name="default"></slot>
       </div>
     </main>
@@ -37,7 +40,7 @@ import throttle from 'lodash/throttle'
 
 export default {
   name: 'DialogLayout',
-  props: ['drag', 'touch', 'props', 'id', 'popupElement', 'dialog', 'initPosition', 'title'],
+  props: ['drag', 'touch', 'props', 'id', 'popupElement', 'dialog', 'initPosition', 'title', 'mainStyle'],
   setup(props) {
     const windowShow = ref(true)
     return {
