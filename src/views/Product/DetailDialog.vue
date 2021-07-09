@@ -117,7 +117,7 @@ import LinePointCreateDialog from './LinePointCreateDialog.vue'
 import LinePointListDialog from './LinePointListDialog.vue'
 
 export default {
-  name: 'DetailDialog',
+  name: 'ProductDetailDialog',
   props: ['drag', 'touch', 'props', 'id', 'popupElement', 'dialog', 'initPosition'],
   components: {
     DialogLayout,
@@ -207,8 +207,21 @@ export default {
       photoFramePlugin: [ImageFolderButton],
       errorMessages,
       modelHandler: async (image) => {
+        // try {
+        //   const res = await image.createData()
+        //   if (res.isAxiosError) {
+        //     throw res.message
+        //   }
+        // } catch (error) {
+        //   if (process.env.NODE_ENV === 'development') {
+        //     console.log('%c[Product DetailDialog] Error: modelHandler > createData', 'color: #f00;background: #ff000011;padding: 2px 6px;border-radius: 4px;')
+        //     console.dir(error)
+        //   }
+        // }
         return new ProductImageModel({
           ...image,
+          // id: res.data,
+          // image_id: res.data,
           image_id: image.id,
         })
       },

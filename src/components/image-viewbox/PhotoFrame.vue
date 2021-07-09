@@ -61,6 +61,9 @@
         <div class="photo-frame__fixed-bar__options__plus" @click.stop="clickCreateImage('plus')" v-html="plusIcon"></div>
       </div>
     </div>
+    <div v-if="listData.loading" class="photo-frame__loading">
+      <div class="photo-frame__loading__animation"></div>
+    </div>
   </div>
 </template>
 
@@ -207,6 +210,7 @@ export default {
       }
       // 建立 ImageModel
       resetSelect(0)
+      list.loading = true
       Promise.all(
         fileList.map(async (f, index) => {
           const filename = new FileName(f.name)
@@ -226,26 +230,35 @@ export default {
           })
           return await props.modelHandler(image)
         })
-      ).then((allResponse) => {
-        allResponse.forEach((image) => {
-          if (fileList.length === 1 && (imageIndex || imageIndex === 0)) {
-            filterList.value[imageIndex].set(image)
-          } else {
-            list.data.push(image)
-          }
-          const reader = new FileReader()
-          reader.onload = async (e) => {
-            image.image_base64 = e.target.result
-            await nextTick()
-            context.emit('loadImage', allResponse)
-          }
-          reader.readAsDataURL(image.image_blob)
+      )
+        .then((allResponse) => {
+          list.loading = false
+          allResponse.forEach((image) => {
+            if (fileList.length === 1 && (imageIndex || imageIndex === 0)) {
+              filterList.value[imageIndex].set(image)
+            } else {
+              list.data.push(image)
+            }
+            const reader = new FileReader()
+            reader.onload = async (e) => {
+              image.image_base64 = e.target.result
+              await nextTick()
+              context.emit('loadImage', allResponse)
+            }
+            reader.readAsDataURL(image.image_blob)
+          })
+          filterList.value.forEach((image, index) => {
+            image.sort = index
+          })
+          list.data.sort((a, b) => a.sort - b.sort)
         })
-        filterList.value.forEach((image, index) => {
-          image.sort = index
+        .catch((error) => {
+          list.loading = false
+          if (process.env.NODE_ENV === 'development') {
+            console.log('%c[Component PhotoFrame] Error: imageUpload', 'color: #f00;background: #ff000011;padding: 2px 6px;border-radius: 4px;')
+            console.dir(error)
+          }
         })
-        list.data.sort((a, b) => a.sort - b.sort)
-      })
     }
     const columnWidth = ref('50%')
     const checkWidth = () => {

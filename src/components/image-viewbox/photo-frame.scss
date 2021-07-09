@@ -111,4 +111,34 @@
       }
     }
   }
+
+  &__loading {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(0, 0, 0, 0.1);
+    border-radius: 0.5rem;
+    &__animation {
+      width: 2rem;
+      height: 2rem;
+      border-color: transparent rgb(23, 162, 184) rgb(23, 162, 184);
+      border-width: 4px;
+      border-radius: 50%;
+      animation: rotate 1s linear infinite;
+    }
+  }
+}
+
+@keyframes rotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }

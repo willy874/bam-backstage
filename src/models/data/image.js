@@ -93,7 +93,7 @@ export default class ImageModel extends FileModel {
           handleApiConfig({
             default: {
               method: 'POST',
-              url: `${this.api}/${this[this.primaryKey]}/upload`,
+              url: `${this.api}/upload`,
             },
             model: this,
             requesHandler: () => {
