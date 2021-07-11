@@ -8,11 +8,13 @@
 
 <script>
 import { reactive, isReactive, computed } from 'vue'
-import { Observable } from 'bam-utility-plugins'
-import { ListModel, ImageAssetModel } from '@/models/index'
-import Swal from '@/utility/alert'
-import { useDialog } from '@/components/dialog/index'
-import LoadingDialog from './LoadingDialog.vue'
+// import { Observable } from 'bam-utility-plugins'
+// import { ListModel, ImageAssetModel } from '@/models/index'
+// import Swal from '@/utility/alert'
+// import { useDialog } from '@/components/dialog/index'
+// import LoadingDialog from './LoadingDialog.vue'
+import { ListModel } from '@/models/index'
+import { deleteAllModel } from '@/utility/model-handle'
 
 export default {
   name: 'DeleteAllModelButton',
@@ -30,65 +32,16 @@ export default {
   setup(props) {
     const listModelData = isReactive(props.listModelData) ? props.listModelData : reactive(props.listModelData)
     const selectList = computed(() => listModelData.data.filter((p) => p.selected))
-    const checkAllowDelete = (list) => {
-      if (listModelData.modelType === ImageAssetModel) {
-        if (selectList.value.some((image) => image.tags.some((p) => p.name === 'System'))) {
-          return Swal.error({ title: '選取圖片中包含系統圖片' })
-        }
-      }
-    }
     return {
       selectList,
       click: async () => {
-        const dialog = useDialog()
-        if (checkAllowDelete()) {
-          return
-        }
-        const swalResult = await Swal.delete(selectList.value.length)
-        if (swalResult.isConfirmed) {
-          const count = reactive({
-            value: selectList.value.length,
+        deleteAllModel(listModelData)
+          .then((res) => {
+            if (props.deleteCallback) props.deleteCallback(res)
           })
-          const deleteIndex = reactive({
-            value: 0,
+          .catch((err) => {
+            if (props.deleteCallback) props.deleteCallback(err)
           })
-          const deleteList = []
-          const observable = new Observable((subscriber) => {
-            selectList.value.forEach((model) => {
-              subscriber.next(async () => {
-                const res = await model.deleteData()
-                if (res.isAxiosError) {
-                  throw res.message
-                }
-                deleteIndex.value++
-                const indexOf = listModelData.data.map((m) => m.id).indexOf(model.id)
-                deleteList.concat(listModelData.data.splice(indexOf, 1))
-              })
-            })
-            subscriber.error(async (error) => {
-              if (process.env.NODE_ENV === 'development') {
-                console.log('%c[DeleteAllModelButton] Error: deleteData', 'color: #f00;background: #ff000011;padding: 2px 6px;border-radius: 4px;')
-                console.dir(error)
-              }
-              deleteIndex.value = count.value
-              await Swal.error({ title: '刪除過程發生錯誤' })
-              if (props.deleteCallback) props.deleteCallback(error)
-            })
-            subscriber.complete(async () => {
-              await Swal.success({ title: '資料刪除成功' })
-              if (props.deleteCallback) props.deleteCallback(deleteList)
-            })
-          })
-          observable.run()
-          await dialog.popup(LoadingDialog, {
-            width: '100%',
-            props: {
-              count,
-              index: deleteIndex,
-              title: '刪除中...',
-            },
-          })
-        }
       },
     }
   },

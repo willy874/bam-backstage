@@ -15,12 +15,28 @@
 </template>
 
 <script>
-import { watch } from 'vue'
+import { watch, isReactive } from 'vue'
 
 export default {
   name: 'DialogLayout',
   props: ['drag', 'touch', 'props', 'id', 'popupElement', 'dialog', 'initPosition'],
   setup(props) {
+    if (!isReactive(props.props.index)) {
+      if (process.env.NODE_ENV === 'development') {
+        console.log(
+          '%c[LoadingDialog] Error: The "index" must be a responsive parameter.',
+          'color: #f00;background: #ff000011;padding: 2px 6px;border-radius: 4px;'
+        )
+      }
+    }
+    if (!isReactive(props.props.count)) {
+      if (process.env.NODE_ENV === 'development') {
+        console.log(
+          '%c[LoadingDialog] Error: The "count" must be a responsive parameter.',
+          'color: #f00;background: #ff000011;padding: 2px 6px;border-radius: 4px;'
+        )
+      }
+    }
     watch(
       () => props.props.index.value,
       (value) => {

@@ -112,6 +112,7 @@ import defaultImage from '@/components/image-viewbox/default-image.jpg'
 import { useDialog } from '@/components/dialog/index'
 import LightBoxDialog from '@/container/LightBoxDialog.vue'
 import Swal from '@/utility/alert'
+import { deleteAllModel } from '@/utility/model-handle'
 
 export default {
   name: 'AssetCardTemp',
@@ -273,7 +274,11 @@ export default {
             if (filterList.value.data.length - 1 !== index) filterList.value.data[index + 1].ref.querySelector('[tabindex]').focus()
             break
           case 'Delete':
-            deleteImage(e, image, index)
+            if (listData.data.find((p) => p.selected)) {
+              deleteAllModel(listData)
+            } else {
+              deleteImage(e, image, index)
+            }
             break
           case 'Enter':
             openLightBox(e, image, index)
