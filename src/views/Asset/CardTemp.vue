@@ -41,7 +41,7 @@
                 </div>
               </div>
               <div class="absolute top-1 right-2" v-show="focusImage === image">
-                <div class="p-1">
+                <div class="p-1" v-if="!isSystemImage(image)">
                   <div
                     class="
                       btn-icon
@@ -202,6 +202,27 @@ export default {
       filterList.value.data[popup.props.index].ref.querySelector('[tabindex]').focus()
       return popup
     }
+    const isSystemImage = (image) => image.tags.find((p) => p.name === 'System')
+    const deleteImage = throttle(async (e, image, index) => {
+      if (isSystemImage(image)) {
+        return Swal.error({ title: '系統圖片無法被刪除' })
+      }
+      const swalResult = await Swal.delete()
+      if (swalResult.isConfirmed) {
+        try {
+          const res = await image.deleteData()
+          if (res.isAxiosError) {
+            throw res.message
+          }
+          listData.data.splice(index, 1)
+        } catch (error) {
+          if (process.env.NODE_ENV === 'development') {
+            console.log('%c[AssetCardTemp] Error: deleteImage', 'color: #f00;background: #ff000011;padding: 2px 6px;border-radius: 4px;')
+            console.dir(error)
+          }
+        }
+      }
+    }, 400)
     return {
       ...refs,
       openLightBox,
@@ -215,6 +236,7 @@ export default {
       listData,
       filterList,
       columnWidth,
+      isSystemImage,
       clickItem: throttle((e, image, index) => {
         if (e.ctrlKey) {
           image.selected = !image.selected
@@ -226,23 +248,7 @@ export default {
           }
         }
       }, 200),
-      deleteImage: throttle(async (e, image, index) => {
-        const swalResult = await Swal.delete()
-        if (swalResult.isConfirmed) {
-          try {
-            const res = await image.deleteData()
-            if (res.isAxiosError) {
-              throw res.message
-            }
-            listData.data.splice(index, 1)
-          } catch (error) {
-            if (process.env.NODE_ENV === 'development') {
-              console.log('%c[AssetCardTemp] Error: deleteImage', 'color: #f00;background: #ff000011;padding: 2px 6px;border-radius: 4px;')
-              console.dir(error)
-            }
-          }
-        }
-      }, 400),
+      deleteImage,
       clickStop(e) {
         if (!e.ctrlKey) {
           e.stopPropagation()
@@ -265,6 +271,9 @@ export default {
             break
           case 'ArrowRight':
             if (filterList.value.data.length - 1 !== index) filterList.value.data[index + 1].ref.querySelector('[tabindex]').focus()
+            break
+          case 'Delete':
+            deleteImage(e, image, index)
             break
           case 'Enter':
             openLightBox(e, image, index)

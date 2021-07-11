@@ -9,7 +9,7 @@
 <script>
 import { reactive, isReactive, computed } from 'vue'
 import { Observable } from 'bam-utility-plugins'
-import { ListModel } from '@/models/index'
+import { ListModel, ImageAssetModel } from '@/models/index'
 import Swal from '@/utility/alert'
 import { useDialog } from '@/components/dialog/index'
 import LoadingDialog from './LoadingDialog.vue'
@@ -30,10 +30,20 @@ export default {
   setup(props) {
     const listModelData = isReactive(props.listModelData) ? props.listModelData : reactive(props.listModelData)
     const selectList = computed(() => listModelData.data.filter((p) => p.selected))
+    const checkAllowDelete = (list) => {
+      if (listModelData.modelType === ImageAssetModel) {
+        if (selectList.value.some((image) => image.tags.some((p) => p.name === 'System'))) {
+          return Swal.error({ title: '選取圖片中包含系統圖片' })
+        }
+      }
+    }
     return {
       selectList,
       click: async () => {
         const dialog = useDialog()
+        if (checkAllowDelete()) {
+          return
+        }
         const swalResult = await Swal.delete(selectList.value.length)
         if (swalResult.isConfirmed) {
           const count = reactive({

@@ -104,9 +104,7 @@ export default {
       h(type.value === 'textarea' ? 'textarea' : 'input', {
         ...context.attrs,
         ref: refsElement.input,
-        class: cx(`${classPrefix}__input`, {
-          [`${classPrefix}--invalid`]: isError.value,
-        }),
+        class: cx(`${classPrefix}__input`),
         style: props.style,
         onInput: (e) => {
           modelValue.value = e.target.value
@@ -121,15 +119,24 @@ export default {
         type: type.value === 'textarea' ? false : type.value,
       })
     return () => {
-      return h('div', { class: cx(`${classPrefix}`, `${classPrefix}--${props.template}`) }, [
-        renderAppend('prepend'),
-        h('div', { class: cx(`${classPrefix}__container`) }, [
-          renderAppend('prefix'),
-          h('div', { class: cx(`${classPrefix}__wrapper`) }, [renderInput()]),
-          renderAppend('suffix'),
-        ]),
-        renderAppend('append'),
-      ])
+      return h(
+        'div',
+        {
+          class: cx(`${classPrefix}`, `${classPrefix}--${props.template}`, {
+            [`${classPrefix}--disabled`]: context.attrs.disabled,
+            [`${classPrefix}--invalid`]: isError.value,
+          }),
+        },
+        [
+          renderAppend('prepend'),
+          h('div', { class: cx(`${classPrefix}__container`) }, [
+            renderAppend('prefix'),
+            h('div', { class: cx(`${classPrefix}__wrapper`) }, [renderInput()]),
+            renderAppend('suffix'),
+          ]),
+          renderAppend('append'),
+        ]
+      )
     }
   },
 }

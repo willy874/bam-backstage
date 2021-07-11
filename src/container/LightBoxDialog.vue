@@ -73,6 +73,9 @@ export default {
         case 'ArrowRight':
           nextPhoto()
           break
+        case 'Escape':
+          close()
+          break
         case 'Enter':
           close()
       }

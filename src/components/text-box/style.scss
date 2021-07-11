@@ -56,22 +56,6 @@
     border-radius: 0.25rem;
     transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
     appearance: none;
-    &.input-box--invalid {
-      --input-box-text-color: var(--input-box-danger);
-      --input-box-border-color: var(--input-box-danger);
-      --input-box-border-color-focus: rgba(220, 53, 69, 0.25);
-    }
-    &.input-box--success {
-      --input-box-text-color: var(--input-box-success);
-      --input-box-border-color: var(--input-box-success);
-      --input-box-border-color-focus: rgba(25, 135, 84, 0.25);
-    }
-    &.input-box--disabled {
-      opacity: 0.4;
-
-      --input-box-bg-color: var(--input-box-disabled);
-      --input-box-border-color: var(--input-box-disabled);
-    }
     &::placeholder {
       color: var(--input-box-placeholder-color);
     }
@@ -93,5 +77,22 @@
       box-shadow: 0 0 0.4rem 0 var(--input-box-border-color-focus);
     }
     @include slot-class;
+  }
+  &.input-box--invalid {
+    --input-box-text-color: var(--input-box-danger);
+    --input-box-border-color: var(--input-box-danger);
+    --input-box-border-color-focus: rgba(220, 53, 69, 0.25);
+  }
+  &.input-box--success {
+    --input-box-text-color: var(--input-box-success);
+    --input-box-border-color: var(--input-box-success);
+    --input-box-border-color-focus: rgba(25, 135, 84, 0.25);
+  }
+  &.input-box--disabled {
+    opacity: 0.4;
+
+    --input-box-text-color: var(--input-box-disabled);
+    --input-box-border-color: var(--input-box-disabled);
+    --input-box-border-color-hover: var(--input-box-disabled);
   }
 }

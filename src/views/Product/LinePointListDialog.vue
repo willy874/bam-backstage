@@ -54,19 +54,19 @@ export default {
           align: 'center',
         },
       ],
-      clickTr: async (item) => {
+      clickTr: async (item, index, { listData }) => {
         const dialog = props.dialog
         const thisPopup = dialog.findPopup(props.id)
         const onBgClickClose = thisPopup.onBackgroundClick
         thisPopup.onBackgroundClick = () => {}
-        await dialog.popup(LinePointDetailDialog, {
-          onBackgroundClick: () => {},
-          width: '768px',
+        const popup = await dialog.popup(LinePointDetailDialog, {
+          width: '620px',
           props: {
             model: item,
           },
         })
         thisPopup.onBackgroundClick = onBgClickClose
+        listData.data.find((p) => p.id === popup.props.model.id).set(popup.props.model)
       },
       // filter(list) {
       //   return list.setData(list.data.filter((p) => p.product_id === productId))
