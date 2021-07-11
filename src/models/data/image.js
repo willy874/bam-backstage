@@ -10,9 +10,6 @@ import {
 import {
   useImageCache
 } from '@/components/image-viewbox'
-import {
-  awaitTime
-} from '@/utility/async'
 
 /**
  * @extends FileModel

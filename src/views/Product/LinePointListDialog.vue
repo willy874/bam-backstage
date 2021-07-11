@@ -1,7 +1,7 @@
 <template>
   <DialogLayout v-bind="$props" title="Line Point 列表">
     <div>
-      <DataTable v-bind="dataTableProps" style="height: calc(100vh - 160px)"></DataTable>
+      <DataTable v-bind="dataTableProps" style="height: calc(100vh - 180px)"></DataTable>
     </div>
     <template #footer>
       <div class="flex justify-between items-center rounded-b-lg border-t p-2">
@@ -19,6 +19,7 @@ import { reactive, onMounted } from 'vue'
 import dayjs from 'dayjs'
 import throttle from 'lodash/throttle'
 import DialogLayout from '@/container/DialogLayout.vue'
+import LinePointDetailDialog from './LinePointDetailDialog.vue'
 
 export default {
   name: 'LinePointListDialog',
@@ -37,11 +38,39 @@ export default {
         { title: 'No.', field: (item, index) => index + 1, width: '60px', align: 'center' },
         { title: '建立日期', field: (item) => dayjs(item.created_at).format('YYYY/MM/DD HH:mm:ss'), width: '200px', align: 'center' },
         { title: '序號', field: 'number', width: 1, columnStyle: { minWidth: '180px' }, bodyStyle: { padding: '0 0.5rem' } },
-        { title: '狀態', field: (item) => (item.state ? '已使用' : '未使用'), width: '60px', align: 'center' },
+        {
+          title: '狀態',
+          field: (item) => {
+            switch (item.state) {
+              case 0:
+                return '<span style="color: rgb(59, 130, 246)">下架</span>'
+              case 1:
+                return '<span style="color: rgb(52, 211, 153)">上架</span>'
+              case 2:
+                return '<span style="color: rgb(156, 163, 175)">已使用</span>'
+            }
+          },
+          width: '60px',
+          align: 'center',
+        },
       ],
-      filter(list) {
-        return list.setData(list.data.filter((p) => p.product_id === productId))
+      clickTr: async (item) => {
+        const dialog = props.dialog
+        const thisPopup = dialog.findPopup(props.id)
+        const onBgClickClose = thisPopup.onBackgroundClick
+        thisPopup.onBackgroundClick = () => {}
+        await dialog.popup(LinePointDetailDialog, {
+          onBackgroundClick: () => {},
+          width: '768px',
+          props: {
+            model: item,
+          },
+        })
+        thisPopup.onBackgroundClick = onBgClickClose
       },
+      // filter(list) {
+      //   return list.setData(list.data.filter((p) => p.product_id === productId))
+      // },
       model,
     })
     return {

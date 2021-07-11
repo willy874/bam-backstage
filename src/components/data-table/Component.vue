@@ -246,9 +246,9 @@ export default {
       },
       refComponent: (component) => {
         return {
-          ...component
+          ...component,
         }
-      }
+      },
     }
   },
 }
@@ -411,12 +411,13 @@ export default {
 
 .datatable__table-foot {
   display: flex;
-  flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
   padding: 0.25rem 1rem;
+  overflow: auto;
   &__left-text {
     display: flex;
+    flex-shrink: 0;
     align-items: center;
     padding-top: 0.25rem;
     padding-right: 1rem;
@@ -425,6 +426,7 @@ export default {
   }
   &__right-text {
     display: flex;
+    flex-shrink: 0;
     flex-wrap: wrap;
     align-items: center;
     &__per-page {

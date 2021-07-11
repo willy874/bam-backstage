@@ -41,13 +41,15 @@
         <div class="py-2 px-2 xs:w-1/2 w-full flex">
           <div class="flex-shrink-0 w-20" :style="{ marginTop: `${formTitleMarginTop}px` }">產品類型</div>
           <div class="flex-grow">
-            <div class="p-2">
-              <select v-model="model.category_id">
-                <option v-for="productCategory in ProductCategories.data" :key="productCategory.id" :value="productCategory.id">
-                  {{ productCategory.name }}
-                </option>
-              </select>
-            </div>
+            <SelectDrop
+              :model="model"
+              :close-element="popupElement"
+              field="category_id"
+              placeholder="請選擇類型"
+              :options="ProductCategories"
+              optionValue="id"
+              optionName="name"
+            ></SelectDrop>
             <span class="text-red-500 text-xs" v-show="model.hasError('category_id')">{{ model.hasError('category_id') }}</span>
           </div>
         </div>
@@ -206,23 +208,29 @@ export default {
       isLinePoint,
       photoFramePlugin: [ImageFolderButton],
       errorMessages,
+      categoryHandle: (value) => {},
       modelHandler: async (image) => {
         try {
           const res = await image.createData()
           if (res.isAxiosError) {
             throw res.message
           }
+          return new ProductImageModel({
+            ...image,
+            id: res.data.id,
+            image_id: res.data.id,
+          })
         } catch (error) {
           if (process.env.NODE_ENV === 'development') {
             console.log('%c[Product DetailDialog] Error: modelHandler > createData', 'color: #f00;background: #ff000011;padding: 2px 6px;border-radius: 4px;')
             console.dir(error)
           }
+          Swal.error({
+            icon: 'error',
+            title: '圖片上傳失敗',
+          })
+          return null
         }
-        return new ProductImageModel({
-          ...image,
-          id: res.data.id,
-          image_id: res.data.id,
-        })
       },
       close: throttle(() => {
         props.dialog.closePopup(props.id)
@@ -266,7 +274,10 @@ export default {
                   state: model.state,
                 }
                 if (model.images.some((img) => img.edited)) {
-                  result.images = model.images.filter((p) => !p.deleted).map((p) => p.id)
+                  model.images.forEach((img) => {
+                    if (img.image_id === '') img.image_id = img.id
+                  })
+                  result.images = model.images.filter((p) => !p.deleted).map((p) => p.image_id)
                 }
                 if (!isLinePoint(model)) result.stock = model.stock
                 return result

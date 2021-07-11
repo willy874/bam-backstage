@@ -1,15 +1,15 @@
 @mixin slot-class {
   .input-box__prefix svg {
-    color: var(--input-box-primary);
+    color: var(--select-box-primary);
   }
   .input-box__suffix svg {
-    color: var(--input-box-primary);
+    color: var(--select-box-primary);
   }
   .input-box__prepend svg {
-    color: var(--input-box-primary);
+    color: var(--select-box-primary);
   }
   .input-box__append svg {
-    color: var(--input-box-primary);
+    color: var(--select-box-primary);
   }
 }
 

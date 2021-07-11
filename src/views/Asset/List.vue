@@ -20,7 +20,16 @@
     <div class="absolute inset-0 flex flex-col py-2 px-4">
       <CardTemp v-bind="tempProps"></CardTemp>
     </div>
-    <template #footer></template>
+    <template #footer>
+      <div>
+        <!-- <SelectDrop
+          :model="{ text: '' }"
+          field="text"
+          placeholder="請選擇"
+          :options="['測試', '測試文字', '測試很多字', '測試非常多字', '測試超級的多字']"
+        ></SelectDrop> -->
+      </div>
+    </template>
   </PageLayout>
 </template>
 

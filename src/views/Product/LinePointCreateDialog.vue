@@ -10,6 +10,16 @@
           <TextBox type="text" :model="model" field="number" placeholder="請輸入序號" />
           <span class="text-red-500 text-xs" v-show="model.hasError('number')">{{ model.hasError('number') }}</span>
         </div>
+        <div class="flex flex-shrink-0 px-2 items-start">
+          <div v-if="model.state === 1" class="flex relative border border-green-500 text-green-500 rounded hover:text-white hover:bg-green-500 py-1">
+            <input id="female" class="hidden" v-model="model.state" type="radio" name="gender" :value="0" />
+            <label for="female" class="inline-block px-2 stretched-link">上架</label>
+          </div>
+          <div v-if="model.state === 0" class="flex relative border border-blue-500 text-blue-500 rounded hover:text-white hover:bg-blue-500 py-1">
+            <input id="male" class="hidden" v-model="model.state" type="radio" name="gender" :value="1" />
+            <label for="male" class="inline-block px-2 stretched-link">下架</label>
+          </div>
+        </div>
         <div class="flex-shrink-0 px-2">
           <button tabindex="-1" type="button" class="btn-icon text-red-500 hover:text-red-600" @click="deleteModel(index)">
             <Icon src="Trash" size="24" />
@@ -67,7 +77,7 @@ export default {
           new LinePointModel({
             id: uuid(),
             product_id: props.props.model.id,
-            state: 1,
+            state: 0,
           }),
         ],
       })

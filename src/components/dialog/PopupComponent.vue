@@ -96,9 +96,8 @@ export default {
           h(PopupView.value, {
             id: popup.id,
             dialog: dialog,
-            popupElement: popupItem.value,
+            popupElement: popupItem,
             props: popup.props,
-            onClick: (e) => e.stopPropagation(),
             initPosition: popup.initPosition,
             drag: (e) => {
               e.dataTransfer.setDragImage(new Image(), 0, 0)

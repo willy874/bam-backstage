@@ -120,34 +120,17 @@ export default {
         value: modelValue.value,
         type: type.value === 'textarea' ? false : type.value,
       })
-    return () =>
-      h(
-        'div',
-        {
-          class: cx(`${classPrefix}`, `${classPrefix}--${props.template}`),
-        },
-        [
-          renderAppend('prepend'),
-          h(
-            'div',
-            {
-              class: cx(`${classPrefix}__container`),
-            },
-            [
-              renderAppend('prefix'),
-              h(
-                'div',
-                {
-                  class: cx(`${classPrefix}__wrapper`),
-                },
-                [renderInput()]
-              ),
-              renderAppend('suffix'),
-            ]
-          ),
-          renderAppend('append'),
-        ]
-      )
+    return () => {
+      return h('div', { class: cx(`${classPrefix}`, `${classPrefix}--${props.template}`) }, [
+        renderAppend('prepend'),
+        h('div', { class: cx(`${classPrefix}__container`) }, [
+          renderAppend('prefix'),
+          h('div', { class: cx(`${classPrefix}__wrapper`) }, [renderInput()]),
+          renderAppend('suffix'),
+        ]),
+        renderAppend('append'),
+      ])
+    }
   },
 }
 </script>

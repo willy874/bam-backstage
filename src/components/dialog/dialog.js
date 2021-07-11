@@ -12,7 +12,10 @@ export default class Dialog {
 
   popup(view, options = {}) {
     document.body.style.overflow = 'hidden'
-    const popup = view instanceof Popup ? view : new Popup({ ...options, view })
+    const popup = view instanceof Popup ? view : new Popup({
+      ...options,
+      view
+    })
     popup.dialog = this
     this.popups.push(popup)
     return new Promise((resolve) => {
@@ -22,30 +25,39 @@ export default class Dialog {
     })
   }
 
+  findPopup(id) {
+    if (typeof id === 'number') {
+      return this.popups[id]
+    }
+    if (typeof id === 'string') {
+      return this.popups.find(popup => popup.id === id)
+    }
+  }
+
   closePopup(id) {
     return new Promise((resolve) => {
       Promise.all(
         this.popups
-          .filter((popup, index) => {
-            if (typeof id === 'number') {
-              return id === index
-            } else if (typeof id === 'string') {
-              return popup.id === id
-            } else {
-              return true
+        .filter((popup, index) => {
+          if (typeof id === 'number') {
+            return id === index
+          } else if (typeof id === 'string') {
+            return popup.id === id
+          } else {
+            return true
+          }
+        })
+        .map((popup) => {
+          return new Promise((resolve) => {
+            popup.ref.style.opacity = '0'
+            const end = () => {
+              popup.ref.removeEventListener('transitionend', end)
+              if (popup.onClose) popup.onClose(popup)
+              resolve()
             }
+            popup.ref.addEventListener('transitionend', end)
           })
-          .map((popup) => {
-            return new Promise((resolve) => {
-              popup.ref.style.opacity = '0'
-              const end = () => {
-                popup.ref.removeEventListener('transitionend', end)
-                if (popup.onClose) popup.onClose(popup)
-                resolve()
-              }
-              popup.ref.addEventListener('transitionend', end)
-            })
-          })
+        })
       ).then(() => {
         if (typeof id === 'number') {
           resolve(this.popups.splice(id, 1))

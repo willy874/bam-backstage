@@ -233,20 +233,22 @@ export default {
       )
         .then((allResponse) => {
           list.loading = false
-          allResponse.forEach((image) => {
-            if (fileList.length === 1 && (imageIndex || imageIndex === 0)) {
-              filterList.value[imageIndex].set(image)
-            } else {
-              list.data.push(image)
-            }
-            const reader = new FileReader()
-            reader.onload = async (e) => {
-              image.image_base64 = e.target.result
-              await nextTick()
-              context.emit('loadImage', allResponse)
-            }
-            reader.readAsDataURL(image.image_blob)
-          })
+          allResponse
+            .filter((p) => p)
+            .forEach((image) => {
+              const reader = new FileReader()
+              reader.onload = async (e) => {
+                image.image_base64 = e.target.result
+                if (fileList.length === 1 && (imageIndex || imageIndex === 0)) {
+                  filterList.value[imageIndex].set(image)
+                } else {
+                  list.data.push(image)
+                }
+                await nextTick()
+                context.emit('loadImage', allResponse)
+              }
+              reader.readAsDataURL(image.image_blob)
+            })
           filterList.value.forEach((image, index) => {
             image.sort = index
           })

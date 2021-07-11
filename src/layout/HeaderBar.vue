@@ -2,7 +2,14 @@
   <div class="h-full flex items-center relative">
     <div class="px-3">
       <div class="flex justify-end" :style="{ width: `${barWidth}px` }">
-        <div></div>
+        <div>
+          <!-- <SelectDrop
+            :model="{ text: '' }"
+            field="text"
+            placeholder="請選擇"
+            :options="['測試', '測試文字', '測試很多字', '測試非常多字', '測試超級的多字']"
+          ></SelectDrop> -->
+        </div>
       </div>
     </div>
     <div class="px-3" @click.stop>

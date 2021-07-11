@@ -1,71 +1,6 @@
 <template>
-  <DialogLayout v-bind="$props" title="會員資料">
+  <DialogLayout v-bind="$props" title="Line Point 資料">
     <form @submit="submit">
-      <div class="flex -mx-2 xs:-mx-4">
-        <div class="py-2 px-2 xs:px-4 w-1/3 xs:w-40">
-          <div class="pt-1/1 rounded-full bg-cover bg-center" v-if="model.image_url" :style="{ backgroundImage: `url(${model.image_url})` }"></div>
-          <div class="rounded-full overflow-hidden bg-gray-200 p-1" v-else>
-            <Icon class="text-gray-400" src="ProfileUser" size="100%" />
-          </div>
-        </div>
-        <div class="py-2 px-2 xs:px-4 flex-grow w-2/3 sm:w-0 truncate">
-          <div class="py-2 flex">
-            <div class="flex-shrink-0 w-12 mt-2">名稱</div>
-            <div class="flex-grow px-3">
-              <div class="text-2xl">{{ model.name }}</div>
-              <div class="text-gray-500 text-sm">{{ model.status_message }}</div>
-            </div>
-          </div>
-          <div class="py-2 flex">
-            <div class="flex-shrink-0 w-12" :style="{ marginTop: `${formTitleMarginTop}px` }">姓名</div>
-            <div class="flex-grow">
-              <TextBox type="text" :model="model" field="real_name" placeholder="請輸入姓名" />
-              <span class="text-red-500 text-xs" v-show="model.hasError('real_name')">{{ model.hasError('real_name') }}</span>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="flex flex-wrap">
-        <div class="flex flex-shrink-0 w-1/2 md:w-1/4 py-2">
-          <div class="flex-shrink-0 w-12 md:w-20">點數</div>
-          <div class="flex-grow px-3">{{ model.points }}</div>
-        </div>
-        <div class="flex flex-shrink-0 w-1/2 md:w-1/4 py-2">
-          <div class="flex-shrink-0 w-12 md:w-20">狀態</div>
-          <div class="flex-grow px-3 font-bold" :style="{ color: convState(model.line_status).color }">
-            {{ convState(model.line_status).text }}
-          </div>
-        </div>
-        <div class="flex flex-shrink-0 md:w-1/2 py-2">
-          <div class="flex-shrink-0 w-12 md:w-20">性別</div>
-          <div class="flex-grow">
-            <div v-if="model.gender === null" class="flex flex-shrink-0">
-              <label for="male" class="flex cursor-pointer hover:text-blue-300">
-                <input id="male" class="hidden" v-model="model.gender" type="radio" name="gender" :value="1" />
-                <Icon class="text-blue-300 transform scale-90" src="MaleSymbol" size="24" />
-                <span class="inline-block px-1">男</span>
-              </label>
-              <label for="female" class="flex cursor-pointer hover:text-pink-300">
-                <input id="female" class="hidden" v-model="model.gender" type="radio" name="gender" :value="2" />
-                <Icon class="text-pink-300" src="FemaleSymbol" size="24" />
-                <span class="inline-block px-1">女</span>
-              </label>
-              <span class="inline-block px-2 text-gray-400" :class="{ 'text-red-500': model.hasError('gender') }">未選擇</span>
-            </div>
-            <div v-if="model.gender === 1" class="flex flex-shrink-0 relative hover:text-blue-300">
-              <input id="male" class="hidden" v-model="model.gender" type="radio" name="gender" :value="2" />
-              <Icon class="text-blue-300 transform scale-90" src="MaleSymbol" size="24" />
-              <label for="male" class="inline-block px-2 stretched-link">男</label>
-            </div>
-            <div v-if="model.gender === 2" class="flex flex-shrink-0 relative hover:text-pink-300">
-              <input id="female" class="hidden" v-model="model.gender" type="radio" name="gender" :value="1" />
-              <Icon class="text-pink-300" src="FemaleSymbol" size="24" />
-              <label for="female" class="inline-block px-1 stretched-link">女</label>
-            </div>
-            <span class="text-red-500 text-xs" v-show="model.hasError('gender')">{{ model.hasError('gender') }}</span>
-          </div>
-        </div>
-      </div>
       <div class="py-2 sm:flex">
         <div class="flex-shrink-0 w-20" :style="{ marginTop: `${formTitleMarginTop}px` }">電子郵件</div>
         <div class="flex-grow">
@@ -108,19 +43,19 @@
 <script>
 import { reactive, ref, onMounted, nextTick } from 'vue'
 import throttle from 'lodash/throttle'
-import { MemberModel } from '@/models/index'
+import { LinePointModel } from '@/models/index'
 import { isModelError } from '@/utility/model-handle'
 import DialogLayout from '@/container/DialogLayout.vue'
 import Swal from '@/utility/alert'
 
 export default {
-  name: 'DetailDialog',
+  name: 'LinePointDetailDialog',
   props: ['drag', 'touch', 'props', 'id', 'popupElement', 'dialog', 'initPosition'],
   components: {
     DialogLayout,
   },
   setup(props) {
-    const model = reactive(new MemberModel(props.props.model))
+    const model = reactive(new LinePointModel(props.props.model))
     onMounted(async () => {
       await model.readData()
     })
