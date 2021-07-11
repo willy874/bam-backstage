@@ -73,11 +73,18 @@ export default {
         case 'ArrowRight':
           nextPhoto()
           break
+        case 'Backspace':
+          prevPhoto()
+          break
+        case 'Enter':
+          nextPhoto()
+          break
         case 'Escape':
           close()
           break
-        case 'Enter':
+        case 'Delete':
           close()
+          break
       }
     }, 100)
     return {

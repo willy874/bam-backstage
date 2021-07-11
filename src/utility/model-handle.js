@@ -63,6 +63,7 @@ export const formDataFomat = (data, exclude) => {
  * @returns {Boolean}
  */
 export const checkAllowDelete = (selectList, Type) => {
+  console.log(selectList);
   if (Type === ImageAssetModel) {
     if (selectList.some((image) => image.tags.some((p) => p.name === 'System'))) {
       return Swal.error({
@@ -81,7 +82,7 @@ export const deleteAllModel = (listMode) => {
   return new Promise(async (resolve, reject) => {
     const selectList = listMode.data.filter((p) => p.selected)
     const dialog = useDialog()
-    if (checkAllowDelete(listMode.modelType, selectList)) {
+    if (checkAllowDelete(selectList, listMode.modelType)) {
       return
     }
     const swalResult = await Swal.delete(selectList.length)
