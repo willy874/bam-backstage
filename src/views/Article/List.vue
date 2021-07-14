@@ -1,17 +1,20 @@
 <template>
   <PageLayout>
     <template #header>
-      <div class="py-2 px-4">
-        <div class="flex items-center shadow">
-          <div class="px-4 py-2">
-            <Breadcrumb />
-          </div>
-          <div class="flex flex-grow justify-end p-1">
-            <div class="px-1" v-for="plugin in headerBar" :key="plugin.name">
-              <component v-bind="headerProps" :is="plugin"></component>
+      <div>
+        <div class="py-2 px-4">
+          <div class="flex items-center shadow">
+            <div class="px-4 py-2">
+              <Breadcrumb />
+            </div>
+            <div class="flex flex-grow justify-end p-1">
+              <div class="px-1" v-for="plugin in headerBar" :key="plugin.name">
+                <component v-bind="headerProps" :is="plugin"></component>
+              </div>
             </div>
           </div>
         </div>
+        <SearchBar v-bind="searchBarProps" />
       </div>
     </template>
     <div class="absolute inset-0 flex flex-col py-2 px-4">
@@ -24,9 +27,10 @@
 </template>
 
 <script>
-import { reactive } from 'vue'
+import { ref, reactive } from 'vue'
 import PageLayout from '@/container/PageLayout.vue'
-import { ArticleModel } from '@/models/index'
+import { ArticleModel, SearchModel } from '@/models/index'
+import SearchBar from '@/container/SearchBar.vue'
 import { useDatabase } from '@/database/index'
 
 export default {
@@ -34,6 +38,7 @@ export default {
   inheritAttrs: false,
   components: {
     PageLayout,
+    SearchBar,
   },
   props: {
     routeTitle: {
@@ -78,21 +83,37 @@ export default {
       type: Function,
       default: () => {},
     },
+    search: {
+      type: Object,
+      default: () => null,
+    },
   },
   setup(props, context) {
     const database = useDatabase()
     const listModelData = reactive(database.data[props.modelName])
+    const searchBarShow = ref(false)
+    const filterOptions = reactive(new SearchModel(props.search))
+
     const dataTableProps = reactive({
       ...props.dataTable,
+      filter: filterOptions.searchFilter(),
       model: listModelData,
     })
+
+    const searchBarProps = {
+      searchBarShow,
+      filterOptions,
+    }
 
     const setupResult = {
       headerProps: {
         ...props,
         listModelData,
+        filterOptions,
+        searchBarShow,
       },
       dataTableProps,
+      searchBarProps,
     }
 
     try {

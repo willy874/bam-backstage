@@ -21,14 +21,7 @@
       <CardTemp v-bind="tempProps"></CardTemp>
     </div>
     <template #footer>
-      <div>
-        <!-- <SelectDrop
-          :model="{ text: '' }"
-          field="text"
-          placeholder="請選擇"
-          :options="['測試', '測試文字', '測試很多字', '測試非常多字', '測試超級的多字']"
-        ></SelectDrop> -->
-      </div>
+      <div></div>
     </template>
   </PageLayout>
 </template>
@@ -39,7 +32,7 @@ import { FileName, Observable } from 'bam-utility-plugins'
 import dayjs from 'dayjs'
 import { useDialog } from '@/components/dialog/index'
 import { useDatabase } from '@/database/index'
-import { DataModel } from '@/models/index'
+import { DataModel, SearchModel } from '@/models/index'
 import PageLayout from '@/container/PageLayout.vue'
 import SearchBar from '@/container/SearchBar.vue'
 import LoadingDialog from '@/container/LoadingDialog.vue'
@@ -85,19 +78,13 @@ export default {
     },
   },
   setup(props) {
-    class SearchModel extends DataModel {
-      constructor() {
-        super()
-        this.keyword = ''
-      }
-    }
     const database = useDatabase()
     const listData = reactive(database.data[props.modelName])
     const searchBarShow = ref(false)
-    const filterOptions = reactive(new SearchModel())
+    const filterOptions = reactive(new SearchModel({ search: 'name' }))
     const reflashData = async () => {
       try {
-        await listData.assetReadList()
+        await listData.readList()
         const allResponse = await Promise.allSettled(listData.data.map(async (model) => await model.readData()))
         // 清除無效圖片
         allResponse
@@ -109,7 +96,7 @@ export default {
           })
       } catch (error) {
         if (process.env.NODE_ENV === 'development') {
-          console.log('%c[AssetList] Error: assetReadList', 'color: #f00;background: #ff000011;padding: 2px 6px;border-radius: 4px;')
+          console.log('%c[AssetList] Error: readList', 'color: #f00;background: #ff000011;padding: 2px 6px;border-radius: 4px;')
           console.dir(error)
         }
       }
@@ -142,11 +129,15 @@ export default {
       const observable = new Observable((subscriber) => {
         fileList.forEach((model) => {
           subscriber.next(async () => {
-            await model.createData()
+            const res = await model.createData()
+            if (res.isAxiosError) {
+              throw res.message
+            }
             uploadIndex.value++
           })
         })
         subscriber.error(async (error) => {
+          uploadIndex.value = count.value
           if (process.env.NODE_ENV === 'development') {
             console.log('%c[AssetList] Error: createData', 'color: #f00;background: #ff000011;padding: 2px 6px;border-radius: 4px;')
             console.dir(error)

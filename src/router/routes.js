@@ -1,8 +1,9 @@
 import ArticleView from '../views/Article/Index.vue'
 import ArticleListView from '../views/Article/List.vue'
-import NewsListProps from '../views/News/list'
+import ArticleListProps from '../views/Article/list'
 import MemberListProps from '../views/Member/list'
 import ProductListProps from '../views/Product/list'
+import RichmenuListProps from '../views/Richmenu/list'
 import AssetListView from '../views/Asset/List.vue'
 import AssetImageProps from '../views/Asset/image.js'
 import {
@@ -25,18 +26,18 @@ const routes = [{
     },
   },
   {
-    name: 'News',
-    path: '/news',
-    redirect: '/news/list',
+    name: 'Article',
+    path: '/article',
+    redirect: '/article/list',
     component: ArticleView,
     props: {
-      routeTitle: '最新消息',
+      routeTitle: '文章管理',
     },
     children: [{
-      name: 'NewsList',
+      name: 'ArticleList',
       path: 'list',
       component: ArticleListView,
-      props: NewsListProps,
+      props: ArticleListProps,
     }, ],
   },
   {
@@ -67,6 +68,21 @@ const routes = [{
       path: 'list',
       component: ArticleListView,
       props: ProductListProps,
+    }, ],
+  },
+  {
+    name: 'Richmenu',
+    path: '/richmenu',
+    redirect: '/richmenu/list',
+    component: ArticleView,
+    props: {
+      routeTitle: '圖文選單管理',
+    },
+    children: [{
+      name: 'RichmenuList',
+      path: 'list',
+      component: ArticleListView,
+      props: RichmenuListProps,
     }, ],
   },
   {

@@ -59,6 +59,11 @@ export default class DataModel {
       enumerable: false,
       writable: true,
     })
+    Object.defineProperty(this, 'modelType', {
+      value: this.__proto__.constructor,
+      enumerable: false,
+      writable: true,
+    })
   }
 
   /**

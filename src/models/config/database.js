@@ -1,20 +1,19 @@
 import {
   ArticleModel,
-  NewsMessageModel,
   MemberModel,
   ProductModel,
   ProductCategoryModel,
   LinePointModel,
-  ImageAssetModel
+  ImageAssetModel,
+  RichmenuModel,
+  AssetsListModel,
+  RichmenusListModel,
 } from '@/models/index'
 
 export default {
   Articles: {
     model: ArticleModel,
-  },
-  NewsMessages: {
-    model: NewsMessageModel,
-    api: 'news',
+    api: 'articles',
   },
   Members: {
     model: MemberModel,
@@ -33,7 +32,13 @@ export default {
     api: 'line-points',
   },
   ImageAssets: {
+    listModel: AssetsListModel,
     model: ImageAssetModel,
     api: 'images',
+  },
+  Richmenus: {
+    listModel: RichmenusListModel,
+    model: RichmenuModel,
+    api: 'richmenus',
   }
 }

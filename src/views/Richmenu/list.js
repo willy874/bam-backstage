@@ -3,18 +3,22 @@ import {
   useDialog
 } from '@/components/dialog/index'
 import DetailDialog from './DetailDialog.vue'
-import TableOptions from '@/components/data-table/TableOptions.vue'
 import AddModelButton from '@/container/AddModelButton.vue'
-import LinePointTableOptionButton from './LinePoint/TableOptionButton.vue'
 
 export default {
-  routeTitle: '商品管理列表',
-  modelSchema: schema.Products,
-  modelName: 'Products',
+  routeTitle: '圖文選單列表',
+  modelSchema: schema.Richmenus,
+  modelName: 'Richmenus',
   dataTable: {
     options: [{
         title: 'No.',
         field: (item, index) => index + 1,
+        width: '80px',
+        align: 'center'
+      },
+      {
+        title: '分格數',
+        field: 'grid',
         width: '80px',
         align: 'center'
       },
@@ -28,24 +32,6 @@ export default {
         bodyStyle: {
           padding: '0 0.5rem'
         },
-        align: 'center'
-      },
-      {
-        title: '價格',
-        field: 'price',
-        width: '80px',
-        align: 'center'
-      },
-      {
-        title: '庫存',
-        field: 'stock',
-        width: '80px',
-        align: 'center'
-      },
-      {
-        title: '類型',
-        field: (item) => item.product_category.name,
-        width: '180px',
         align: 'center'
       },
       {
@@ -65,29 +51,22 @@ export default {
         field: (item) => {
           switch (item.state) {
             case 0:
-              return '<span style="color: rgb(239, 68, 68)">關閉</span>'
+              return '<span>未上傳</span>'
             case 1:
-              return '<span style="color: rgb(52, 211, 153)">正常</span>'
+              return '<span>未上傳圖片</span>'
+            case 2:
+              return '<span>修改未上傳</span>'
+            case 3:
+              return '<span>資料已同步</span>'
             default:
-              return ''
+              ''
           }
         },
         width: '100px',
-        align: 'center',
-      },
-      {
-        title: '功能',
-        field: TableOptions,
-        width: '80px',
-        align: 'center',
-        props: {
-          plugins: [LinePointTableOptionButton],
-        },
+        align: 'center'
       },
     ],
-    clickTr: async (model, index, {
-      listData
-    }) => {
+    clickTr: async (model) => {
       const dialog = useDialog()
       const popup = await dialog.popup(DetailDialog, {
         onBackgroundClick: () => {},

@@ -12,18 +12,20 @@
         </div>
       </div>
     </template>
-    <div class="flex flex-wrap" style="height: 700px">
-      <div class="p-2 transition w-1/2 sm:w-1/3" v-for="(image, index) in filterList.data" :ref="setRefsItem(index)" :key="image.id">
-        <div
-          class="pt-1/1 relative border-2 rounded-lg border-opacity-50"
-          :class="{ 'shadow-focus': image.selected }"
-          @click="clickImage($event, image, index)"
-          @dblclick="dblclickImage($event, image, index)"
-        >
-          <div class="absolute inset-0 px-4 py-2 flex flex-col">
-            <div class="flex-grow bg-cover bg-no-repeat bg-center mb-2 rounded" :style="{ backgroundImage: `url(${convUrl(image)})` }"></div>
-            <div class="flex-shrink-0 h-12">
-              <div class="line-clamp-2 border border-transparent">{{ image.name }}</div>
+    <div style="height: 700px">
+      <div class="flex flex-wrap">
+        <div class="p-2 transition w-1/2 sm:w-1/3" v-for="(image, index) in filterList.data" :ref="setRefsItem(index)" :key="image.id">
+          <div
+            class="pt-1/1 relative border-2 rounded-lg border-opacity-50"
+            :class="{ 'shadow-focus': image.selected }"
+            @click="clickImage($event, image, index)"
+            @dblclick="dblclickImage($event, image, index)"
+          >
+            <div class="absolute inset-0 px-4 py-2 flex flex-col">
+              <div class="flex-grow bg-cover bg-no-repeat bg-center mb-2 rounded" :style="{ backgroundImage: `url(${convUrl(image)})` }"></div>
+              <div class="flex-shrink-0 h-12">
+                <div class="line-clamp-2 border border-transparent">{{ image.name }}</div>
+              </div>
             </div>
           </div>
         </div>
@@ -44,7 +46,7 @@
 
 <script>
 import { reactive, computed, onMounted } from 'vue'
-import { ListModel, DataModel } from '@/models/index'
+import { ListModel, DataModel, SearchModel } from '@/models/index'
 import throttle from 'lodash/throttle'
 import DialogLayout from '@/container/DialogLayout.vue'
 import defaultImage from '@/components/image-viewbox/default-image.jpg'
@@ -56,16 +58,20 @@ export default {
     DialogLayout,
   },
   setup(props) {
+    /** @type {ListModel} */
     const listModelData = props.props.listModelData
+    /** @type {Function} */
+    const ListModelType = listModelData.listModelType
     const assetsList = reactive(
-      new ListModel({
+      new ListModelType({
+        listModel: ListModelType,
         model: listModelData.modelType,
         api: 'images',
       })
     )
     const reflashData = async () => {
       try {
-        await assetsList.assetReadList()
+        await assetsList.readList()
         const allResponse = await Promise.allSettled(assetsList.data.map(async (model) => await model.readData()))
         // 清除無效圖片
         allResponse
@@ -77,7 +83,7 @@ export default {
           })
       } catch (error) {
         if (process.env.NODE_ENV === 'development') {
-          console.log('%c[AssetList] Error: assetReadList', 'color: #f00;background: #ff000011;padding: 2px 6px;border-radius: 4px;')
+          console.log('%c[AssetList] Error: readList', 'color: #f00;background: #ff000011;padding: 2px 6px;border-radius: 4px;')
           console.dir(error)
         }
       }
@@ -85,15 +91,10 @@ export default {
     onMounted(async () => {
       await reflashData()
     })
-    class SearchModel extends DataModel {
-      constructor() {
-        super()
-        this.keyword = ''
-      }
-    }
-    const filterOptions = reactive(new SearchModel())
+    const filterOptions = reactive(new SearchModel({ search: 'name' }))
     const filterList = computed(() => {
-      const list = new ListModel({
+      const list = new ListModelType({
+        listModel: listModelData.listModelType,
         model: listModelData.modelType,
       })
       return list.set({
@@ -116,6 +117,9 @@ export default {
     const selectedList = computed(() => {
       return filterList.value.data.filter((p) => p.selected)
     })
+    /**
+     * @param {Array<DataModel>} selectedImages
+     */
     const close = (selectedImages) => {
       props.props.selectedImages = selectedImages
       props.dialog.closePopup(props.id)

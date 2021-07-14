@@ -8,6 +8,10 @@ require('bam-auto-tool')({
         suffix: 'Model',
       },
       {
+        path: 'src/models/list',
+        suffix: 'ListModel',
+      },
+      {
         path: 'src/models/schema',
         type: 'cjs',
       },

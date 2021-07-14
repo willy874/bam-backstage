@@ -8,10 +8,10 @@
  * @property {Array<Navbar>} Navbar.children
  */
 export default [{
-    title: '最新消息',
-    icon: 'News',
+    title: '文章管理',
+    icon: 'Article',
     route: {
-      name: 'News',
+      name: 'Article',
     },
   },
   {
@@ -26,6 +26,13 @@ export default [{
     icon: 'Product',
     route: {
       name: 'Product',
+    },
+  },
+  {
+    title: '圖文選單管理',
+    icon: 'Menu',
+    route: {
+      name: 'Richmenu',
     },
   },
   {

@@ -19,7 +19,7 @@ import { reactive, onMounted } from 'vue'
 import dayjs from 'dayjs'
 import throttle from 'lodash/throttle'
 import DialogLayout from '@/container/DialogLayout.vue'
-import LinePointDetailDialog from './LinePointDetailDialog.vue'
+import LinePointDetailDialog from './DetailDialog.vue'
 
 export default {
   name: 'LinePointListDialog',

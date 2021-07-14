@@ -20,7 +20,7 @@ export default class Database {
           this.data[key] = null
           return Promise.resolve()
         } else {
-          this.data[key] = new ListModel(schema[key])
+          this.data[key] = this.createModel(schema[key])
           this.store.state.model[key] = this.data[key]
           if (this.createLoad) {
             return this.data[key].readList()
@@ -31,11 +31,16 @@ export default class Database {
     ).then(this.created)
   }
 
+  createModel(schema) {
+    const Model = schema.listModel || ListModel
+    return new Model(schema)
+  }
+
   async login() {
     return await Promise.all(
       Object.keys(schema).map((key) => {
         if (this.auth.includes(key) || this.allow) {
-          this.data[key] = new ListModel(schema[key])
+          this.data[key] = this.createModel(schema[key])
           this.store.state.model[key] = this.data[key]
           if (this.createLoad) {
             return this.data[key].readList()

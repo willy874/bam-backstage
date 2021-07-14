@@ -1,7 +1,7 @@
 <template>
   <div class="datatable">
     <div class="datatable__container">
-      <div class="datatable__container__table">
+      <div class="datatable__container__table" :ref="setRefsTable">
         <div class="datatable__container__head" ref="head">
           <div class="datatable__table__tr" :style="{ gridTemplateColumns: widthTemplate }">
             <div
@@ -28,20 +28,24 @@
             v-for="(data, index) in filterList.data"
             class="datatable__table__tr"
             :key="data.id"
+            :ref="setRefsTableRow(index)"
             :style="{ gridTemplateColumns: widthTemplate, cursor: clickTr ? 'pointer' : 'auto' }"
-            @click="clickTrEvent(filterList.data[index], index, { listData, filterList, tables })"
+            @click="clickTrEvent(filterList.data[index], index, { element: elements.row[index], event: $event, listData, filterList, tables })"
           >
             <div
               class="datatable__table__td"
-              v-for="table in tables"
+              v-for="(table, colIndex) in tables"
               :key="table.id"
+              :ref="setRefsTableCol(index, colIndex)"
               :style="{
                 textAlign: table.align,
                 cursor: clickTr ? 'pointer' : 'auto',
                 ...table.columnStyle,
                 ...table.bodyStyle,
               }"
-              @click="clickTdEvent(filterList.data[index], index, { listData, filterList, ...table.props })"
+              @click="
+                clickTdEvent(filterList.data[index], index, { element: elements.row[index].col[colIndex], event: $event, listData, filterList, ...table.props })
+              "
             >
               <template v-if="typeof table.field === 'object' && table.field.render">
                 <component :is="refComponent(table.field)" v-bind="{ model: filterList.data[index], listData: model, filterList, ...table.props }"></component>
@@ -193,9 +197,40 @@ export default {
     })
     const head = ref(null)
     const body = ref(null)
+    const elements = reactive({
+      table: null,
+      row: [],
+    })
     return {
       head,
       body,
+      elements,
+      setRefsTable: (ref) => {
+        elements.table = ref
+      },
+      setRefsTableRow: (index) => {
+        return (ref) => {
+          if (elements.row[index]) {
+            elements.row[index].tr = ref
+          } else {
+            elements.row[index] = {
+              tr: ref,
+              col: [],
+            }
+          }
+        }
+      },
+      setRefsTableCol: (index, colIndex) => {
+        return (ref) => {
+          if (!elements.row[index]) {
+            elements.row[index] = {
+              tr: null,
+              col: [],
+            }
+          }
+          elements.row[index].col[colIndex] = ref
+        }
+      },
       clickTrEvent: props.clickTr || (() => {}),
       clickTdEvent: props.clickTd || (() => {}),
       tables,

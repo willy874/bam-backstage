@@ -1,6 +1,7 @@
 import Add from './add.js'
 import ArrowSolid from './arrow-solid.js'
 import Arrow from './arrow.js'
+import Article from './article.js'
 import Cloud from './cloud.js'
 import Delete from './delete.js'
 import Edit from './edit.js'
@@ -12,6 +13,7 @@ import Image from './image.js'
 import Invisible from './invisible.js'
 import List from './list.js'
 import MaleSymbol from './male-symbol.js'
+import Menu from './menu.js'
 import News from './news.js'
 import Padlock from './padlock.js'
 import Play from './play.js'
@@ -27,6 +29,7 @@ export {
   Add,
   ArrowSolid,
   Arrow,
+  Article,
   Cloud,
   Delete,
   Edit,
@@ -38,6 +41,7 @@ export {
   Invisible,
   List,
   MaleSymbol,
+  Menu,
   News,
   Padlock,
   Play,

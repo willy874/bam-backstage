@@ -1,75 +1,71 @@
 <template>
-  <DialogLayout v-bind="$props" title="產品資料">
+  <DialogLayout v-bind="$props" title="文章資料">
     <form @submit="submit">
       <div class="py-2 sm:flex">
-        <div class="flex-shrink-0 w-20" :style="{ marginTop: `${formTitleMarginTop}px` }">產品名稱</div>
+        <div class="flex-shrink-0 w-20" :style="{ marginTop: `${formTitleMarginTop}px` }">標題</div>
         <div class="flex-grow">
-          <TextBox type="text" :model="model" field="name" placeholder="請輸入產品名稱" />
-          <span class="text-red-500 text-xs" v-show="model.hasError('name')">{{ model.hasError('name') }}</span>
+          <TextBox type="text" :model="model" field="title" placeholder="請輸入文章標題" />
+          <span class="text-red-500 text-xs" v-show="model.hasError('title')">{{ model.hasError('title') }}</span>
         </div>
       </div>
       <div class="py-2 sm:flex">
-        <div class="flex-shrink-0 w-20" :style="{ marginTop: `${formTitleMarginTop}px` }">產品描述</div>
+        <div class="flex-shrink-0 w-20" :style="{ marginTop: `${formTitleMarginTop}px` }">副標題</div>
         <div class="flex-grow">
-          <TextBox type="textarea" rows="4" :model="model" field="description" placeholder="請輸入產品描述" />
-          <span class="text-red-500 text-xs" v-show="model.hasError('description')">{{ model.hasError('description') }}</span>
+          <TextBox type="text" :model="model" field="sub_title" placeholder="請輸入文章副標題" />
+          <span class="text-red-500 text-xs" v-show="model.hasError('sub_title')">{{ model.hasError('sub_title') }}</span>
         </div>
       </div>
-      <div class="flex flex-wrap -mx-2">
+      <div class="py-2 sm:flex">
+        <div class="flex-shrink-0 w-20" :style="{ marginTop: `${formTitleMarginTop}px` }">文章內容</div>
+        <div class="flex-grow">
+          <TextBox type="textarea" rows="4" :model="model" field="content" placeholder="請輸入文章內容" />
+          <span class="text-red-500 text-xs" v-show="model.hasError('content')">{{ model.hasError('content') }}</span>
+        </div>
+      </div>
+      <div class="flex flex-wrap -mx-2 reactive z-10">
         <div class="py-2 px-2 xs:w-1/2 w-full flex">
-          <div class="flex-shrink-0 w-20" :style="{ marginTop: `${formTitleMarginTop}px` }">產品價格</div>
+          <div class="flex-shrink-0 w-20" :style="{ marginTop: `${formTitleMarginTop}px` }">文章類型</div>
           <div class="flex-grow">
-            <TextBox type="number" :model="model" field="price" placeholder="請輸入價格" />
-            <span class="text-red-500 text-xs" v-show="model.hasError('price')">{{ model.hasError('price') }}</span>
+            <SelectDrop
+              :model="model"
+              :close-element="popupElement"
+              field="category"
+              placeholder="請選擇文章類型"
+              :options="[
+                { value: 'news', label: '最新消息' },
+                { value: 'faq', label: '問與答' },
+              ]"
+            ></SelectDrop>
+            <span class="text-red-500 text-xs" v-show="model.hasError('category')">{{ model.hasError('category') }}</span>
           </div>
         </div>
         <div class="py-2 px-2 xs:w-1/2 w-full flex">
           <div class="flex-shrink-0 w-20" :style="{ marginTop: `${formTitleMarginTop}px` }">狀態</div>
           <div class="flex-grow flex flex-wrap">
             <div class="input-radio-btn">
-              <input id="display-hide" type="radio" v-model="model.state" :value="0" />
-              <label for="display-hide">下架</label>
+              <input :id="uuid.stateHide" type="radio" v-model="model.state" :value="0" />
+              <label :for="uuid.stateHide">隱藏</label>
             </div>
             <div class="input-radio-btn">
-              <input id="display-show" type="radio" v-model="model.state" :value="1" />
-              <label for="display-show">正常</label>
+              <input :id="uuid.stateShow" type="radio" v-model="model.state" :value="1" />
+              <label :for="uuid.stateShow">公開</label>
             </div>
           </div>
         </div>
       </div>
-      <div class="flex flex-wrap -mx-2">
-        <div class="py-2 px-2 xs:w-1/2 w-full flex">
-          <div class="flex-shrink-0 w-20" :style="{ marginTop: `${formTitleMarginTop}px` }">產品類型</div>
-          <div class="flex-grow">
-            <SelectDrop
-              :model="model"
-              :close-element="popupElement"
-              field="category_id"
-              placeholder="請選擇類型"
-              :options="ProductCategories"
-              optionValue="id"
-              optionName="name"
-            ></SelectDrop>
-            <span class="text-red-500 text-xs" v-show="model.hasError('category_id')">{{ model.hasError('category_id') }}</span>
-          </div>
-        </div>
-        <div class="py-2 px-2 xs:w-1/2 w-full flex">
-          <div class="flex-shrink-0 w-20" :style="{ marginTop: `${formTitleMarginTop}px` }">庫存量</div>
-          <div class="flex-grow">
-            <div class="flex" v-if="isLinePoint(model)">
-              <div class="py-2 mx-2">{{ model.stock }}</div>
-              <button v-if="model.id" class="btn-icon mx-1 text-primary-500 hover:text-primary-600" type="button" @click="addLinePoint">
-                <Icon src="Add" size="20" />
-              </button>
-              <button v-if="model.id" class="btn-icon mx-1 text-primary-500 hover:text-primary-600" type="button" @click="listLinePoint">
-                <Icon src="List" size="20" />
-              </button>
-            </div>
-            <template v-else>
-              <TextBox type="number" :model="model" field="stock" placeholder="請輸入庫存量" />
-              <span class="text-red-500 text-xs" v-show="model.hasError('stock')">{{ model.hasError('stock') }}</span>
-            </template>
-          </div>
+      <div class="py-2 xs:w-1/2 w-full flex">
+        <div class="flex-shrink-0 w-20" :style="{ marginTop: `${formTitleMarginTop}px` }">封面圖片</div>
+        <div class="flex-grow">
+          <SelectDrop
+            :model="model"
+            :close-element="popupElement"
+            field="image_id"
+            placeholder="請選擇封面圖片"
+            :options="imageList"
+            optionValue="id"
+            optionName="name"
+          ></SelectDrop>
+          <span class="text-red-500 text-xs" v-show="model.hasError('image_id')">{{ model.hasError('image_id') }}</span>
         </div>
       </div>
       <div class="py-2 sm:flex">
@@ -78,7 +74,7 @@
           <PhotoFrame
             :model="imageList"
             :model-handler="modelHandler"
-            file-length="3"
+            file-length="9"
             :plugins="photoFramePlugin"
             :class="{ 'is-invalid': model.hasError('images') }"
             @loadImage="initPosition"
@@ -107,16 +103,14 @@
 
 <script>
 import { reactive, ref, onMounted, nextTick } from 'vue'
+import { v4 as uuidV4 } from 'uuid'
 import throttle from 'lodash/throttle'
-import { ProductModel, ProductImageModel, AssetsListModel } from '@/models/index'
+import { ArticleModel, ImageModel, AssetsListModel } from '@/models/index'
 import { isModelError } from '@/utility/model-handle'
 import Swal from '@/utility/alert'
 import { useDialog } from '@/components/dialog/index'
 import DialogLayout from '@/container/DialogLayout.vue'
 import ImageFolderButton from '@/container/ImageFolderButton.vue'
-import { useDatabase } from '@/database/index'
-import LinePointCreateDialog from './LinePoint/CreateDialog.vue'
-import LinePointListDialog from './LinePoint/ListDialog.vue'
 
 export default {
   name: 'ProductDetailDialog',
@@ -125,19 +119,17 @@ export default {
     DialogLayout,
   },
   setup(props) {
-    const model = reactive(new ProductModel(props.props.model))
+    const model = reactive(new ArticleModel(props.props.model))
     const imageList = reactive(
       new AssetsListModel({
-        model: ProductImageModel,
+        model: ImageModel,
         data: model.images,
       })
     )
-    const ProductCategories = reactive(useDatabase().data.ProductCategories)
-    const LinePoints = reactive(useDatabase().data.LinePoints)
     onMounted(async () => {
-      await model.readData()
-      ProductCategories.readList()
-      LinePoints.readList()
+      if (model.id) {
+        await model.readData()
+      }
       const allResponse = await Promise.allSettled(model.images.map(async (image) => await image.readData()))
       // 清除無效圖片
       allResponse
@@ -147,7 +139,12 @@ export default {
           const index = model.images.map((p) => Number(p.id)).indexOf(Number(id))
           model.images.splice(index, 1)
         })
+
       imageList.data = model.images
+    })
+    const uuid = reactive({
+      stateHide: uuidV4(),
+      stateShow: uuidV4(),
     })
     const dialog = useDialog()
     const popupProps = reactive(props.props)
@@ -155,57 +152,43 @@ export default {
     const formTitleMarginTop = ref(7)
     const windowShow = ref(true)
     const validateRules = {
-      name: {
+      category: {
         presence: {
           allowEmpty: false,
-          message: '^請填寫產品名稱',
+          message: '^請選擇文章類型',
         },
       },
-      description: {
+      title: {
         presence: {
           allowEmpty: false,
-          message: '^請填寫產品描述',
+          message: '^請填寫文章標題',
         },
       },
-      price: {
+      sub_title: {
         presence: {
           allowEmpty: false,
-          message: '^請填寫產品價格',
+          message: '^請填寫文章副標題',
         },
       },
-      stock: {
+      content: {
         presence: {
           allowEmpty: false,
-          message: '^請填寫產品庫存',
+          message: '^請填寫文章內容',
         },
       },
-      category_id: {
+      image_id: {
         presence: {
           allowEmpty: false,
-          message: '^請選擇產品類型',
+          message: '^請選擇封面圖片',
         },
       },
-      // images: () => {
-      //   const publishImages = model.images.filter((p) => !p.deleted)
-      //   if (publishImages.length && publishImages.every((p) => p.image_blob)) {
-      //     return {}
-      //   }
-      //   return {
-      //     inclusion: {
-      //       message: '^請上傳圖片',
-      //     },
-      //   }
-      // },
     }
-    const isLinePoint = (model) => model.category_id === 1
     return {
       model,
       imageList,
-      ProductCategories,
-      LinePoints,
+      uuid,
       windowShow,
       formTitleMarginTop,
-      isLinePoint,
       photoFramePlugin: [ImageFolderButton],
       errorMessages,
       categoryHandle: (value) => {},
@@ -215,14 +198,14 @@ export default {
           if (res.isAxiosError) {
             throw res.message
           }
-          return new ProductImageModel({
+          return new ImageModel({
             ...image,
             id: res.data.id,
             image_id: res.data.id,
           })
         } catch (error) {
           if (process.env.NODE_ENV === 'development') {
-            console.log('%c[Product DetailDialog] Error: modelHandler > createData', 'color: #f00;background: #ff000011;padding: 2px 6px;border-radius: 4px;')
+            console.log('%c[Article DetailDialog] Error: modelHandler > createData', 'color: #f00;background: #ff000011;padding: 2px 6px;border-radius: 4px;')
             console.dir(error)
           }
           Swal.error({
@@ -261,26 +244,32 @@ export default {
         }
         try {
           if (model.id === 0 || model.id === '') {
-            await model.createData()
+            await model.createData({
+              requesHandler(model) {
+                return {
+                  category: model.category,
+                  title: model.title,
+                  sub_title: model.sub_title,
+                  content: model.content,
+                  image_id: model.image_id,
+                  // state: model.state,
+                  images: model.images.map((p) => p.id),
+                }
+              },
+            })
             popupProps.model = model
           } else {
             const res = await model.updateData({
               requesHandler(model) {
-                const result = {
-                  name: model.name,
-                  description: model.description,
-                  price: model.price,
-                  category_id: model.category_id,
-                  state: model.state,
+                return {
+                  category: model.category,
+                  title: model.title,
+                  sub_title: model.sub_title,
+                  content: model.content,
+                  image_id: model.image_id,
+                  // state: model.state,
+                  images: model.images.map((p) => p.id),
                 }
-                if (model.images.some((img) => img.edited)) {
-                  model.images.forEach((img) => {
-                    if (img.image_id === '') img.image_id = img.id
-                  })
-                  result.images = model.images.filter((p) => !p.deleted).map((p) => p.image_id)
-                }
-                if (!isLinePoint(model)) result.stock = model.stock
-                return result
               },
             })
             if (res.isAxiosError) {
@@ -300,28 +289,6 @@ export default {
           })
         }
       }, 1000),
-      addLinePoint: throttle(async () => {
-        const popup = await dialog.popup(LinePointCreateDialog, {
-          width: '576px',
-          props: {
-            model,
-          },
-        })
-        if (popup.props.LinePoints) {
-          popup.props.LinePoints.data.forEach((data) => {
-            LinePoints.data.push(data)
-          })
-        }
-      }, 300),
-      listLinePoint: throttle(async () => {
-        dialog.popup(LinePointListDialog, {
-          width: '576px',
-          props: {
-            model: LinePoints,
-            productId: model.id,
-          },
-        })
-      }, 300),
     }
   },
 }

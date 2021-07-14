@@ -107,7 +107,7 @@
 <script>
 import { ref, onMounted, onUnmounted, reactive, nextTick, computed } from 'vue'
 import throttle from 'lodash/throttle'
-import { ListModel } from '@/models/index'
+import { ListModel, AssetsListModel } from '@/models/index'
 import defaultImage from '@/components/image-viewbox/default-image.jpg'
 import { useDialog } from '@/components/dialog/index'
 import LightBoxDialog from '@/container/LightBoxDialog.vue'
@@ -135,7 +135,7 @@ export default {
     const dialog = useDialog()
     const listData = reactive(props.listModelData)
     const filterList = computed(() => {
-      const list = new ListModel({
+      const list = new AssetsListModel({
         ...props.modelSchema,
         ...listData,
       })
@@ -299,6 +299,7 @@ export default {
             props.uploadChange(filterList)
           }
         }
+        dragHover.value = false
       },
       dragover(e) {
         e.preventDefault()

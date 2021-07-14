@@ -43,16 +43,15 @@
     flex-grow: 1;
   }
   .select-drop__wrapper {
-    position: absolute;
+    // right: 0;
     left: 0;
-    z-index: 10;
+    z-index: 1;
     overflow: hidden;
     border: 1px solid var(--select-drop-border-color);
     border-radius: 0.25rem;
     transition: border-color 0.15s ease-in-out, drop-shadow 0.15s ease-in-out;
   }
   .select-drop__select {
-    position: relative;
     background-color: var(--select-drop-bg-color);
   }
   .select-drop__input-box {
@@ -75,6 +74,7 @@
     width: 0.625rem;
     height: 0.625rem;
     color: var(--select-drop-arrow-color);
+    pointer-events: none;
     transition: transform 0.3s;
     transform: translate(0, -50%) rotate(-90deg);
   }

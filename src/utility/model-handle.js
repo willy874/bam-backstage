@@ -63,7 +63,6 @@ export const formDataFomat = (data, exclude) => {
  * @returns {Boolean}
  */
 export const checkAllowDelete = (selectList, Type) => {
-  console.log(selectList);
   if (Type === ImageAssetModel) {
     if (selectList.some((image) => image.tags.some((p) => p.name === 'System'))) {
       return Swal.error({

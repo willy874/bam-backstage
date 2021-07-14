@@ -6,10 +6,10 @@
 
 <script>
 import { useDialog } from '@/components/dialog/index'
-import LinePointCreateDialog from './LinePointCreateDialog.vue'
+import LinePointCreateDialog from './CreateDialog.vue'
 
 export default {
-  name: 'LinePointButton',
+  name: 'LinePointTableOptionButton',
   inheritAttrs: false,
   setup(props, context) {
     const dialog = useDialog()
@@ -19,8 +19,7 @@ export default {
           width: '576px',
           props: context.attrs,
         })
-        console.log(popup)
-      }
+      },
     }
   },
 }

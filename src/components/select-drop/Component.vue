@@ -46,10 +46,6 @@ export default {
       type: String,
       default: 'value',
     },
-    width: {
-      type: [Number, String],
-      default: 'auto',
-    },
     panelHeight: {
       type: Number,
       default: 200,
@@ -70,26 +66,16 @@ export default {
     const refsElement = {
       root: ref({}),
       input: ref({}),
+      wrapper: ref({}),
       panel: ref({}),
     }
+    const selectWidth = ref('auto')
+
     const selectHeight = computed(() => {
       if (refsElement.input.value) {
         return refsElement.input.value.offsetHeight
       }
       return 'auto'
-    })
-    const selectWidth = computed(() => {
-      if (props.width === 'auto') {
-        if (options.data.map((p) => p.ref).filter((p) => p).length) {
-          const maxWidth = Math.max(...options.data.map((p) => p.ref.offsetWidth))
-          return maxWidth ? `${maxWidth}px` : 'auto'
-        }
-        return 'auto'
-      } else if (typeof props.width === 'number' || !isNaN(props.width)) {
-        return `${props.width}px`
-      } else {
-        return props.width
-      }
     })
     const modelValue = computed({
       get: () => model[field.value],
@@ -127,21 +113,73 @@ export default {
       return isValid() || false
     })
 
+    watch(
+      () => {
+        if (refsElement.root.value && refsElement.root.value instanceof HTMLElement) {
+          return refsElement.root.value.offsetWidth
+        }
+        return refsElement.root.value
+      },
+      () => {
+        const rootWidth = refsElement.root.value.offsetWidth
+        if (options.data.map((p) => p.ref).filter((p) => p).length) {
+          const maxWidth = Math.max(...options.data.map((p) => p.ref.offsetWidth))
+          selectWidth.value = maxWidth ? `${maxWidth}px` : 'auto'
+        } else {
+          selectWidth.value = `${rootWidth}px`
+        }
+      }
+    )
     const clickOver = (e) => {
       if (!refsElement.root.value.contains(e.target)) {
         selectFocus.value = false
       }
     }
     onMounted(() => {
-      if (props.closeElement.value) {
+      if (props.closeElement.value && props.closeElement.value instanceof HTMLElement) {
         props.closeElement.value.addEventListener('click', clickOver)
       }
     })
     onUnmounted(() => {
-      if (props.closeElement.value) {
+      if (props.closeElement.value && props.closeElement.value instanceof HTMLElement) {
         props.closeElement.value.removeEventListener('click', clickOver)
       }
     })
+
+    // console.log()
+    const renderInput = () => {
+      return h('input', {
+        ...context.attrs,
+        class: cx(`${classPrefix}__input`, context.attrs.class),
+        value: modelValue.value,
+        ref: refsElement.input,
+        type: 'text',
+        onFocus: (e) => {
+          selectFocus.value = true
+          context.emit('focus', e)
+        },
+        onBlur: async (e) => {
+          context.emit('blur', e)
+        },
+        onInput: (e) => {
+          const option = options.data[Number(e.target.value) - 1]
+          if (option) {
+            modelValue.value = option[props.optionValue]
+            selected.value = option
+          }
+          context.emit('input', e)
+        },
+        onChange: (e) => {
+          const option = options.data.find((p) => String(p[props.optionValue]) === e.target.value)
+          if (option) {
+            modelValue.value = option[props.optionValue]
+            selected.value = option
+            context.emit('change', e)
+          }
+        },
+        value: selected.value[props.optionName],
+      })
+    }
 
     const arrowIcon = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 213.333 213.333" fill="currentColor"><polygon points="0,53.333 106.667,160 213.333,53.333 "/></svg>`
     const renderSelect = () => {
@@ -149,31 +187,7 @@ export default {
         checkeWindow() ? renderPanel() : null,
         h('div', { class: cx(`${classPrefix}__input-box`) }, [
           renderAppend('prefix'),
-          h('input', {
-            ...context.attrs,
-            class: cx(`${classPrefix}__input`, context.attrs.class),
-            value: modelValue.value,
-            ref: refsElement.input,
-            type: 'text',
-            onFocus: () => {
-              selectFocus.value = true
-            },
-            onInput: (e) => {
-              const option = options.data[Number(e.target.value) - 1]
-              if (option) {
-                modelValue.value = option[props.optionValue]
-                selected.value = option
-              }
-            },
-            onChange: (e) => {
-              const option = options.data.find((p) => String(p[props.optionValue]) === e.target.value)
-              if (option) {
-                modelValue.value = option[props.optionValue]
-                selected.value = option
-              }
-            },
-            value: selected.value[props.optionName],
-          }),
+          renderInput(),
           renderAppend('suffix'),
           h('div', {
             class: cx(`${classPrefix}__arrow`),
@@ -183,28 +197,27 @@ export default {
         checkeWindow() ? null : renderPanel(),
       ])
     }
-    const uuidCreate = (arr) => {
-      arr.forEach((p) => (p.uuid = uuid()))
-    }
     const options = reactive(
       (() => {
         if (Array.isArray(props.options)) {
           return {
             data: props.options.map((option) => {
               if (typeof option === 'object') {
-                uuidCreate(option)
+                option.uuid = uuid()
                 return option
               }
               return {
                 [props.optionValue]: option,
                 [props.optionName]: option,
-                uuid: uuid(),
+                uuid: option.uuid || uuid(),
               }
             }),
           }
         }
         if (props.options instanceof ListModel) {
-          uuidCreate(props.options.data)
+          props.options.data.forEach((option) => {
+            option.uuid = uuid()
+          })
           return props.options
         }
         return { data: [] }
@@ -238,11 +251,18 @@ export default {
               e.target.style.overflow = 'auto'
               context.emit('open')
             } else {
+              refsElement.wrapper.value.style.position = 'static'
+              refsElement.wrapper.value.style.maxWidth = selectWidth.value
+              refsElement.wrapper.value.style.minWidth = 'none'
               context.emit('close')
             }
           },
           onTransitionstart: (e) => {
-            if (!selectFocus.value) {
+            if (selectFocus.value) {
+              refsElement.wrapper.value.style.position = 'absolute'
+              refsElement.wrapper.value.style.maxWidth = 'none'
+              refsElement.wrapper.value.style.minWidth = selectWidth.value
+            } else {
               e.target.style.overflow = 'hidden'
             }
           },
@@ -260,9 +280,12 @@ export default {
             [`${classPrefix}__option--selected`]: item[props.optionValue] === selected.value[props.optionValue],
           }),
           ref: optionsRefsRender(item, index),
-          onClick: () => {
-            selected.value = item
-            modelValue.value = item[props.optionValue]
+          onClick: (e) => {
+            if (modelValue.value !== item[props.optionValue]) {
+              selected.value = item
+              modelValue.value = item[props.optionValue]
+              context.emit('change', e)
+            }
             selectFocus.value = false
           },
         },
@@ -310,7 +333,9 @@ export default {
                 class: cx(`${classPrefix}__wrapper`, {
                   [`${classPrefix}--invalid`]: isError.value,
                 }),
+                ref: refsElement.wrapper,
                 style: {
+                  zIndex: 10,
                   top: checkeWindow() ? 'auto' : '0',
                   bottom: checkeWindow() ? '0' : 'auto',
                 },

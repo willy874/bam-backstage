@@ -1,29 +1,26 @@
 import DataModel from './data'
-import axios from 'axios'
-import config from '@/config/index'
 import {
   axiosInstance,
-  getAbstractRequest
 } from '@/plugins/axios/request'
 import {
   handleApiConfig
 } from '../utility/index'
 
 /**
- * @property {Array.<*>} data         - ListModel 管理的 Model
- * @property {Boolean} loading        - 目前是否為讀取中
- * @property {Number} current_page    - 當前 ListModel 控制的頁碼
- * @property {Number} last_page       - 資料總合的頁數
- * @property {Number} per_page        -
- * @property {Number} from            -
- * @property {Number} to              -
- * @property {Number} total           - 總資料數長度
- * @property {String} path            - 資料來源的網址
- * @property {Array.<*>} cache        - 用於全域快取空間資料
- * @property {Object} query           - 暫存的 route.query
- * @property {Function} modelType     - data 內的 Model 類型
- * @property {String} primaryKey      - 該資料使用的主 key
- * @property {Object} api             - 該 model api 的 Url，如果使用 ListModel 的方法建立會往底下繼承該資料
+ * @property {Array.<DataModel>} data  - ListModel 管理的 Model
+ * @property {Boolean} loading         - 目前是否為讀取中
+ * @property {Number} current_page     - 當前 ListModel 控制的頁碼
+ * @property {Number} last_page        - 資料總合的頁數
+ * @property {Number} per_page         - 單頁顯示數
+ * @property {Number} total            - 總資料數長度
+ * @property {Number} from             -
+ * @property {Number} to               -
+ * @property {String} path             - 資料來源的網址
+ * @property {Array.<DataModel>} cache - 用於全域快取空間資料
+ * @property {Object} query            - 暫存的 route.query
+ * @property {Function} modelType      - data 內的 Model 類型
+ * @property {String} primaryKey       - 該資料使用的主 key
+ * @property {Object} api              - 該 model api 的 Url，如果使用 ListModel 的方法建立會往底下繼承該資料
  */
 export default class ListModel {
   constructor(args) {
@@ -34,6 +31,7 @@ export default class ListModel {
       entity = args || {}
     }
     const Model = entity.model || DataModel
+    const listModel = entity.listModel || ListModel
     this.data = (entity.data && entity.data.map((p) => new Model(p))) || []
     this.loading = entity.loading || false
     this.currentPage = entity.currentPage || 0
@@ -45,6 +43,11 @@ export default class ListModel {
     this.path = entity.path || ''
     this.cache = entity.cache || []
     this.query = entity.query || {}
+    Object.defineProperty(this, 'listModelType', {
+      value: listModel,
+      enumerable: false,
+      writable: true,
+    })
     Object.defineProperty(this, 'modelType', {
       value: Model,
       enumerable: false,
@@ -155,36 +158,6 @@ export default class ListModel {
             data: res.data
           } : res.data
           this.set(listModel, options)
-          resolve(res)
-        })
-        .catch((err) => {
-          this.loading = false
-          reject(err)
-        })
-    })
-  }
-
-  assetReadList(options = {}) {
-    this.loading = true
-    const Instance = axios.create(config.asset)
-    const axiosRequest = getAbstractRequest(Instance, {})
-    return new Promise((resolve, reject) => {
-      axiosRequest(
-          handleApiConfig({
-            default: {
-              method: 'GET',
-              url: `${this.api}`,
-            },
-            model: this,
-            ...options,
-          })
-        )
-        .then((res) => {
-          this.loading = false
-          const listModel = Array.isArray(res.data) ? {
-            data: res.data
-          } : res.data
-          this.set(this.responseHandler(listModel, options), options)
           resolve(res)
         })
         .catch((err) => {

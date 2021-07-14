@@ -135,6 +135,9 @@ export const getCoordinateBox = (target) => {
   }
 
   function boxCount(dom) {
+    if (!dom) {
+      return document
+    }
     const offsetParent = dom.offsetParent
     box.y = box.y + (dom.offsetTop ? dom.offsetTop : 0)
     box.x = box.x + (dom.offsetLeft ? dom.offsetLeft : 0)
