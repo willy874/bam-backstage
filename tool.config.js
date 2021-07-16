@@ -11,10 +11,6 @@ require('bam-auto-tool')({
         path: 'src/models/list',
         suffix: 'ListModel',
       },
-      {
-        path: 'src/models/schema',
-        type: 'cjs',
-      },
       // {
       //   path: 'utility',
       //   fileNameHandler: (f) => {

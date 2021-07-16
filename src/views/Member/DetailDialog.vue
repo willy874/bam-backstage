@@ -87,6 +87,18 @@
           <span class="text-red-500 text-xs" v-show="model.hasError('address')">{{ model.hasError('address') }}</span>
         </div>
       </div>
+      <div class="py-2 sm:flex" v-if="model.categories.length">
+        <div class="flex-shrink-0 w-20" :style="{ marginTop: `${formTitleMarginTop}px` }">分眾類別</div>
+        <div class="flex-grow">
+          <div class="flex flex-wrap border scroll-bar max-h-40 pr-8 py-1 relative" style="min-height: 2.5rem">
+            <div class="p-1" v-for="(relation, index) in model.categories" :key="relation.category_info.id">
+              <div class="text-xs py-1 px-2 inline-block rounded" :style="covnBadgeColor(relation.category_info.color)">
+                {{ relation.category_info.name }}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </form>
     <template #footer>
       <div class="flex justify-between items-center rounded-b-lg border-t p-2">
@@ -127,6 +139,16 @@ export default {
     const popupProps = reactive(props.props)
     const errorMessages = ref([])
     const formTitleMarginTop = ref(7)
+    const defaultBadgeColor = {
+      color: '#ffffff',
+      backgroundColor: '#17a2b8',
+    }
+    const covnBadgeColor = (color) => {
+      return {
+        color: color.split(',')[0] || defaultBadgeColor.color,
+        backgroundColor: color.split(',')[1] || defaultBadgeColor.backgroundColor,
+      }
+    }
     const validateRules = {
       real_name: {
         presence: {
@@ -166,6 +188,7 @@ export default {
       model,
       formTitleMarginTop,
       errorMessages,
+      covnBadgeColor,
       ready() {
         props.initPosition()
       },
