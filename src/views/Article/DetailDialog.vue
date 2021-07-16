@@ -62,7 +62,7 @@
             field="image_id"
             placeholder="請選擇封面圖片"
             :options="imageList"
-            optionValue="id"
+            optionValue="image_id"
             optionName="name"
           ></SelectDrop>
           <span class="text-red-500 text-xs" v-show="model.hasError('image_id')">{{ model.hasError('image_id') }}</span>
@@ -105,10 +105,9 @@
 import { reactive, ref, onMounted, nextTick } from 'vue'
 import { v4 as uuidV4 } from 'uuid'
 import throttle from 'lodash/throttle'
-import { ArticleModel, ImageModel, AssetsListModel } from '@/models/index'
+import { ArticleModel, ArticleImageModel, AssetsListModel } from '@/models/index'
 import { isModelError } from '@/utility/model-handle'
 import Swal from '@/utility/alert'
-import { useDialog } from '@/components/dialog/index'
 import DialogLayout from '@/container/DialogLayout.vue'
 import ImageFolderButton from '@/container/ImageFolderButton.vue'
 
@@ -122,13 +121,14 @@ export default {
     const model = reactive(new ArticleModel(props.props.model))
     const imageList = reactive(
       new AssetsListModel({
-        model: ImageModel,
+        model: ArticleImageModel,
         data: model.images,
       })
     )
     onMounted(async () => {
       if (model.id) {
         await model.readData()
+        console.log(model)
       }
       const allResponse = await Promise.allSettled(model.images.map(async (image) => await image.readData()))
       // 清除無效圖片
@@ -146,7 +146,6 @@ export default {
       stateHide: uuidV4(),
       stateShow: uuidV4(),
     })
-    const dialog = useDialog()
     const popupProps = reactive(props.props)
     const errorMessages = ref([])
     const formTitleMarginTop = ref(7)
@@ -198,7 +197,7 @@ export default {
           if (res.isAxiosError) {
             throw res.message
           }
-          return new ImageModel({
+          return new ArticleImageModel({
             ...image,
             id: res.data.id,
             image_id: res.data.id,
@@ -252,8 +251,8 @@ export default {
                   sub_title: model.sub_title,
                   content: model.content,
                   image_id: model.image_id,
-                  // state: model.state,
-                  images: model.images.map((p) => p.id),
+                  state: model.state,
+                  images: model.images.filter((p) => !p.deleted).map((p) => p.image_id),
                 }
               },
             })
@@ -267,8 +266,8 @@ export default {
                   sub_title: model.sub_title,
                   content: model.content,
                   image_id: model.image_id,
-                  // state: model.state,
-                  images: model.images.map((p) => p.id),
+                  state: model.state,
+                  images: model.images.filter((p) => !p.deleted).map((p) => p.image_id),
                 }
               },
             })

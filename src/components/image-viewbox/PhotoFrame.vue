@@ -388,6 +388,7 @@ export default {
         listModelData: list,
         filterList,
         selecteList,
+        modelHandler: props.modelHandler,
         fileLength: props.fileLength,
       },
     }

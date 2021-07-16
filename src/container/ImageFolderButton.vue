@@ -35,6 +35,10 @@ export default markRaw({
       },
       default: 10,
     },
+    modelHandler: {
+      type: Function,
+      default: async (p) => p,
+    },
   },
   setup(props) {
     const listModelData = isReactive(props.listModelData) ? props.listModelData : reactive(props.listModelData)
@@ -52,8 +56,13 @@ export default markRaw({
           if (selectedImages.length + listModelData.data.length > props.fileLength) {
             alert('上傳檔案數量超過上限')
           } else {
-            selectedImages.forEach((image) => {
-              image.edited = true
+            const imageList = await Promise.all(
+              selectedImages.map(async (image) => {
+                image.edited = true
+                return await props.modelHandler(image)
+              })
+            )
+            imageList.forEach((image) => {
               listModelData.data.push(image)
             })
           }

@@ -13,6 +13,12 @@ export default class ArticleImageModel extends ImageModel {
     this.id = entity.id || 0
     this.article_id = entity.article_id || 0
     this.image_id = entity.image_id || ''
+    if (entity.info) {
+      this.name = entity.info.name || ''
+      this.height = entity.info.height || 0
+      this.width = entity.info.width || 0
+      this.type = entity.info.mime || ''
+    }
     this.primaryKey = entity.primaryKey || 'image_id'
   }
 }
