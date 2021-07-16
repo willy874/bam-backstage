@@ -16,9 +16,9 @@
             >
               <div class="datatable__table__th__block">
                 <div v-if="typeof table.field === 'object' && table.title.render">
-                  <component :is="refComponent(table.title)" v-bind="{ listData, filterList, listIndex: -1, ...table.props }"></component>
+                  <component :is="table.title" v-bind="{ listData, filterList, listIndex: -1, ...table.props }"></component>
                 </div>
-                <div v-else v-html="table.title"></div>
+                <div v-else v-html="contentTitle(table.title, table)"></div>
               </div>
             </div>
           </div>
@@ -48,7 +48,12 @@
               "
             >
               <template v-if="typeof table.field === 'object' && table.field.render">
-                <component :is="refComponent(table.field)" v-bind="{ model: filterList.data[index], listData: model, filterList, ...table.props }"></component>
+                <KeepAlive>
+                  <component
+                    :is="table.field"
+                    v-bind="{ model: filterList.data[index], listData: model, listIndex: index, filterList, ...table.props }"
+                  ></component>
+                </KeepAlive>
               </template>
               <div v-else class="datatable__table__td__block" :style="{ webkitLineClamp: table.lineClamp || 2 }" v-html="content(table.field, index)"></div>
             </div>
@@ -139,7 +144,6 @@ export default {
     },
     filter: {
       type: Function,
-      default: (data) => data,
     },
   },
   setup(props, context) {
@@ -172,13 +176,12 @@ export default {
       if (props.ajax) {
         return list
       } else if (props.filter) {
-        return props.filter(list)
+        return props.filter(list, listData)
       } else {
-        return list.set({
-          data: list.data.filter((m, i) => {
-            return (listCurrentPage.value - 1) * listPerPage.value <= i && i < listCurrentPage.value * listPerPage.value
-          }),
+        list.data = listData.data.filter((m, i) => {
+          return (listCurrentPage.value - 1) * listPerPage.value <= i && i < listCurrentPage.value * listPerPage.value
         })
+        return list
       }
     })
     const widthTemplate = computed(() => {
@@ -270,6 +273,15 @@ export default {
       scrollBody: (e) => {
         head.value.scrollTo(e.target.scrollLeft, 0)
       },
+      contentTitle: (field, table) => {
+        if (typeof field === 'string') {
+          return field
+        }
+        if (typeof field === 'function') {
+          return field(field, table, { listData, filterList })
+        }
+        return ''
+      },
       content: (field, index) => {
         if (typeof field === 'string') {
           return filterList.value.data[index][field]
@@ -278,11 +290,6 @@ export default {
           return field(filterList.value.data[index], index, { listData, filterList })
         }
         return ''
-      },
-      refComponent: (component) => {
-        return {
-          ...component,
-        }
       },
     }
   },

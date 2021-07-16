@@ -2,6 +2,7 @@ import ArticleView from '../views/Article/Index.vue'
 import ArticleListView from '../views/Article/List.vue'
 import ArticleListProps from '../views/Article/list'
 import MemberListProps from '../views/Member/list'
+import CategoriesListProps from '../views/Member/Category/list'
 import ProductListProps from '../views/Product/list'
 import RichmenuListProps from '../views/Richmenu/list'
 import AssetListView from '../views/Asset/List.vue'
@@ -49,11 +50,18 @@ const routes = [{
       routeTitle: '會員專區',
     },
     children: [{
-      name: 'MemberList',
-      path: 'list',
-      component: ArticleListView,
-      props: MemberListProps,
-    }, ],
+        name: 'MemberList',
+        path: 'list',
+        component: ArticleListView,
+        props: MemberListProps,
+      },
+      {
+        name: 'CategoriesList',
+        path: 'categories',
+        component: ArticleListView,
+        props: CategoriesListProps,
+      },
+    ],
   },
   {
     name: 'Product',
@@ -83,21 +91,6 @@ const routes = [{
       path: 'list',
       component: ArticleListView,
       props: RichmenuListProps,
-    }, ],
-  },
-  {
-    name: 'Group',
-    path: '/group',
-    redirect: '/group/list',
-    component: ArticleView,
-    props: {
-      routeTitle: '分眾管理',
-    },
-    children: [{
-      name: 'GrouptList',
-      path: 'list',
-      component: ArticleListView,
-      // props: MemberListProps,
     }, ],
   },
   {

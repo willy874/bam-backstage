@@ -5,10 +5,11 @@
 </template>
 
 <script>
+import { markRaw } from 'vue'
 import { useDialog } from '@/components/dialog/index'
 import LinePointCreateDialog from './CreateDialog.vue'
 
-export default {
+export default markRaw({
   name: 'LinePointTableOptionButton',
   inheritAttrs: false,
   setup(props, context) {
@@ -22,5 +23,5 @@ export default {
       },
     }
   },
-}
+})
 </script>

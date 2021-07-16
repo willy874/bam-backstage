@@ -8,6 +8,7 @@ import {
   RichmenuModel,
   AssetsListModel,
   RichmenusListModel,
+  MemberCategoryModel,
 } from '@/models/index'
 
 export default {
@@ -40,5 +41,9 @@ export default {
     listModel: RichmenusListModel,
     model: RichmenuModel,
     api: 'richmenus',
+  },
+  MemberCategories: {
+    model: MemberCategoryModel,
+    api: 'member-categories',
   }
 }

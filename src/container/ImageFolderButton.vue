@@ -5,12 +5,12 @@
 </template>
 
 <script>
-import { reactive, isReactive } from 'vue'
+import { reactive, isReactive, markRaw } from 'vue'
 import { ListModel } from '@/models/index'
 import { useDialog } from '@/components/dialog/index'
 import ImageFolderDialog from './ImageFolderDialog.vue'
 
-export default {
+export default markRaw({
   name: 'ImageFolderButton',
   inheritAttrs: false,
   props: {
@@ -61,5 +61,5 @@ export default {
       },
     }
   },
-}
+})
 </script>

@@ -1,4 +1,6 @@
-import { DataModel } from '../index'
+import {
+  DataModel
+} from '../index'
 
 /**
  * @extends DataModel
@@ -34,6 +36,7 @@ export default class MemberModel extends DataModel {
     this.email = entity.email || ''
     this.phone_number = entity.phone_number || ''
     this.address = entity.address || ''
+    this.selected = entity.selected || false
     // proto set
     this.api = entity.api || 'member'
   }

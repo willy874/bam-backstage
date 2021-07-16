@@ -40,38 +40,39 @@ export default class SearchModel extends DataModel {
   }
 
   searchFilter() {
-    return (list) => {
-      return list.set({
+    return (list, native) => {
+      list.set({
         model: list.modelType,
         primaryKey: list.primaryKey,
         ...list,
-        data: list.data.filter((model, index) => {
-          this.type = (() => {
-            if (typeof this.search === 'function') {
-              return 'handle'
-            }
-            if (typeof this.search === 'string') {
-              return 'keyword'
-            }
-            if (typeof this.search === 'object') {
-              return this.search && this.search.type || 'keyword'
-            }
-          })()
-          const defaultSearch = (() => {
-            switch (this.type) {
-              case 'handle':
-                return this.search
-              case 'keyword':
-                return this.keywordSearch.bind(this)
-              case 'category':
-                return this.categorySearch.bind(this)
-              default:
-                return this.keywordSearch.bind(this)
-            }
-          })()
-          return [defaultSearch, ...this.filterRules].every(method => method(model, index, list))
-        }),
       })
+      list.data = native.data.filter((model, index) => {
+        this.type = (() => {
+          if (typeof this.search === 'function') {
+            return 'handle'
+          }
+          if (typeof this.search === 'string') {
+            return 'keyword'
+          }
+          if (typeof this.search === 'object') {
+            return this.search && this.search.type || 'keyword'
+          }
+        })()
+        const defaultSearch = (() => {
+          switch (this.type) {
+            case 'handle':
+              return this.search
+            case 'keyword':
+              return this.keywordSearch.bind(this)
+            case 'category':
+              return this.categorySearch.bind(this)
+            default:
+              return this.keywordSearch.bind(this)
+          }
+        })()
+        return [defaultSearch, ...this.filterRules].every(method => method(model, index, list))
+      })
+      return list
     }
   }
 }

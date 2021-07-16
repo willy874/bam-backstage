@@ -1,7 +1,7 @@
 <template>
   <nav>
     <ul class="overflow-hidden">
-      <li class="text-primary-mirror py-1" v-for="item in nav" :key="item.uuid">
+      <li class="text-primary-mirror" v-for="item in nav" :key="item.uuid">
         <div class="relative flex items-center bg-white bg-opacity-0 hover:bg-opacity-40">
           <template v-if="item.route && hasRoute(item.route.name)">
             <div class="flex flex-grow items-center relative">
@@ -36,7 +36,7 @@
             </div>
           </template>
         </div>
-        <ul class="pb-2" v-if="item.children && item.children.length && item.open">
+        <ul v-if="item.children && item.children.length && item.open">
           <li class="relative py-2 flex bg-white bg-opacity-20 hover:bg-opacity-40" v-for="child in item.children" :key="child.uuid">
             <div class="flex-shrink-0 p-2">
               <Icon v-if="child.icon" :src="child.icon" :size="global.iconWidth" />

@@ -51,7 +51,7 @@
     </div>
     <div class="photo-frame__fixed-bar">
       <div class="photo-frame__fixed-bar__options" v-for="plugin in plugins" :key="plugin.name">
-        <component :is="refComponent(plugin)" v-bind="optionBarProps"></component>
+        <component :is="plugin" v-bind="optionBarProps"></component>
       </div>
       <div class="photo-frame__fixed-bar__options" v-show="selecteList.length">
         <div class="photo-frame__fixed-bar__options__trash" v-html="trashIcon" @click.stop="clearAll"></div>
@@ -389,11 +389,6 @@ export default {
         filterList,
         selecteList,
         fileLength: props.fileLength,
-      },
-      refComponent: (component) => {
-        return {
-          ...component,
-        }
       },
     }
   },

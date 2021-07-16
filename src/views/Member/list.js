@@ -1,14 +1,20 @@
 import schema from '@/models/config/database'
-import { useDialog } from '@/components/dialog/index'
+import {
+  useDialog
+} from '@/components/dialog/index'
 import DetailDialog from './DetailDialog.vue'
 
 export default {
-  routeTitle: '會員專區列表',
+  routeTitle: '會員列表',
   modelName: 'Members',
   modelSchema: schema.Members,
   dataTable: {
-    options: [
-      { title: 'No.', field: (item, index) => index + 1, width: '80px', align: 'center' },
+    options: [{
+        title: 'No.',
+        field: (item, index) => index + 1,
+        width: '80px',
+        align: 'center'
+      },
       {
         title: '相片',
         field: (item) => {
@@ -22,7 +28,18 @@ export default {
         width: '60px',
         align: 'center',
       },
-      { title: '名稱', field: 'name', width: 1, columnStyle: { minWidth: '180px' }, bodyStyle: { padding: '0 0.5rem' }, align: 'center' },
+      {
+        title: '名稱',
+        field: 'name',
+        width: 1,
+        columnStyle: {
+          minWidth: '180px'
+        },
+        bodyStyle: {
+          padding: '0 0.5rem'
+        },
+        align: 'center'
+      },
       {
         title: '性別',
         field: (item) => {
@@ -38,9 +55,36 @@ export default {
         width: '60px',
         align: 'center',
       },
-      { title: '電子郵件', field: 'email', width: 1, columnStyle: { minWidth: '180px' }, bodyStyle: { padding: '0 0.5rem' }, align: 'center' },
-      { title: '電話', field: 'phone_number', width: '120px', align: 'center' },
-      { title: '地址', field: 'address', width: 2, columnStyle: { minWidth: '180px' }, bodyStyle: { padding: '0 0.5rem' }, align: 'left' },
+      {
+        title: '電子郵件',
+        field: 'email',
+        width: 1,
+        columnStyle: {
+          minWidth: '180px'
+        },
+        bodyStyle: {
+          padding: '0 0.5rem'
+        },
+        align: 'center'
+      },
+      {
+        title: '電話',
+        field: 'phone_number',
+        width: '120px',
+        align: 'center'
+      },
+      {
+        title: '地址',
+        field: 'address',
+        width: 2,
+        columnStyle: {
+          minWidth: '180px'
+        },
+        bodyStyle: {
+          padding: '0 0.5rem'
+        },
+        align: 'left'
+      },
       {
         title: '狀態',
         field: (item) => {
@@ -57,7 +101,9 @@ export default {
         align: 'center',
       },
     ],
-    clickTr: async (model, index, { listData }) => {
+    clickTr: async (model, index, {
+      listData
+    }) => {
       const dialog = useDialog()
       const popup = await dialog.popup(DetailDialog, {
         onBackgroundClick: () => {},

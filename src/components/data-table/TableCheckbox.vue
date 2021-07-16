@@ -1,57 +1,45 @@
 <template>
-  <div class="d-flex flex-center w-100">
-    <div>
-      <button class="btn btn-checkbox" :class="{ active: checked }" @click="changeEvent"></button>
-    </div>
+  <div class="mx-auto">
+    <button class="btn-checkbox" :class="{ active: model.selected }" @click="changeEvent"></button>
   </div>
 </template>
 
 <script>
-import { v4 as uuid } from 'uuid'
+import { reactive, isReactive, markRaw } from 'vue'
 
-export default {
+export default markRaw({
   name: 'TableCheckbox',
+  inheritAttrs: false,
   props: {
-    selecteList: {
-      type: Array,
-      default: () => [],
-    },
-    listIndex: {
-      type: Number,
-      required: true,
-    },
     listData: {
       type: Object,
       required: true,
     },
+    model: {
+      type: Object,
+      required: true,
+    },
+    changeSelected: {
+      type: Function,
+    },
   },
-  data() {
+  setup(props) {
+    const listData = isReactive(props.listData) ? props.listData : reactive(props.listData)
+    const model = reactive(props.model)
     return {
-      uuid: uuid(),
-      checked: false,
+      listData,
+      model,
+      changeEvent: (e) => {
+        if (model.selected) {
+          model.selected = false
+        } else {
+          model.selected = true
+        }
+        if (props.changeSelected) {
+          props.changeSelected(e)
+        }
+      },
     }
   },
-  watch: {
-    selecteList(value) {
-      const model = this.listData.data[this.listIndex]
-      if (value.includes(model)) {
-        this.checked = true
-      } else {
-        this.checked = false
-      }
-    },
-  },
-  methods: {
-    changeEvent(e) {
-      const model = this.listData.data[this.listIndex]
-      const selecteList = this.selecteList
-      if (selecteList.includes(model)) {
-        const index = this.value.indexOf(model)
-        selecteList.splice(index, 1)
-      } else {
-        this.value.push(model)
-      }
-    },
-  },
-}
+})
 </script>

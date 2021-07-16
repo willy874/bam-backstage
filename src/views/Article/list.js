@@ -76,8 +76,7 @@ export default {
       },
     ],
     clickTr: async (model, index, {
-      listData,
-      element,
+      listData
     }) => {
       // console.log(element)
       const dialog = useDialog()

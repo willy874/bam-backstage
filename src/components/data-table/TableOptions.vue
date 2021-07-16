@@ -1,15 +1,16 @@
 <template>
   <div class="datatable__options" @click.stop>
     <div v-for="plugin in plugins" :key="plugin.name">
-      <component :is="refComponent(plugin)" v-bind="$props"></component>
+      <component :is="plugin" v-bind="$props"></component>
     </div>
   </div>
 </template>
 
 <script>
+import { markRaw } from 'vue'
 import { ListModel, DataModel } from '@/models/index'
 
-export default {
+export default markRaw({
   name: 'TableOptions',
   inheritAttrs: false,
   props: {
@@ -27,15 +28,9 @@ export default {
     },
   },
   setup(props) {
-    return {
-      refComponent: (component) => {
-        return {
-          ...component
-        }
-      }
-    }
+    return {}
   },
-}
+})
 </script>
 <style lang="scss" scoped>
 .datatable__options {

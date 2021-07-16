@@ -32,6 +32,7 @@ export default class Admin {
       try {
         const res = await request.get('admin/profile')
         if (res.isAxiosError) {
+          console.log('profile isAxiosError')
           throw res.message
         }
         this.user = res.data

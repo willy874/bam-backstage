@@ -27,7 +27,7 @@
 </template>
 
 <script>
-import { ref, reactive } from 'vue'
+import { ref, reactive, onMounted } from 'vue'
 import PageLayout from '@/container/PageLayout.vue'
 import { ArticleModel, SearchModel } from '@/models/index'
 import SearchBar from '@/container/SearchBar.vue'
@@ -116,14 +116,18 @@ export default {
       searchBarProps,
     }
 
-    try {
-      listModelData.readList()
-    } catch (error) {
-      if (process.env.NODE_ENV === 'development') {
-        console.log('%c[ArticleList] Error: readList', 'color: #f00;background: #ff000011;padding: 2px 6px;border-radius: 4px;')
-        console.dir(error)
+    onMounted(async () => {
+      try {
+        if (listModelData) {
+          await listModelData.readList()
+        }
+      } catch (error) {
+        if (process.env.NODE_ENV === 'development') {
+          console.log('%c[ArticleList] Error: readList', 'color: #f00;background: #ff000011;padding: 2px 6px;border-radius: 4px;')
+          console.dir(error)
+        }
       }
-    }
+    })
 
     return setupResult
   },

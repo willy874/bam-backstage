@@ -8,9 +8,10 @@
 </template>
 
 <script>
+import { markRaw } from 'vue'
 import { v4 as uuid } from 'uuid'
 
-export default {
+export default markRaw({
   inheritAttrs: false,
   name: 'TableCheckboxAll',
   props: {
@@ -52,5 +53,5 @@ export default {
       }
     },
   },
-}
+})
 </script>

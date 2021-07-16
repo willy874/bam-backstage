@@ -17,9 +17,19 @@ export default [{
   {
     title: '會員專區',
     icon: 'User',
-    route: {
-      name: 'Member',
-    },
+    children: [{
+        title: '會員列表',
+        route: {
+          name: 'MemberList',
+        },
+      },
+      {
+        title: '分眾管理',
+        route: {
+          name: 'CategoriesList',
+        },
+      }
+    ]
   },
   {
     title: '商品管理',
