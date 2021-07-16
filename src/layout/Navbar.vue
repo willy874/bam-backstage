@@ -90,11 +90,17 @@ export default {
         }
       })
     }
+    const nav = reactive(navMiddleware(props.config))
+    store.commit('setNav', nav)
+
     return {
-      nav: reactive(navMiddleware(props.config)),
+      nav,
       global: ref(store.state.global),
       toggleItem: (item) => {
         item.open = !item.open
+        if (item.open === true) {
+          store.commit('setAsideShow', true)
+        }
       },
       hasRoute: router.hasRoute,
     }

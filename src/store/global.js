@@ -9,6 +9,7 @@ export default {
     iconWidth: 24,
     asideShow: window.innerWidth > config.layout.deviceSwitch,
     headerShow: false,
+    nav: null
   },
   mutations: {
     setLang(state, value) {
@@ -33,6 +34,11 @@ export default {
       } else {
         state.asideShow = !state.asideShow
       }
+      if (state.asideShow === false) {
+        state.nav.forEach(nav => {
+          nav.open = false
+        })
+      }
     },
     setHeaderShow(state, value) {
       if (typeof value === 'boolean') {
@@ -40,6 +46,9 @@ export default {
       } else {
         state.headerShow = !state.headerShow
       }
+    },
+    setNav(state, value) {
+      state.nav = value
     },
   },
   actions: {},
