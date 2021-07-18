@@ -152,7 +152,7 @@ export default {
     const dialog = useDialog()
     const popupProps = reactive(props.props)
     const errorMessages = ref([])
-    const formTitleMarginTop = ref(7)
+    const formTitleMarginTop = ref(6)
     const windowShow = ref(true)
     const validateRules = {
       name: {
@@ -210,26 +210,29 @@ export default {
       errorMessages,
       categoryHandle: (value) => {},
       modelHandler: async (image) => {
-        try {
-          const res = await image.createData()
-          if (res.isAxiosError) {
-            throw res.message
+        if (image.mode === 'create') {
+          try {
+            const res = await image.createData()
+            if (res.isAxiosError) {
+              throw res.message
+            }
+            return new ProductImageModel({
+              ...image,
+              image_id: res.data.id,
+            })
+          } catch (error) {
+            if (process.env.NODE_ENV === 'development') {
+              console.log('%c[Product DetailDialog] Error: modelHandler > createData', 'color: #f00;background: #ff000011;padding: 2px 6px;border-radius: 4px;')
+              console.dir(error)
+            }
+            Swal.error({ title: '圖片上傳失敗' })
+            return null
           }
-          return new ProductImageModel({
-            ...image,
-            id: res.data.id,
-            image_id: res.data.id,
+        } else {
+          return image.set({
+            id: 0,
+            image_id: image.id,
           })
-        } catch (error) {
-          if (process.env.NODE_ENV === 'development') {
-            console.log('%c[Product DetailDialog] Error: modelHandler > createData', 'color: #f00;background: #ff000011;padding: 2px 6px;border-radius: 4px;')
-            console.dir(error)
-          }
-          Swal.error({
-            icon: 'error',
-            title: '圖片上傳失敗',
-          })
-          return null
         }
       },
       close: throttle(() => {
@@ -261,15 +264,36 @@ export default {
         }
         try {
           if (model.id === 0 || model.id === '') {
-            await model.createData()
-            popupProps.model = model
+            const res = await model.createData({
+              requesHandler(model) {
+                const result = {
+                  name: model.name,
+                  description: model.description,
+                  price: Number(model.price),
+                  category_id: model.category_id,
+                  state: model.state,
+                }
+                if (model.images.some((img) => img.edited)) {
+                  model.images.forEach((img) => {
+                    if (img.image_id === '') img.image_id = img.id
+                  })
+                  result.images = model.images.filter((p) => !p.deleted).map((p) => p.image_id)
+                }
+                if (!isLinePoint(model)) result.stock = model.stock
+                return result
+              },
+            })
+            if (res.isAxiosError) {
+              throw res.message
+            }
+            popupProps.model = model.set(res.data)
           } else {
             const res = await model.updateData({
               requesHandler(model) {
                 const result = {
                   name: model.name,
                   description: model.description,
-                  price: model.price,
+                  price: Number(model.price),
                   category_id: model.category_id,
                   state: model.state,
                 }
@@ -294,10 +318,7 @@ export default {
             console.log('%c[Product DetailDialog] Error: submit', 'color: #f00;background: #ff000011;padding: 2px 6px;border-radius: 4px;')
             console.dir(error)
           }
-          Swal.error({
-            icon: 'error',
-            title: '儲存失敗',
-          })
+          Swal.error({ title: '儲存失敗' })
         }
       }, 1000),
       addLinePoint: throttle(async () => {

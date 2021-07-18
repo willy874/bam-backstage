@@ -6,6 +6,9 @@ import '../validate/index'
 import {
   handleApiConfig
 } from '../utility/index'
+import {
+  v4 as uuid
+} from 'uuid'
 
 /**
  * @property {Number} id             - 該筆資料唯一索引
@@ -39,6 +42,11 @@ export default class DataModel {
     this.mode = entity.mode || 'static'
     this.edited = entity.edited || false
     this.deleted = entity.deleted || false
+    Object.defineProperty(this, 'modelId', {
+      value: uuid(),
+      enumerable: false,
+      writable: true,
+    })
     Object.defineProperty(this, 'api', {
       value: entity.api || '',
       enumerable: false,

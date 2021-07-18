@@ -267,7 +267,7 @@ export default {
             }
           },
         },
-        [options.data.map((option, index) => renderOption(option, index))]
+        [options.data.filter((p) => !p.deleted).map((option, index) => renderOption(option, index))]
       )
     }
     const renderOption = (item, index) => {

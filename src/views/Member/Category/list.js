@@ -5,6 +5,7 @@ import {
 import TableOptions from '@/components/data-table/TableOptions.vue'
 import AddModelButton from '@/container/AddModelButton.vue'
 import DetailDialog from './DetailDialog.vue'
+import TableOptionButton from '../LinePush/TableOptionButton.vue'
 
 export default {
   routeTitle: '分眾管理',
@@ -61,7 +62,7 @@ export default {
         width: '80px',
         align: 'center',
         props: {
-          plugins: [],
+          plugins: [TableOptionButton],
         },
       },
     ],

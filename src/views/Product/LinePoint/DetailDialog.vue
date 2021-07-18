@@ -76,7 +76,7 @@ export default {
     const model = reactive(new LinePointModel(props.props.model))
     const popupProps = reactive(props.props)
     const errorMessages = ref([])
-    const formTitleMarginTop = ref(7)
+    const formTitleMarginTop = ref(6)
     const formTitleWidth = ref(120)
     const validateRules = {
       number: {
@@ -142,10 +142,7 @@ export default {
             console.log('%c[Product LinePointDetailDialog] Error: submit', 'color: #f00;background: #ff000011;padding: 2px 6px;border-radius: 4px;')
             console.dir(error)
           }
-          Swal.error({
-            icon: 'error',
-            title: '儲存失敗',
-          })
+          Swal.error({ title: '儲存失敗' })
         }
       }, 1000),
       convState(code) {

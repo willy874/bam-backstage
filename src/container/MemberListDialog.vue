@@ -48,7 +48,7 @@ import throttle from 'lodash/throttle'
 import DialogLayout from '@/container/DialogLayout.vue'
 import TableCheckbox from '@/components/data-table/TableCheckbox.vue'
 import schema from '@/models/config/database'
-import { ListModel, SearchModel } from '@/models/index'
+import { ListModel, SearchModel, MemberRelationModel } from '@/models/index'
 
 export default {
   name: 'MemberListDialog',
@@ -58,7 +58,12 @@ export default {
   },
   setup(props) {
     const category = props.props.model
-    const arrMamberId = category.members.map((p) => p.member.id)
+    const CategoryRelationList = reactive(
+      new ListModel({
+        model: MemberRelationModel,
+        api: `member-category/${category.id}/members`,
+      })
+    )
     const listData = reactive(new ListModel(schema.Members))
     const selecteOptions = [
       {
@@ -88,9 +93,10 @@ export default {
       })
     )
     onMounted(async () => {
-      await listData.readList()
+      await Promise.all([CategoryRelationList.readList(), listData.readList()])
       await nextTick()
       props.initPosition()
+      const arrMamberId = CategoryRelationList.data.map((p) => p.member.id)
       listData.data.forEach((model) => {
         if (arrMamberId.includes(model.id)) {
           model.selected = true

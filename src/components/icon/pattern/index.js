@@ -13,6 +13,7 @@ import Image from './image.js'
 import Invisible from './invisible.js'
 import List from './list.js'
 import MaleSymbol from './male-symbol.js'
+import Megaphone from './megaphone.js'
 import Menu from './menu.js'
 import News from './news.js'
 import Padlock from './padlock.js'
@@ -41,6 +42,7 @@ export {
   Invisible,
   List,
   MaleSymbol,
+  Megaphone,
   Menu,
   News,
   Padlock,

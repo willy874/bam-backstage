@@ -3,7 +3,6 @@ import {
   useDialog
 } from '@/components/dialog/index'
 import DetailDialog from './DetailDialog.vue'
-import AddModelButton from '@/container/AddModelButton.vue'
 
 export default {
   routeTitle: '圖文選單列表',
@@ -81,5 +80,5 @@ export default {
     },
   },
   detailPage: DetailDialog,
-  headerBar: [AddModelButton],
+  headerBar: [],
 }

@@ -84,7 +84,7 @@ export default {
     )
     const popupProps = reactive(props.props)
     const errorMessages = ref([])
-    const formTitleMarginTop = ref(7)
+    const formTitleMarginTop = ref(6)
     const validateRules = {
       number: {
         presence: {
@@ -156,10 +156,7 @@ export default {
               html: `<div>${success}筆成功，${fail}筆失敗<div>` + (duplicate.length ? `<div>${duplicate.join(', ')} 已使用過。<div>` : ''),
             })
           } else {
-            await Swal.fire({
-              title: '序號上傳成功',
-              icon: 'success',
-            })
+            await Swal.success({ title: '序號上傳成功' })
           }
         } catch (error) {
           if (process.env.NODE_ENV === 'development') {
@@ -167,10 +164,7 @@ export default {
             console.dir(error)
           }
           listData.loading = false
-          await Swal.error({
-            icon: 'error',
-            title: '上傳失敗',
-          })
+          await Swal.error({ title: '上傳失敗' })
         }
         props.dialog.closePopup(props.id)
       }, 1000),

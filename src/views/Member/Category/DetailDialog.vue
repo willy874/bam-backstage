@@ -32,22 +32,13 @@
         </div>
       </div>
       <div class="py-2 sm:flex">
-        <div class="flex-shrink-0 w-20" :style="{ marginTop: `${formTitleMarginTop}px` }">群組會員</div>
+        <div class="flex-shrink-0 w-20">群組會員</div>
         <div class="flex-grow">
-          <div class="border flex flex-wrap scroll-bar max-h-40 pr-8 relative" style="min-height: 2.5rem">
-            <div class="p-1" v-for="(relation, index) in model.members" :key="relation.member.id">
-              <div class="rounded text-xs text-white bg-primary-500 flex items-center">
-                <div class="px-1">{{ relation.member.name }}</div>
-                <button type="button" class="btn-icon" @click="deleteMember(relation, index, model.members)">
-                  <Icon src="Add" class="transform rotate-45" size="16" />
-                </button>
-              </div>
-            </div>
-            <div class="absolute right-0 top-1">
-              <button type="button" class="btn-icon text-primary-500 hover:text-primary-600" @click="openMemberSelect">
-                <Icon src="Add" size="24" />
-              </button>
-            </div>
+          <div class="flex-grow flex items-center">
+            <div class="mr-2">{{ selectedMemerCount }}</div>
+            <button type="button" class="btn-icon text-primary-500 hover:text-primary-600" @click="openMemberSelect">
+              <Icon src="List" size="16" />
+            </button>
           </div>
         </div>
       </div>
@@ -61,6 +52,8 @@
           </div>
         </div>
         <div class="px-1 flex items-center">
+          <button class="btn mx-1 text-primary-mirror bg-primary-500 hover:bg-primary-600" type="button" @click="pushMessage">推播</button>
+          <button v-if="model.id" class="btn mx-1 text-primary-mirror bg-red-500 hover:bg-red-600" type="button" @click="deleteModel">刪除</button>
           <button class="btn mx-1 text-primary-mirror bg-gray-500 hover:bg-gray-600" type="button" @click="close">取消</button>
           <SubmitButton class="mx-1 text-primary-mirror bg-green-500 hover:bg-green-600" type="button" :model="model" @click="submit">送出</SubmitButton>
         </div>
@@ -72,11 +65,12 @@
 <script>
 import { reactive, ref, onMounted, nextTick, computed } from 'vue'
 import throttle from 'lodash/throttle'
-import { ListModel, MemberCategoryModel, MemberRelationModel } from '@/models/index'
+import { MemberCategoryModel } from '@/models/index'
 import { isModelError } from '@/utility/model-handle'
 import DialogLayout from '@/container/DialogLayout.vue'
 import MemberListDialog from '@/container/MemberListDialog.vue'
 import Swal from '@/utility/alert'
+import LinePushOptionDialog from '../LinePush/OptionDialog.vue'
 
 export default {
   name: 'DetailDialog',
@@ -86,16 +80,9 @@ export default {
   },
   setup(props) {
     const model = reactive(new MemberCategoryModel(props.props.model))
-    const CategoryRelationList = reactive(
-      new ListModel({
-        model: MemberRelationModel,
-        api: `member-category/${model.id}/members`,
-      })
-    )
+    const selectedMemerCount = ref(2)
     onMounted(async () => {
       await model.readData()
-      const res = await CategoryRelationList.readList()
-      model.set({ members: res.data })
       await nextTick()
       props.initPosition()
     })
@@ -124,6 +111,7 @@ export default {
     return {
       model,
       badgeColor,
+      selectedMemerCount,
       formTitleMarginTop,
       errorMessages,
       close,
@@ -138,16 +126,24 @@ export default {
         if (!popup.props.selectedMemers) {
           return
         }
-        const selectedMemers = popup.props.selectedMemers.map((member) => {
-          return new MemberRelationModel({
-            member,
-          })
-        })
-        model.set({ members: selectedMemers })
+        selectedMemerCount.value = popup.props.selectedMemers.length
+        model.members = popup.props.selectedMemers
       }, 300),
-      deleteMember: throttle(async (item, index, list) => {
-        list.splice(index, 1)
-      }, 300),
+      deleteModel: async () => {
+        const swalResult = await Swal.delete()
+        try {
+          if (swalResult.isConfirmed) {
+            const res = await popupProps.model.deleteData()
+            if (res.isAxiosError) {
+              throw res.message
+            }
+            popupProps.model.deleted = true
+            props.dialog.closePopup(props.id)
+          }
+        } catch (error) {
+          console.log(error)
+        }
+      },
       submit: throttle(async (e) => {
         e.preventDefault()
         const modelErrorMessage = model.validate(validateRules)
@@ -161,33 +157,42 @@ export default {
           if (model.id === 0 || model.id === '') {
             const res = await model.createData({
               requesHandler(model) {
-                return {
+                const result = {
                   name: model.name,
                   description: model.description,
                   color: [badgeColor.color, badgeColor.backgroundColor].join(','),
-                  members: model.members.map((p) => p.member_id),
                 }
+                if (model.members) {
+                  result.members = model.members.map((p) => p.id)
+                }
+                return result
               },
             })
             if (res.isAxiosError) {
               throw res.message
             }
-            popupProps.model = model
+            popupProps.model = model.set(res.data)
           } else {
             const res = await model.updateData({
               requesHandler(model) {
-                return {
+                const result = {
                   name: model.name,
                   description: model.description,
                   color: [badgeColor.color, badgeColor.backgroundColor].join(','),
-                  members: model.members.map((p) => p.member.id),
                 }
+                if (model.members) {
+                  result.members = model.members.map((p) => p.id)
+                }
+                return result
               },
             })
             if (res.isAxiosError) {
               throw res.message
             }
-            popupProps.model.set(model)
+            popupProps.model.set({
+              ...model,
+              color: [badgeColor.color, badgeColor.backgroundColor].join(','),
+            })
           }
           props.dialog.closePopup(props.id)
         } catch (error) {
@@ -201,6 +206,14 @@ export default {
           })
         }
       }, 1000),
+      pushMessage: throttle(async () => {
+        await props.dialog.popup(LinePushOptionDialog, {
+          width: '576px',
+          props: {
+            model,
+          },
+        })
+      }, 300),
     }
   },
 }

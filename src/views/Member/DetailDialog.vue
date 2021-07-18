@@ -138,7 +138,7 @@ export default {
     })
     const popupProps = reactive(props.props)
     const errorMessages = ref([])
-    const formTitleMarginTop = ref(7)
+    const formTitleMarginTop = ref(6)
     const defaultBadgeColor = {
       color: '#ffffff',
       backgroundColor: '#17a2b8',
@@ -210,7 +210,7 @@ export default {
             if (res.isAxiosError) {
               throw res.message
             }
-            popupProps.model = model
+            popupProps.model = model.set(res.data)
           } else {
             const res = await model.updateData({
               requesHandler(model) {

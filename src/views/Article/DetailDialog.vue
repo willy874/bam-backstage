@@ -128,7 +128,6 @@ export default {
     onMounted(async () => {
       if (model.id) {
         await model.readData()
-        console.log(model)
       }
       const allResponse = await Promise.allSettled(model.images.map(async (image) => await image.readData()))
       // 清除無效圖片
@@ -148,7 +147,7 @@ export default {
     })
     const popupProps = reactive(props.props)
     const errorMessages = ref([])
-    const formTitleMarginTop = ref(7)
+    const formTitleMarginTop = ref(6)
     const windowShow = ref(true)
     const validateRules = {
       category: {
@@ -192,26 +191,29 @@ export default {
       errorMessages,
       categoryHandle: (value) => {},
       modelHandler: async (image) => {
-        try {
-          const res = await image.createData()
-          if (res.isAxiosError) {
-            throw res.message
+        if (image.mode === 'create') {
+          try {
+            const res = await image.createData()
+            if (res.isAxiosError) {
+              throw res.message
+            }
+            return new ArticleImageModel({
+              ...image,
+              image_id: res.data.id,
+            })
+          } catch (error) {
+            if (process.env.NODE_ENV === 'development') {
+              console.log('%c[Article DetailDialog] Error: modelHandler > createData', 'color: #f00;background: #ff000011;padding: 2px 6px;border-radius: 4px;')
+              console.dir(error)
+            }
+            Swal.error({ title: '圖片上傳失敗' })
+            return null
           }
-          return new ArticleImageModel({
-            ...image,
-            id: res.data.id,
-            image_id: res.data.id,
+        } else {
+          return image.set({
+            id: 0,
+            image_id: image.id,
           })
-        } catch (error) {
-          if (process.env.NODE_ENV === 'development') {
-            console.log('%c[Article DetailDialog] Error: modelHandler > createData', 'color: #f00;background: #ff000011;padding: 2px 6px;border-radius: 4px;')
-            console.dir(error)
-          }
-          Swal.error({
-            icon: 'error',
-            title: '圖片上傳失敗',
-          })
-          return null
         }
       },
       close: throttle(() => {
@@ -243,7 +245,7 @@ export default {
         }
         try {
           if (model.id === 0 || model.id === '') {
-            await model.createData({
+            const res = await model.createData({
               requesHandler(model) {
                 return {
                   category: model.category,
@@ -256,7 +258,10 @@ export default {
                 }
               },
             })
-            popupProps.model = model
+            if (res.isAxiosError) {
+              throw res.message
+            }
+            popupProps.model = model.set(res.data)
           } else {
             const res = await model.updateData({
               requesHandler(model) {
@@ -282,10 +287,7 @@ export default {
             console.log('%c[Product DetailDialog] Error: submit', 'color: #f00;background: #ff000011;padding: 2px 6px;border-radius: 4px;')
             console.dir(error)
           }
-          Swal.error({
-            icon: 'error',
-            title: '儲存失敗',
-          })
+          Swal.error({ title: '儲存失敗' })
         }
       }, 1000),
     }

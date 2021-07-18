@@ -75,20 +75,20 @@ export default class ListModel {
   }
 
   /**
-   * 設定data的資料，並存到快取內
    * @param {Array.<DataModel>} data
    * @returns {DataModel} 快取內的資料包
    */
   setData(data = [], options = {}) {
-    const ModelType = this.modelType
-    this.data = data.map((target) => {
-      if (target instanceof ModelType) {
-        return target
+    data.forEach((model) => {
+      const target = this.data.find(p => p[this.primaryKey] === model[this.primaryKey])
+      if (target && target instanceof DataModel) {
+        target.set(model)
       } else {
-        const model = new ModelType({
+        const ModelType = this.modelType
+        this.data.push(new ModelType({
           primaryKey: this.primaryKey,
-        })
-        return model.set(target)
+          ...model
+        }))
       }
     })
     return this

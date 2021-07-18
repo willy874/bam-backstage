@@ -18,8 +18,8 @@
               :tabindex="index + 1"
               @focus="focusItem($event, image)"
               @blur="blurItem"
-              @click.stop="clickItem($event, image, index)"
-              @keydown="keydownItem($event, image, index)"
+              @click.stop="clickItem($event, image, index, listData)"
+              @keydown="keydownItem($event, image, index, listData)"
             >
               <div class="absolute inset-0 px-4 py-2 flex flex-col">
                 <div
@@ -139,20 +139,19 @@ export default {
         ...props.modelSchema,
         ...listData,
       })
-      return list.set({
-        data: listData.data.filter((model) => {
-          try {
-            const keywordRegExp = props.filterOptions.keyword ? new RegExp(props.filterOptions.keyword) : false
-            if (keywordRegExp) {
-              return keywordRegExp.test(model.name)
-            } else {
-              return true
-            }
-          } catch (error) {
+      list.data = listData.data.filter((model) => {
+        try {
+          const keywordRegExp = props.filterOptions.keyword ? new RegExp(props.filterOptions.keyword) : false
+          if (keywordRegExp) {
+            return keywordRegExp.test(model.name)
+          } else {
             return true
           }
-        }),
+        } catch (error) {
+          return true
+        }
       })
+      return list
     })
     const refs = {
       root: ref(null),

@@ -97,22 +97,21 @@ export default {
         listModel: listModelData.listModelType,
         model: listModelData.modelType,
       })
-      return list.set({
-        data: assetsList.data.filter((model) => {
-          const idList = listModelData.data.map((p) => p.id)
-          if (idList.includes(model.id)) return false
-          try {
-            const keywordRegExp = filterOptions.keyword ? new RegExp(filterOptions.keyword) : false
-            if (keywordRegExp) {
-              return keywordRegExp.test(model.name)
-            } else {
-              return true
-            }
-          } catch (error) {
+      list.data = assetsList.data.filter((model) => {
+        const idList = listModelData.data.map((p) => p.id)
+        if (idList.includes(model.id)) return false
+        try {
+          const keywordRegExp = filterOptions.keyword ? new RegExp(filterOptions.keyword) : false
+          if (keywordRegExp) {
+            return keywordRegExp.test(model.name)
+          } else {
             return true
           }
-        }),
+        } catch (error) {
+          return true
+        }
       })
+      return list
     })
     const selectedList = computed(() => {
       return filterList.value.data.filter((p) => p.selected)
