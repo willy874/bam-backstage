@@ -1,3 +1,11 @@
+import {
+  FileName
+} from 'bam-utility-plugins'
+import dayjs from 'dayjs'
+import Swal from '@/utility/alert'
+import {
+  ImageModel
+} from '@/models/index'
 /**
  * 判斷檔案大小，如果發生錯誤則回傳 true
  * @param {FileList} files 
@@ -91,4 +99,50 @@ export const checkFile = (files, options = {}) => {
     return 'fileType'
   }
   return false
+}
+
+export const checkFileErrorMessage = (errors) => {
+  if (errors) {
+    switch (errors) {
+      case 'fileLength':
+        Swal.error({
+          title: '檔案上傳數已達上限'
+        })
+        break
+      case 'fileLimit':
+        Swal.error({
+          title: '檔案上傳包含過大的檔案'
+        })
+        break
+      case 'fileType':
+        Swal.error({
+          title: '檔案上傳包含不正確類型'
+        })
+        break
+      default:
+        Swal.error({
+          title: '檔案上傳失敗'
+        })
+        break
+    }
+    return true
+  }
+}
+
+export const createFileModelList = (files, Model = ImageModel) => {
+  const fileList = Array.from(files)
+  return fileList.map((fileBlob) => {
+    const filename = new FileName(fileBlob.name)
+    return new Model({
+      name: fileBlob.name,
+      size: fileBlob.size,
+      type: fileBlob.type,
+      image_name: filename.name,
+      image_ext: filename.ext,
+      blob: fileBlob,
+      image_blob: fileBlob,
+      created_at: dayjs().format('YYYY/MM/DD HH:mm:ss'),
+      updated_at: dayjs().format('YYYY/MM/DD HH:mm:ss'),
+    })
+  })
 }

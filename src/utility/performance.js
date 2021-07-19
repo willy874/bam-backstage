@@ -19,7 +19,6 @@ export const throttle = (func, delay) => {
     if (!inThrottle) {
       func.apply(context, args)
       inThrottle = true
-      console.log(inThrottle, timeout)
       clearTimeout(timeout)
       timeout = setTimeout(() => {
         inThrottle = false

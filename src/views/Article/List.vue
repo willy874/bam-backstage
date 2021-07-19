@@ -3,12 +3,12 @@
     <template #header>
       <div>
         <div class="py-2 px-4">
-          <div class="flex items-center shadow">
-            <div class="px-4 py-2">
+          <div class="flex flex-wrap items-center shadow">
+            <div class="px-4 py-2 flex-shrink-0">
               <Breadcrumb />
             </div>
             <div class="flex flex-grow justify-end p-1">
-              <div class="px-1" v-for="plugin in headerBar" :key="plugin.name">
+              <div class="p-1" v-for="plugin in headerBar" :key="plugin.name">
                 <component v-bind="headerProps" :is="plugin"></component>
               </div>
             </div>
@@ -29,9 +29,10 @@
 <script>
 import { ref, reactive, onMounted } from 'vue'
 import PageLayout from '@/container/PageLayout.vue'
-import { ArticleModel, SearchModel } from '@/models/index'
 import SearchBar from '@/container/SearchBar.vue'
+import { ArticleModel, SearchModel } from '@/models/index'
 import { useDatabase } from '@/database/index'
+import { devErrorMessage } from '@/utility/error'
 
 export default {
   name: 'ArticleList',
@@ -87,8 +88,12 @@ export default {
       type: Object,
       default: () => null,
     },
+    questionContent: {
+      type: String,
+      default: '',
+    },
   },
-  setup(props, context) {
+  setup(props) {
     const database = useDatabase()
     const listModelData = reactive(database.data[props.modelName])
     const searchBarShow = ref(false)
@@ -122,10 +127,12 @@ export default {
           await listModelData.readList()
         }
       } catch (error) {
-        if (process.env.NODE_ENV === 'development') {
-          console.log('%c[ArticleList] Error: readList', 'color: #f00;background: #ff000011;padding: 2px 6px;border-radius: 4px;')
-          console.dir(error)
-        }
+        devErrorMessage({
+          dir: '/src/views/Article',
+          component: 'ArticleList',
+          func: 'deleteImage',
+          message: error.message,
+        })
       }
     })
 

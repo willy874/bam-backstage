@@ -88,14 +88,14 @@
       </div>
     </form>
     <template #footer>
-      <div class="flex justify-between items-center rounded-b-lg border-t p-2">
+      <div class="flex flex-wrap justify-between items-center rounded-b-lg border-t p-2">
         <div class="px-2">
-          <div class="px-1 text-red-500 flex items-center" v-show="errorMessages.length">
+          <div class="p-1 text-red-500 flex items-center" v-show="errorMessages.length">
             <Icon src="Warning" size="24" />
             <div class="text-sm mx-1">資料填寫有誤或不完整</div>
           </div>
         </div>
-        <div class="px-1 flex items-center">
+        <div class="px-1 flex flex-wrap items-center">
           <button v-if="model.id" class="btn mx-1 text-primary-mirror bg-red-500 hover:bg-red-600" type="button" @click="deleteModel">刪除</button>
           <button class="btn mx-1 text-primary-mirror bg-gray-500 hover:bg-gray-600" type="button" @click="close">取消</button>
           <SubmitButton class="mx-1 text-primary-mirror bg-green-500 hover:bg-green-600" type="button" :model="model" @click="submit">送出</SubmitButton>
@@ -109,12 +109,13 @@
 import { reactive, ref, onMounted, nextTick } from 'vue'
 import throttle from 'lodash/throttle'
 import { ProductModel, ProductImageModel, AssetsListModel } from '@/models/index'
-import { isModelError } from '@/utility/model-handle'
-import Swal from '@/utility/alert'
 import { useDialog } from '@/components/dialog/index'
 import DialogLayout from '@/container/DialogLayout.vue'
 import ImageFolderButton from '@/container/ImageFolderButton.vue'
 import { useDatabase } from '@/database/index'
+import { isModelError } from '@/utility/model-handle'
+import Swal from '@/utility/alert'
+import { devErrorMessage } from '@/utility/error'
 import LinePointCreateDialog from './LinePoint/CreateDialog.vue'
 import LinePointListDialog from './LinePoint/ListDialog.vue'
 
@@ -221,10 +222,12 @@ export default {
               image_id: res.data.id,
             })
           } catch (error) {
-            if (process.env.NODE_ENV === 'development') {
-              console.log('%c[Product DetailDialog] Error: modelHandler > createData', 'color: #f00;background: #ff000011;padding: 2px 6px;border-radius: 4px;')
-              console.dir(error)
-            }
+            devErrorMessage({
+              dir: '/src/views/Product',
+              component: 'ProductDetailDialog',
+              func: 'modelHandler',
+              message: error.message,
+            })
             Swal.error({ title: '圖片上傳失敗' })
             return null
           }
@@ -314,10 +317,12 @@ export default {
           }
           props.dialog.closePopup(props.id)
         } catch (error) {
-          if (process.env.NODE_ENV === 'development') {
-            console.log('%c[Product DetailDialog] Error: submit', 'color: #f00;background: #ff000011;padding: 2px 6px;border-radius: 4px;')
-            console.dir(error)
-          }
+          devErrorMessage({
+            dir: '/src/views/Product',
+            component: 'ProductDetailDialog',
+            func: 'submit',
+            message: error.message,
+          })
           Swal.error({ title: '儲存失敗' })
         }
       }, 1000),

@@ -48,7 +48,7 @@ export default markRaw({
         const popup = await dialog.popup(ImageFolderDialog, {
           width: '768px',
           props: {
-            listModelData,
+            model: listModelData,
           },
         })
         const selectedImages = popup.props.selectedImages

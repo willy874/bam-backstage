@@ -457,6 +457,28 @@ export default {
   justify-content: space-between;
   padding: 0.25rem 1rem;
   overflow: auto;
+  &::-webkit-scrollbar {
+    width: 5px;
+    height: 10px;
+  }
+  &::-webkit-scrollbar-track {
+    background: #ccc;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: #999;
+    border-radius: 0.5rem;
+  }
+  &::-webkit-scrollbar-button {
+    width: 0;
+    height: 0;
+  }
+  &::-webkit-scrollbar-corner {
+    background: #555;
+    border-radius: 50%;
+  }
+  &::-webkit-scrollbar-track-piece {
+    background: #eee;
+  }
   &__left-text {
     display: flex;
     flex-shrink: 0;

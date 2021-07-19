@@ -4,9 +4,9 @@
       <DataTable v-bind="dataTableProps" style="height: calc(100vh - 180px)"></DataTable>
     </div>
     <template #footer>
-      <div class="flex justify-between items-center rounded-b-lg border-t p-2">
+      <div class="flex flex-wrap justify-between items-center rounded-b-lg border-t p-2">
         <div class="px-2"></div>
-        <div class="px-1 flex items-center">
+        <div class="px-1 flex flex-wrap items-center">
           <button class="btn mx-1 text-primary-mirror bg-gray-500 hover:bg-gray-600" type="button" @click="close">關閉</button>
         </div>
       </div>
@@ -68,9 +68,6 @@ export default {
         thisPopup.onBackgroundClick = onBgClickClose
         listData.data.find((p) => p.id === popup.props.model.id).set(popup.props.model)
       },
-      // filter(list) {
-      //   return list.setData(list.data.filter((p) => p.product_id === productId))
-      // },
       model,
     })
     return {

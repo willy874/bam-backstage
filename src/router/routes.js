@@ -7,9 +7,6 @@ import ProductListProps from '../views/Product/list'
 import RichmenuListProps from '../views/Richmenu/list'
 import AssetListView from '../views/Asset/List.vue'
 import AssetImageProps from '../views/Asset/image.js'
-import {
-  h
-} from 'vue'
 
 const routes = [{
     name: 'Home',
@@ -109,21 +106,6 @@ const routes = [{
     }, ],
   },
   {
-    name: 'Service',
-    path: '/service',
-    redirect: '/service/list',
-    component: ArticleView,
-    props: {
-      routeTitle: '服務管理',
-    },
-    children: [{
-      name: 'ServiceList',
-      path: 'list',
-      component: ArticleListView,
-      // props: MemberListProps,
-    }, ],
-  },
-  {
     name: 'Order',
     path: '/order',
     redirect: '/order/list',
@@ -139,42 +121,41 @@ const routes = [{
     }, ],
   },
   {
-    name: 'Friend',
-    path: '/friend',
+    name: 'Service',
+    path: '/service',
+    redirect: '/service/list',
     component: ArticleView,
-    props: {},
+    props: {
+      routeTitle: '服務管理',
+    },
     children: [{
-        path: '',
-        component: {
-          render() {
-            return h('div', 'List')
-          },
-        },
-      },
-      {
-        path: ':id',
-        component: {
-          render() {
-            return h('div', 'Detail')
-          },
-        },
-      },
-    ],
+      name: 'ServiceList',
+      path: 'list',
+      component: ArticleListView,
+      // props: MemberListProps,
+    }, ],
   },
   {
-    name: 'Setting',
-    path: '/setting',
-    redirect: '/setting/list',
+    name: 'Admin',
+    path: '/admin',
+    redirect: '/admin/list',
     component: ArticleView,
     props: {
       routeTitle: '系統管理',
     },
     children: [{
-      name: 'SettingList',
-      path: 'list',
-      component: ArticleListView,
-      // props: MemberListProps,
-    }, ],
+        name: 'AdminList',
+        path: 'list',
+        component: ArticleListView,
+        // props: MemberListProps,
+      },
+      {
+        name: 'RoleList',
+        path: 'roles',
+        component: ArticleListView,
+        // props: CategoriesListProps,
+      }
+    ],
   },
 ]
 

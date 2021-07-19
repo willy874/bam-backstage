@@ -1,38 +1,74 @@
 <template>
   <DialogLayout v-bind="$props" title="圖文選單資料">
     <form @submit="submit">
-      <div class="py-2 sm:flex">
-        <div class="flex-shrink-0 w-20" :style="{ marginTop: `${formTitleMarginTop}px` }">電子郵件</div>
-        <div class="flex-grow">
-          <TextBox type="text" :model="model" field="email" placeholder="請輸入電子郵件" />
-          <span class="text-red-500 text-xs" v-show="model.hasError('email')">{{ model.hasError('email') }}</span>
+      <div>
+        <div class="py-1">大小限制: 800 x 540 (px)</div>
+        <div class="bg-cover relative" :style="{ paddingTop: `${imageSize * 100}%`, backgroundImage: `url(${image.image_base64})` }">
+          <div class="absolute inset-0 bg-white bg-opacity-70 flex flex-col" v-if="model.data && model.data.length">
+            <div class="flex-grow border" v-if="model.grid === 6">
+              <div class="h-1/2 flex">
+                <div class="w-1/3 h-full flex items-center justify-center border">
+                  <div class="text-base sm:text-2xl">{{ model.data[0].action.label }}</div>
+                </div>
+                <div class="w-1/3 h-full flex items-center justify-center border">
+                  <div class="text-base sm:text-2xl">{{ model.data[1].action.label }}</div>
+                </div>
+                <div class="w-1/3 h-full flex items-center justify-center border">
+                  <div class="text-base sm:text-2xl">{{ model.data[2].action.label }}</div>
+                </div>
+              </div>
+              <div class="h-1/2 flex">
+                <div class="w-1/3 h-full flex items-center justify-center border">
+                  <div class="text-base sm:text-2xl">{{ model.data[3].action.label }}</div>
+                </div>
+                <div class="w-1/3 h-full flex items-center justify-center border">
+                  <div class="text-base sm:text-2xl">{{ model.data[4].action.label }}</div>
+                </div>
+                <div class="w-1/3 h-full flex items-center justify-center border">
+                  <div class="text-base sm:text-2xl">{{ model.data[5].action.label }}</div>
+                </div>
+              </div>
+            </div>
+            <div class="flex-grow border" v-if="model.grid === 5">
+              <div class="h-1/2 flex">
+                <div class="w-1/3 h-full flex items-center justify-center border">
+                  <div class="text-base sm:text-2xl">{{ model.data[0].action.label }}</div>
+                </div>
+                <div class="w-1/3 h-full flex items-center justify-center border">
+                  <div class="text-base sm:text-2xl">{{ model.data[1].action.label }}</div>
+                </div>
+                <div class="w-1/3 h-full flex items-center justify-center border">
+                  <div class="text-base sm:text-2xl">{{ model.data[2].action.label }}</div>
+                </div>
+              </div>
+              <div class="h-1/2 flex">
+                <div class="w-1/2 h-full flex items-center justify-center border">
+                  <div class="text-base sm:text-2xl">{{ model.data[3].action.label }}</div>
+                </div>
+                <div class="w-1/2 h-full flex items-center justify-center border">
+                  <div class="text-base sm:text-2xl">{{ model.data[4].action.label }}</div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
-      <div class="py-2 sm:flex">
-        <div class="flex-shrink-0 w-20" :style="{ marginTop: `${formTitleMarginTop}px` }">電話號碼</div>
-        <div class="flex-grow">
-          <TextBox type="text" :model="model" field="phone_number" placeholder="請輸入電話號碼" />
-          <span class="text-red-500 text-xs" v-show="model.hasError('phone_number')">{{ model.hasError('phone_number') }}</span>
-        </div>
-      </div>
-      <div class="py-2 sm:flex">
-        <div class="flex-shrink-0 w-20" :style="{ marginTop: `${formTitleMarginTop}px` }">地址</div>
-        <div class="flex-grow">
-          <TextBox type="text" :model="model" field="address" placeholder="請輸入地址" />
-          <span class="text-red-500 text-xs" v-show="model.hasError('address')">{{ model.hasError('address') }}</span>
-        </div>
+      <div class="flex flex-wrap justify-end items-center py-2 -mx-1">
+        <input :id="uuid.image" type="file" class="hidden" @change="changeUpload" ref="upload" />
+        <SubmitButton class="mx-1 text-primary-mirror bg-blue-500 hover:bg-blue-600" type="button" :model="model" @click="clickUpload"> 上傳圖片 </SubmitButton>
+        <button class="btn mx-1 text-primary-mirror bg-primary-500 hover:bg-primary-600" type="button" :model="model" @click="cloud">資源圖片</button>
       </div>
     </form>
     <template #footer>
-      <div class="flex justify-between items-center rounded-b-lg border-t p-2">
+      <div class="flex flex-wrap justify-between items-center rounded-b-lg border-t p-2">
         <div class="px-2">
-          <div class="px-1 text-red-500 flex items-center" v-show="errorMessages.length">
+          <div class="p-1 text-red-500 flex items-center" v-show="errorMessages.length">
             <Icon src="Warning" size="24" />
             <div class="text-sm mx-1">資料填寫有誤或不完整</div>
           </div>
         </div>
-        <div class="px-1 flex items-center">
-          <button class="btn mx-1 text-primary-mirror bg-gray-500 hover:bg-gray-600" type="button" @click="close">取消</button>
+        <div class="px-1 flex flex-wrap items-center">
+          <button class="btn mx-1 text-primary-mirror bg-gray-500 hover:bg-gray-600" type="button" @click="close">關閉</button>
           <SubmitButton class="mx-1 text-primary-mirror bg-green-500 hover:bg-green-600" type="button" :model="model" @click="submit">送出</SubmitButton>
         </div>
       </div>
@@ -41,130 +77,111 @@
 </template>
 
 <script>
-import { reactive, ref, onMounted, nextTick } from 'vue'
+import { reactive, ref, onMounted } from 'vue'
 import throttle from 'lodash/throttle'
-import { RichmenuModel } from '@/models/index'
-import { isModelError } from '@/utility/model-handle'
+import { RichmenuModel, ImageModel } from '@/models/index'
 import DialogLayout from '@/container/DialogLayout.vue'
 import Swal from '@/utility/alert'
+import { v4 as uuid } from 'uuid'
+import { checkFile, checkFileErrorMessage, createFileModelList } from '@/utility/file'
+import { devErrorMessage } from '@/utility/error'
+import ImageFolderDialog from '@/container/ImageFolderDialog.vue'
 
 export default {
-  name: 'DetailDialog',
+  name: 'RichmenuDetailDialog',
   props: ['drag', 'touch', 'props', 'id', 'popupElement', 'dialog', 'initPosition'],
   components: {
     DialogLayout,
   },
   setup(props) {
     const model = reactive(new RichmenuModel(props.props.model))
+    const image = reactive(new ImageModel())
+    const imageSize = ref(540 / 800)
     onMounted(async () => {
       await model.readData()
+      image.set({ id: model.image_id })
+      await image.readData()
     })
-    const popupProps = reactive(props.props)
     const errorMessages = ref([])
     const formTitleMarginTop = ref(6)
-    const validateRules = {
-      name: {
-        presence: {
-          allowEmpty: false,
-          message: '^請填寫姓名',
-        },
-      },
-      description: {
-        presence: {
-          allowEmpty: false,
-          message: '^請選擇性別',
-        },
-      },
-      grid: {
-        presence: {
-          allowEmpty: false,
-          message: '^請填寫電話號碼',
-        },
-      },
-      chat_bar_text: {
-        presence: {
-          allowEmpty: false,
-          message: '^請填寫電子郵件',
-        },
-        email: {
-          message: '^填寫的電子信箱格式不正確',
-        },
-      },
-    }
+    const upload = ref(null)
     return {
       model,
+      image,
+      imageSize,
       formTitleMarginTop,
-      errorMessages,
-      ready() {
-        props.initPosition()
+      upload,
+      uuid: {
+        image: uuid(),
       },
+      errorMessages,
       close: throttle(() => {
         props.dialog.closePopup(props.id)
       }, 300),
-      submit: throttle(async (e) => {
-        e.preventDefault()
-        const modelErrorMessage = model.validate(validateRules)
-        errorMessages.value = isModelError(modelErrorMessage)
-        if (errorMessages.value.length) {
-          await nextTick()
-          props.initPosition()
-          return
+      cloud: throttle(async () => {
+        const popup = await props.dialog.popup(ImageFolderDialog, {
+          width: '768px',
+          props: {
+            model: image,
+          },
+        })
+        if (popup.props.selectedImages instanceof Array) {
+          image.set(popup.props.selectedImages[0])
         }
-        try {
-          if (model.id === 0 || model.id === '') {
-            const res = await model.createData()
-            if (res.isAxiosError) {
-              throw res.message
-            }
-            popupProps.model = model
-          } else {
-            const res = await model.updateData({
-              requesHandler(model) {
-                return {
-                  real_name: model.real_name,
-                  gender: model.gender,
-                  email: model.email,
-                  phone_number: model.phone_number,
-                  address: model.address,
-                  state: model.state,
-                }
-              },
-            })
-            if (res.isAxiosError) {
-              throw res.message
-            }
-            popupProps.model.set(model)
-          }
-          props.dialog.closePopup(props.id)
-        } catch (error) {
-          if (process.env.NODE_ENV === 'development') {
-            console.log('%c[Member DetailDialog] Error: submit', 'color: #f00;background: #ff000011;padding: 2px 6px;border-radius: 4px;')
-            console.dir(error)
-          }
-          Swal.error({
-            icon: 'error',
-            title: '儲存失敗',
-          })
-        }
+      }, 300),
+      clickUpload: throttle(async (e) => {
+        upload.value.click()
       }, 1000),
-      convState(code) {
-        switch (code) {
-          case 0:
-            return {
-              color: 'rgb(156, 163, 175)',
-              text: '封鎖',
+      changeUpload: async (e) => {
+        const files = e.target.files
+        if (files) {
+          try {
+            const errors = checkFile(files, {
+              fileLength: 1,
+              fileLimit: 0,
+              fileType: 'image',
+            })
+            if (checkFileErrorMessage(errors)) {
+              return
             }
-          case 1:
-            return {
-              color: 'rgb(52, 211, 153)',
-              text: '正常',
+            image.set(createFileModelList(files)[0])
+            const res = await image.createData()
+            if (res.isAxiosError) {
+              throw res.message
             }
-          default:
-            return {
-              text: '',
-            }
+            image.set({ id: res.data.id })
+            await image.readData()
+          } catch (error) {
+            devErrorMessage({
+              dir: '/src/views/Richmenu',
+              component: 'RichmenuDetailDialog',
+              func: 'changeUpload',
+              message: error.message,
+            })
+            Swal.error({ title: '儲存失敗' })
+          }
         }
       },
+      submit: throttle(async () => {
+        try {
+          if (model.grid === 6) {
+            const res = await model.defaultImageUpload(image.id)
+            if (res.isAxiosError) throw res.message
+          }
+          if (model.grid === 5) {
+            const res = await model.memberImageUpload(image.id)
+            if (res.isAxiosError) throw res.message
+          }
+        } catch (error) {
+          devErrorMessage({
+            dir: '/src/views/Richmenu',
+            component: 'RichmenuDetailDialog',
+            func: 'submit',
+            message: error.message,
+          })
+          Swal.error({ title: '儲存失敗' })
+        }
+      }, 300),
     }
   },
 }

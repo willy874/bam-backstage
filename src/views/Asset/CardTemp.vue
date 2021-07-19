@@ -113,6 +113,7 @@ import { useDialog } from '@/components/dialog/index'
 import LightBoxDialog from '@/container/LightBoxDialog.vue'
 import Swal from '@/utility/alert'
 import { deleteAllModel } from '@/utility/model-handle'
+import { devErrorMessage } from '@/utility/error'
 
 export default {
   name: 'AssetCardTemp',
@@ -216,10 +217,12 @@ export default {
           }
           listData.data.splice(index, 1)
         } catch (error) {
-          if (process.env.NODE_ENV === 'development') {
-            console.log('%c[AssetCardTemp] Error: deleteImage', 'color: #f00;background: #ff000011;padding: 2px 6px;border-radius: 4px;')
-            console.dir(error)
-          }
+          devErrorMessage({
+            dir: '/src/views/Asset',
+            component: 'AssetCardTemp',
+            func: 'deleteImage',
+            message: error.message,
+          })
         }
       }
     }, 400)
@@ -334,10 +337,12 @@ export default {
           }
         } catch (error) {
           image.name = textValue.value
-          if (process.env.NODE_ENV === 'development') {
-            console.log('%c[AssetCardTemp] Error: changeNameText', 'color: #f00;background: #ff000011;padding: 2px 6px;border-radius: 4px;')
-            console.dir(error)
-          }
+          devErrorMessage({
+            dir: '/src/views/Asset',
+            component: 'AssetCardTemp',
+            func: 'changeNameText',
+            message: error.message,
+          })
         }
       },
       editModel: async (e, image) => {

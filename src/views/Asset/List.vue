@@ -28,14 +28,15 @@
 
 <script>
 import { ref, reactive, onMounted } from 'vue'
-import { FileName, Observable } from 'bam-utility-plugins'
-import dayjs from 'dayjs'
+import { Observable } from 'bam-utility-plugins'
 import { useDialog } from '@/components/dialog/index'
 import { useDatabase } from '@/database/index'
-import { DataModel, SearchModel } from '@/models/index'
+import { SearchModel } from '@/models/index'
 import PageLayout from '@/container/PageLayout.vue'
 import SearchBar from '@/container/SearchBar.vue'
 import LoadingDialog from '@/container/LoadingDialog.vue'
+import { createFileModelList } from '@/utility/file'
+import { devErrorMessage } from '@/utility/error'
 import CardTemp from './CardTemp.vue'
 
 export default {
@@ -95,10 +96,12 @@ export default {
             listData.data.splice(index, 1)
           })
       } catch (error) {
-        if (process.env.NODE_ENV === 'development') {
-          console.log('%c[AssetList] Error: readList', 'color: #f00;background: #ff000011;padding: 2px 6px;border-radius: 4px;')
-          console.dir(error)
-        }
+        devErrorMessage({
+          dir: '/src/views/Asset',
+          component: 'AssetList',
+          func: 'reflashData',
+          message: error.message,
+        })
       }
     }
     onMounted(async () => {
@@ -106,27 +109,14 @@ export default {
     })
     const uploadChange = (files) => {
       const Model = props.modelSchema.model
-      const fileList = files.map((fileBlob) => {
-        const filename = new FileName(fileBlob.name)
-        return new Model({
-          name: fileBlob.name,
-          size: fileBlob.size,
-          type: fileBlob.type,
-          image_name: filename.name,
-          image_ext: filename.ext,
-          blob: fileBlob,
-          image_blob: fileBlob,
-          created_at: dayjs().format('YYYY/MM/DD HH:mm:ss'),
-          updated_at: dayjs().format('YYYY/MM/DD HH:mm:ss'),
-        })
-      })
-      const count = reactive({
-        value: fileList.length,
-      })
-      const uploadIndex = reactive({
-        value: 0,
-      })
       const observable = new Observable((subscriber) => {
+        const fileList = createFileModelList(files, Model)
+        const count = reactive({
+          value: fileList.length,
+        })
+        const uploadIndex = reactive({
+          value: 0,
+        })
         fileList.forEach((model) => {
           subscriber.next(async () => {
             const res = await model.createData()
@@ -138,10 +128,12 @@ export default {
         })
         subscriber.error(async (error) => {
           uploadIndex.value = count.value
-          if (process.env.NODE_ENV === 'development') {
-            console.log('%c[AssetList] Error: createData', 'color: #f00;background: #ff000011;padding: 2px 6px;border-radius: 4px;')
-            console.dir(error)
-          }
+          devErrorMessage({
+            dir: '/src/views/Asset',
+            component: 'AssetList',
+            func: 'uploadChange',
+            message: error.message,
+          })
         })
         subscriber.complete(async () => {
           await reflashData()

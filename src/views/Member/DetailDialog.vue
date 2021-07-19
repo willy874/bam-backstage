@@ -101,14 +101,14 @@
       </div>
     </form>
     <template #footer>
-      <div class="flex justify-between items-center rounded-b-lg border-t p-2">
+      <div class="flex flex-wrap justify-between items-center rounded-b-lg border-t p-2">
         <div class="px-2">
-          <div class="px-1 text-red-500 flex items-center" v-show="errorMessages.length">
+          <div class="p-1 text-red-500 flex items-center" v-show="errorMessages.length">
             <Icon src="Warning" size="24" />
             <div class="text-sm mx-1">資料填寫有誤或不完整</div>
           </div>
         </div>
-        <div class="px-1 flex items-center">
+        <div class="px-1 flex flex-wrap items-center">
           <button class="btn mx-1 text-primary-mirror bg-gray-500 hover:bg-gray-600" type="button" @click="close">取消</button>
           <SubmitButton class="mx-1 text-primary-mirror bg-green-500 hover:bg-green-600" type="button" :model="model" @click="submit">送出</SubmitButton>
         </div>
@@ -122,11 +122,12 @@ import { reactive, ref, onMounted, nextTick } from 'vue'
 import throttle from 'lodash/throttle'
 import { MemberModel } from '@/models/index'
 import { isModelError } from '@/utility/model-handle'
-import DialogLayout from '@/container/DialogLayout.vue'
+import { devErrorMessage } from '@/utility/error'
 import Swal from '@/utility/alert'
+import DialogLayout from '@/container/DialogLayout.vue'
 
 export default {
-  name: 'DetailDialog',
+  name: 'MemberDetailDialog',
   props: ['drag', 'touch', 'props', 'id', 'popupElement', 'dialog', 'initPosition'],
   components: {
     DialogLayout,
@@ -205,36 +206,30 @@ export default {
           return
         }
         try {
-          if (model.id === 0 || model.id === '') {
-            const res = await model.createData()
-            if (res.isAxiosError) {
-              throw res.message
-            }
-            popupProps.model = model.set(res.data)
-          } else {
-            const res = await model.updateData({
-              requesHandler(model) {
-                return {
-                  real_name: model.real_name,
-                  gender: model.gender,
-                  email: model.email,
-                  phone_number: model.phone_number,
-                  address: model.address,
-                  state: model.state,
-                }
-              },
-            })
-            if (res.isAxiosError) {
-              throw res.message
-            }
-            popupProps.model.set(model)
+          const res = await model.updateData({
+            requesHandler(model) {
+              return {
+                real_name: model.real_name,
+                gender: model.gender,
+                email: model.email,
+                phone_number: model.phone_number,
+                address: model.address,
+                state: model.state,
+              }
+            },
+          })
+          if (res.isAxiosError) {
+            throw res.message
           }
+          popupProps.model.set(model)
           props.dialog.closePopup(props.id)
         } catch (error) {
-          if (process.env.NODE_ENV === 'development') {
-            console.log('%c[Member DetailDialog] Error: submit', 'color: #f00;background: #ff000011;padding: 2px 6px;border-radius: 4px;')
-            console.dir(error)
-          }
+          devErrorMessage({
+            dir: '/src/views/Member',
+            component: 'MemberDetailDialog',
+            func: 'submit',
+            message: error.message,
+          })
           Swal.error({
             icon: 'error',
             title: '儲存失敗',

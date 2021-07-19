@@ -11,8 +11,7 @@
 import { reactive, isReactive } from 'vue'
 import { v4 as uuid } from 'uuid'
 import { ListModel } from '@/models/index'
-import { checkFile } from '@/utility/file'
-import Swal from '@/utility/alert'
+import { checkFile, checkFileErrorMessage } from '@/utility/file'
 
 export default {
   name: 'AddUploadButton',
@@ -50,21 +49,7 @@ export default {
           fileLimit: props.fileLimit,
           fileType: props.fileType,
         })
-        if (errors) {
-          switch (errors) {
-            case 'fileLength':
-              Swal.error({ title: '檔案上傳數已達上限' })
-              break
-            case 'fileLimit':
-              Swal.error({ title: '檔案上傳包含過大的檔案' })
-              break
-            case 'fileType':
-              Swal.error({ title: '檔案上傳包含不正確類型' })
-              break
-            default:
-              Swal.error({ title: '檔案上傳失敗' })
-              break
-          }
+        if (checkFileErrorMessage(errors)) {
           return
         }
         props.uploadChange(fileList)

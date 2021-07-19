@@ -30,9 +30,9 @@
       <DataTable v-bind="dataTableProps" style="height: calc(100vh - 210px)"></DataTable>
     </div>
     <template #footer>
-      <div class="flex justify-between items-center rounded-b-lg border-t p-2">
+      <div class="flex flex-wrap justify-between items-center rounded-b-lg border-t p-2">
         <div class="px-1">已選擇 {{ selectedList.length }} 張圖片</div>
-        <div class="px-1 flex items-center">
+        <div class="px-1 flex flex-wrap items-center">
           <button class="btn mx-1 text-primary-mirror bg-blue-500 hover:bg-blue-600" type="button" @click="clear">清除</button>
           <button class="btn mx-1 text-primary-mirror bg-gray-500 hover:bg-gray-600" type="button" @click="close">取消</button>
           <button class="btn mx-1 text-primary-mirror bg-green-500 hover:bg-green-600" type="button" @click="submit">確定</button>

@@ -68,8 +68,7 @@ export default {
     clickTr: async (model) => {
       const dialog = useDialog()
       const popup = await dialog.popup(DetailDialog, {
-        onBackgroundClick: () => {},
-        width: '768px',
+        width: '576px',
         props: {
           model,
         },

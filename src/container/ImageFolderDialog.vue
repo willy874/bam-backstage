@@ -32,10 +32,12 @@
       </div>
     </div>
     <template #footer>
-      <div class="flex justify-between items-center rounded-b-lg border-t p-2">
-        <div class="px-1">已選擇 {{ selectedList.length }} 張圖片</div>
-        <div class="px-1 flex items-center">
-          <button class="btn mx-1 text-primary-mirror bg-blue-500 hover:bg-blue-600" type="button" @click="clear">清除</button>
+      <div class="flex flex-wrap justify-between items-center rounded-b-lg border-t p-2">
+        <div class="px-1">
+          <span v-if="multiple">已選擇 {{ selectedList.length }} 張圖片</span>
+        </div>
+        <div class="px-1 flex flex-wrap items-center">
+          <button v-if="multiple" class="btn mx-1 text-primary-mirror bg-blue-500 hover:bg-blue-600" type="button" @click="clear">清除</button>
           <button class="btn mx-1 text-primary-mirror bg-gray-500 hover:bg-gray-600" type="button" @click="close">取消</button>
           <button class="btn mx-1 text-primary-mirror bg-green-500 hover:bg-green-600" type="button" @click="submit">確定</button>
         </div>
@@ -45,8 +47,8 @@
 </template>
 
 <script>
-import { reactive, computed, onMounted } from 'vue'
-import { ListModel, DataModel, SearchModel } from '@/models/index'
+import { ref, reactive, computed, onMounted } from 'vue'
+import { ListModel, AssetsListModel, DataModel, SearchModel, ImageModel } from '@/models/index'
 import throttle from 'lodash/throttle'
 import DialogLayout from '@/container/DialogLayout.vue'
 import defaultImage from '@/components/image-viewbox/default-image.jpg'
@@ -59,7 +61,26 @@ export default {
   },
   setup(props) {
     /** @type {ListModel} */
-    const listModelData = props.props.listModelData
+    const model = props.props.model
+    const multiple = ref(true)
+    const listModelData = (() => {
+      if (model instanceof ListModel) {
+        return model
+      }
+      if (model instanceof DataModel) {
+        multiple.value = false
+        return new ListModel({
+          model: model.modelType,
+          listModel: AssetsListModel,
+          data: [model],
+        })
+      }
+      return new ListModel({
+        model: ImageModel,
+        listModel: AssetsListModel,
+        data: [],
+      })
+    })()
     /** @type {Function} */
     const ListModelType = listModelData.listModelType
     const assetsList = reactive(
@@ -127,6 +148,7 @@ export default {
       filterList,
       selectedList,
       filterOptions,
+      multiple,
       setRefsItem: (index) => {
         return (ref) => {
           if (ref) filterList.value.data[index].ref = ref
@@ -141,8 +163,15 @@ export default {
       submit: () => {
         close(selectedList.value)
       },
-      clickImage: throttle((e, image) => {
-        image.selected = !image.selected
+      clickImage: throttle((e, image, index) => {
+        if (multiple.value) {
+          image.selected = !image.selected
+        } else {
+          assetsList.data.forEach((image) => {
+            image.selected = false
+          })
+          image.selected = true
+        }
       }, 100),
       dblclickImage: (e, image) => {
         close([image])

@@ -1,5 +1,5 @@
 <template>
-  <form class="fixed inset-0 z-40" :style="{ background }">
+  <form class="fixed inset-0 z-40" :style="{ background }" @submit="login">
     <div class="flex justify-center items-center absolute inset-0 px-4 pb-10">
       <div class="border rounded-xl px-4 shadow-lg">
         <div class="pb-3">

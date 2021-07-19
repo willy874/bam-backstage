@@ -5,6 +5,7 @@ import {
 import DetailDialog from '../Article/DetailDialog.vue'
 import AddModelButton from '@/container/AddModelButton.vue'
 import SearchBarButton from '@/container/SearchBarButton.vue'
+import QuestionButton from '@/container/QuestionButton.vue'
 
 export default {
   routeTitle: '文章列表',
@@ -78,7 +79,6 @@ export default {
     clickTr: async (model, index, {
       listData
     }) => {
-      // console.log(element)
       const dialog = useDialog()
       const popup = await dialog.popup(DetailDialog, {
         onBackgroundClick: () => {},
@@ -93,7 +93,8 @@ export default {
     },
   },
   detailPage: DetailDialog,
-  headerBar: [SearchBarButton, AddModelButton],
+  questionContent: `或科子示大新氣說，長人母模變場看麼難有作你排在課事教經印行算發備，臺止排展廣，實考海業母、以小商向英開好禮實麼大術觀來的心看中它策待蘭預麼呢！地班再興味三重行臺方者生幾之生子樂。臺這銀天兩心時專汽變風的戲感，而說了、中的製何同卻原不，展風然般他字公面外！流在共十孩著成與，合經農緊銷人是印`,
+  headerBar: [SearchBarButton, AddModelButton, QuestionButton],
   search: {
     allow: [{
         value: 'title',

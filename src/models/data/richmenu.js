@@ -2,6 +2,9 @@ import {
   DataModel,
   RichmenuOptionModel
 } from '../index'
+import {
+  request
+} from '@/plugins/axios/request'
 
 /**
  * @extends DataModel
@@ -60,4 +63,39 @@ export default class RichmenuModel extends DataModel {
   setDefaultMenu() {
     return new Promise((resolve, reject) => {})
   }
+
+
+  defaultImageUpload(id) {
+    return new Promise((resolve, reject) => {
+      request.put('/default-richmenu/image', {
+          image_id: id
+        })
+        .then((res) => {
+          this.loading = false
+          resolve(res)
+        })
+        .catch((err) => {
+          this.loading = false
+          reject(err)
+        })
+    })
+  }
+
+  memberImageUpload(id) {
+    this.loading = true
+    return new Promise((resolve, reject) => {
+      request.put('/member-richmenu/image', {
+          image_id: id
+        })
+        .then((res) => {
+          this.loading = false
+          resolve(res)
+        })
+        .catch((err) => {
+          this.loading = false
+          reject(err)
+        })
+    })
+  }
+
 }

@@ -15,8 +15,8 @@ export default markRaw({
   setup(props, context) {
     const dialog = useDialog()
     return {
-      click: async () => {
-        const popup = await dialog.popup(LinePointCreateDialog, {
+      click: () => {
+        dialog.popup(LinePointCreateDialog, {
           width: '576px',
           props: context.attrs,
         })

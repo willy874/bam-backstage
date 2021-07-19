@@ -37,14 +37,14 @@
       </div>
     </form>
     <template #footer>
-      <div class="flex justify-between items-center rounded-b-lg border-t p-2">
+      <div class="flex flex-wrap justify-between items-center rounded-b-lg border-t p-2">
         <div class="px-2">
-          <div class="px-1 text-red-500 flex items-center" v-show="errorMessages.length">
+          <div class="p-1 text-red-500 flex items-center" v-show="errorMessages.length">
             <Icon src="Warning" size="24" />
             <div class="text-sm mx-1">資料填寫有誤或不完整</div>
           </div>
         </div>
-        <div class="px-1 flex items-center">
+        <div class="px-1 flex flex-wrap items-center">
           <button class="btn mx-1 text-primary-mirror bg-gray-500 hover:bg-gray-600" type="button" @click="close">取消</button>
           <SubmitButton class="mx-1 text-primary-mirror bg-green-500 hover:bg-green-600" type="button" :model="listData" @click="submit">送出</SubmitButton>
         </div>
@@ -60,6 +60,7 @@ import throttle from 'lodash/throttle'
 import Swal from '@/utility/alert'
 import { ListModel, LinePointModel } from '@/models/index'
 import { isModelError } from '@/utility/model-handle'
+import { devErrorMessage } from '@/utility/error'
 import DialogLayout from '@/container/DialogLayout.vue'
 import { request } from '@/plugins/axios/request'
 
@@ -159,10 +160,12 @@ export default {
             await Swal.success({ title: '序號上傳成功' })
           }
         } catch (error) {
-          if (process.env.NODE_ENV === 'development') {
-            console.log('[Product LinePointDialog] Error: submit')
-            console.dir(error)
-          }
+          devErrorMessage({
+            dir: '/src/views/Product/LinePoint',
+            component: 'LinePointCreateDialog',
+            func: 'submit',
+            message: error.message,
+          })
           listData.loading = false
           await Swal.error({ title: '上傳失敗' })
         }

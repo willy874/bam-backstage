@@ -39,14 +39,14 @@
       </div>
     </form>
     <template #footer>
-      <div class="flex justify-between items-center rounded-b-lg border-t p-2">
+      <div class="flex flex-wrap justify-between items-center rounded-b-lg border-t p-2">
         <div class="px-2">
-          <div class="px-1 text-red-500 flex items-center" v-show="errorMessages.length">
+          <div class="p-1 text-red-500 flex items-center" v-show="errorMessages.length">
             <Icon src="Warning" size="24" />
             <div class="text-sm mx-1">資料填寫有誤或不完整</div>
           </div>
         </div>
-        <div class="px-1 flex items-center">
+        <div class="px-1 flex flex-wrap items-center">
           <button class="btn mx-1 text-primary-mirror bg-gray-500 hover:bg-gray-600" type="button" @click="close">取消</button>
           <SubmitButton v-if="!isDisabled" class="mx-1 text-primary-mirror bg-green-500 hover:bg-green-600" type="button" :model="model" @click="submit">
             送出
@@ -63,8 +63,9 @@ import throttle from 'lodash/throttle'
 import dayjs from 'dayjs'
 import { LinePointModel } from '@/models/index'
 import { isModelError } from '@/utility/model-handle'
-import DialogLayout from '@/container/DialogLayout.vue'
+import { devErrorMessage } from '@/utility/error'
 import Swal from '@/utility/alert'
+import DialogLayout from '@/container/DialogLayout.vue'
 
 export default {
   name: 'LinePointDetailDialog',
@@ -138,10 +139,12 @@ export default {
           }
           props.dialog.closePopup(props.id)
         } catch (error) {
-          if (process.env.NODE_ENV === 'development') {
-            console.log('%c[Product LinePointDetailDialog] Error: submit', 'color: #f00;background: #ff000011;padding: 2px 6px;border-radius: 4px;')
-            console.dir(error)
-          }
+          devErrorMessage({
+            dir: '/src/views/Product/LinePoint',
+            component: 'LinePointDetailDialog',
+            func: 'submit',
+            message: error.message,
+          })
           Swal.error({ title: '儲存失敗' })
         }
       }, 1000),
