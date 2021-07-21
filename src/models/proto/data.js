@@ -134,7 +134,7 @@ export default class DataModel {
    * 設定 model property 值
    * @param {*} entity
    */
-  set(entity) {
+  set(entity = {}) {
     const exclude = 'errors,loading,mode,api,edited,deleted,primaryKey,dayFormat,'.split(',')
     Object.keys(entity).forEach((key) => {
       if (this[key] instanceof DataModel) {

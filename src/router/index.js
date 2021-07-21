@@ -1,10 +1,16 @@
-import { createRouter, createWebHistory } from 'vue-router'
+import {
+  createRouter,
+  createWebHistory
+} from 'vue-router'
 import routes from './routes'
+import addRoutePermissions from './auth-routes'
 
 const router = createRouter({
   history: createWebHistory(),
   routes,
 })
+
+router.addRoutePermissions = addRoutePermissions
 
 const cache = {
   to: '',

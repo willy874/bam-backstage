@@ -11,6 +11,7 @@ import {
   MemberCategoryModel,
   RoleModel,
   AdminModel,
+  PermissionModel,
 } from '@/models/index'
 
 export default {
@@ -55,5 +56,9 @@ export default {
   Admins: {
     model: AdminModel,
     api: 'admins',
+  },
+  Permissions: {
+    model: PermissionModel,
+    api: 'permissions',
   }
 }

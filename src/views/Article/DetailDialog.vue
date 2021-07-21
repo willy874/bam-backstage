@@ -209,6 +209,8 @@ export default {
             return new ArticleImageModel({
               ...image,
               image_id: res.data.id,
+              width: res.data.width,
+              height: res.data.height,
             })
           } catch (error) {
             devErrorMessage({

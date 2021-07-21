@@ -8,7 +8,7 @@ export default {
   modelSchema: schema.ImageAssets,
   modelName: 'ImageAssets',
   headerBar: [SearchBarButton, DeleteAllModelButton, AddUploadButton],
-  fileLimit: 0,
+  fileLimit: 1000000,
   fileLength: 0,
   fileType: 'image',
 }

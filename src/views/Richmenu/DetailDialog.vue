@@ -2,7 +2,8 @@
   <DialogLayout v-bind="$props" title="圖文選單資料">
     <form @submit="submit">
       <div>
-        <div class="py-1">大小限制: 800 x 540 (px)</div>
+        <div class="py-1">長寬大小限制: 800 x 540 (px)</div>
+        <div class="py-1">檔案大小限制: 1 MB</div>
         <div class="bg-cover relative" :style="{ paddingTop: `${imageSize * 100}%`, backgroundImage: `url(${image.image_base64})` }">
           <div class="absolute inset-0 bg-white bg-opacity-70 flex flex-col" v-if="model.data && model.data.length">
             <div class="flex-grow border" v-if="model.grid === 6">
@@ -58,6 +59,9 @@
         <SubmitButton class="mx-1 text-primary-mirror bg-blue-500 hover:bg-blue-600" type="button" :model="model" @click="clickUpload"> 上傳圖片 </SubmitButton>
         <button class="btn mx-1 text-primary-mirror bg-primary-500 hover:bg-primary-600" type="button" :model="model" @click="cloud">資源圖片</button>
       </div>
+      <div class="text-right">
+        <span class="text-red-500 text-xs" v-show="model.hasError('image_id')">{{ model.hasError('image_id') }}</span>
+      </div>
     </form>
     <template #footer>
       <div class="flex flex-wrap justify-between items-center rounded-b-lg border-t p-2">
@@ -69,7 +73,9 @@
         </div>
         <div class="px-1 flex flex-wrap items-center">
           <button class="btn mx-1 text-primary-mirror bg-gray-500 hover:bg-gray-600" type="button" @click="close">關閉</button>
-          <SubmitButton class="mx-1 text-primary-mirror bg-green-500 hover:bg-green-600" type="button" :model="model" @click="submit">送出</SubmitButton>
+          <SubmitButton v-if="edit" class="mx-1 text-primary-mirror bg-green-500 hover:bg-green-600" type="button" :model="model" @click="submit"
+            >送出</SubmitButton
+          >
         </div>
       </div>
     </template>
@@ -77,13 +83,14 @@
 </template>
 
 <script>
-import { reactive, ref, onMounted } from 'vue'
+import { reactive, ref, onMounted, nextTick } from 'vue'
 import throttle from 'lodash/throttle'
 import { RichmenuModel, ImageModel } from '@/models/index'
 import DialogLayout from '@/container/DialogLayout.vue'
 import Swal from '@/utility/alert'
 import { v4 as uuid } from 'uuid'
 import { checkFile, checkFileErrorMessage, createFileModelList } from '@/utility/file'
+import { isModelError } from '@/utility/model-handle'
 import { devErrorMessage } from '@/utility/error'
 import ImageFolderDialog from '@/container/ImageFolderDialog.vue'
 
@@ -97,6 +104,7 @@ export default {
     const model = reactive(new RichmenuModel(props.props.model))
     const image = reactive(new ImageModel())
     const imageSize = ref(540 / 800)
+    const edit = ref(false)
     onMounted(async () => {
       await model.readData()
       image.set({ id: model.image_id })
@@ -105,8 +113,20 @@ export default {
     const errorMessages = ref([])
     const formTitleMarginTop = ref(6)
     const upload = ref(null)
+    const validateRules = {
+      image_id: () => {
+        if (!edit.value) {
+          return {}
+        }
+        if (image.width !== 800 || image.height !== 540) {
+          return { inclusion: { message: '^圖片寬高不正確' } }
+        }
+        return {}
+      },
+    }
     return {
       model,
+      edit,
       image,
       imageSize,
       formTitleMarginTop,
@@ -127,6 +147,7 @@ export default {
         })
         if (popup.props.selectedImages instanceof Array) {
           image.set(popup.props.selectedImages[0])
+          edit.value = true
         }
       }, 300),
       clickUpload: throttle(async (e) => {
@@ -138,7 +159,7 @@ export default {
           try {
             const errors = checkFile(files, {
               fileLength: 1,
-              fileLimit: 0,
+              fileLimit: 1000000,
               fileType: 'image',
             })
             if (checkFileErrorMessage(errors)) {
@@ -149,8 +170,13 @@ export default {
             if (res.isAxiosError) {
               throw res.message
             }
-            image.set({ id: res.data.id })
+            image.set({
+              id: res.data.id,
+              width: res.data.width,
+              height: res.data.height,
+            })
             await image.readData()
+            edit.value = true
           } catch (error) {
             devErrorMessage({
               dir: '/src/views/Richmenu',
@@ -162,7 +188,15 @@ export default {
           }
         }
       },
-      submit: throttle(async () => {
+      submit: throttle(async (e) => {
+        e.preventDefault()
+        const modelErrorMessage = model.validate(validateRules)
+        errorMessages.value = isModelError(modelErrorMessage)
+        if (errorMessages.value.length) {
+          await nextTick()
+          props.initPosition()
+          return
+        }
         try {
           if (model.grid === 6) {
             const res = await model.defaultImageUpload(image.id)

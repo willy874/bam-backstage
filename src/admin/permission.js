@@ -1,48 +1,49 @@
 export default {
   Articles: {
-    name: 'article',
+    name: 'Article',
     allow: false,
   },
   Members: {
-    name: 'member',
+    name: 'Member',
     allow: false,
   },
   Products: {
-    name: 'product',
-    allow: false,
-  },
-  MemberCategories: {
-    name: 'member-category',
+    name: 'Product',
     allow: false,
   },
   Richmenus: {
-    name: 'richmenu',
+    name: 'Richmenu',
     allow: false,
   },
   ImageAssets: {
-    name: 'image',
+    name: 'Asset',
     allow: false,
   },
   Order: {
-    name: 'order',
+    name: 'Order',
     allow: false,
   },
   CustomerService: {
-    name: 'customer-service',
+    name: 'Service',
     allow: false,
   },
   Admins: {
-    name: 'admin',
+    name: 'Admin',
     allow: false,
   },
+  MemberCategories: {
+    allow: true,
+  },
   Roles: {
-    name: 'role',
-    allow: false,
+    allow: true,
   },
   LinePoints: {
     allow: true,
   },
   ProductCategories: {
+    allow: true,
+  },
+  Permissions: {
     allow: true,
   },
 }

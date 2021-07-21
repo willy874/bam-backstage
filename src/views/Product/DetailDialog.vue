@@ -220,6 +220,8 @@ export default {
             return new ProductImageModel({
               ...image,
               image_id: res.data.id,
+              width: res.data.width,
+              height: res.data.height,
             })
           } catch (error) {
             devErrorMessage({

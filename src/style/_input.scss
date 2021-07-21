@@ -4,10 +4,10 @@
     display: none;
     &:checked ~ label {
       color: #fff;
-      background-color:  rgba(23, 162, 184);
+      background-color: rgba(23, 162, 184);
       &:hover {
         color: #fff;
-        background-color:  rgba(19, 132, 150);
+        background-color: rgba(19, 132, 150);
       }
     }
   }
@@ -16,12 +16,72 @@
     margin: 0.125rem;
     color: #555;
     cursor: pointer;
-    background-color:  transparent;
+    background-color: transparent;
     border-width: 1px;
     border-radius: 0.25rem;
     &:hover {
       color: #fff;
-      background-color:  rgba(23, 162, 184);
+      background-color: rgba(23, 162, 184);
+    }
+  }
+}
+
+.form-check {
+  position: relative;
+  padding-left: 1.5rem;
+  .form-check-label {
+    display: flex;
+    .form-check-box {
+      position: absolute;
+      top: 3px;
+      left: 0;
+      display: block;
+      width: 14px;
+      height: 14px;
+      background-color: transparent;
+      border: 1px solid #424242;
+      transition: all 0.2s;
+      &::after {
+        position: absolute;
+        bottom: 5px;
+        left: 1px;
+        width: 6px;
+        height: 2px;
+        content: '';
+        background-color: #fff;
+        transition: all 0.2s 0.1s;
+        transform: rotate(45deg) scale(0, 1);
+        transform-origin: left;
+      }
+      &::before {
+        position: absolute;
+        bottom: 1px;
+        left: 5px;
+        width: 10px;
+        height: 2px;
+        content: '';
+        background-color: #fff;
+        transition: all 0.2s 0.2s;
+        transform: rotate(-45deg) scale(0, 1);
+        transform-origin: left;
+      }
+    }
+  }
+  .form-check-input {
+    display: none;
+    &:focus ~ .form-check-label .form-check-box {
+      box-shadow: 0 0 0 0.2rem rgba(23, 162, 184, 0.25);
+    }
+    &:checked ~ .form-check-label {
+      .form-check-box {
+        background-color: rgba(23, 162, 184);
+        &::after {
+          transform: rotate(45deg) scale(1);
+        }
+        &::before {
+          transform: rotate(-45deg) scale(1);
+        }
+      }
     }
   }
 }

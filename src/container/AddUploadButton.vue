@@ -23,7 +23,7 @@ export default {
     },
     fileLimit: {
       type: Number,
-      default: 0,
+      default: 1000000,
     },
     fileLength: {
       type: Number,

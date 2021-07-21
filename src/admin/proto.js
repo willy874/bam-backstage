@@ -24,7 +24,7 @@ export default class Admin {
   }
 
   allowPermissions(jwt) {
-    // console.log(this.router)
+    this.router.addRoutePermissions(jwt.payload.profile.permissions)
     Object.keys(this.permission).forEach(key => {
       const auth = this.permission[key]
       if (jwt.payload.profile.permissions.includes(auth.name) || this.allow) {

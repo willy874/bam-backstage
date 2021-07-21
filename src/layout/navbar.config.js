@@ -48,9 +48,12 @@ export default [{
   {
     title: '資源管理',
     icon: 'Image',
-    route: {
-      name: 'Asset',
-    },
+    children: [{
+      title: '圖片管理',
+      route: {
+        name: 'AssetList',
+      },
+    }]
   },
   // {
   //   title: '訂單管理',
