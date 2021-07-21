@@ -1,13 +1,8 @@
 import {
   DataModel,
-  MemberRelationModel
+  MemberRelationModel,
+  PushLogRelationModel
 } from '../index'
-import {
-  request
-} from '@/plugins/axios/request'
-import {
-  handleApiConfig
-} from '../utility/index'
 
 /**
  * @extends DataModel
@@ -17,6 +12,7 @@ import {
  * @property {String} color 類別顏色 [文字顏色,背景顏色]
  * @property {Boolean} selected 是否被選取
  * @property {Array<MemberRelationModel>} members 會員資料
+ * @property {PushLogRelationModel} logs 產品類型的說明
  */
 export default class MemberCategoryModel extends DataModel {
   constructor(args) {
@@ -29,64 +25,48 @@ export default class MemberCategoryModel extends DataModel {
     this.text = entity.text || ''
     if (entity.members) {
       this.members = entity.members ? entity.members.map(p => new MemberRelationModel(p)) : []
-      this.arrayModel.members = MemberRelationModel
     }
+    this.arrayModel.members = MemberRelationModel
+    if (entity.logs) {
+      this.logs = entity.categories ? entity.logs.map(p => new PushLogRelationModel(p)) : []
+    }
+    this.arrayModel.logs = PushLogRelationModel
     // proto set
     this.api = entity.api || 'member-category'
   }
 
   readPushLogs(options = {}) {
-    this.loading = true
-    return new Promise((resolve, reject) => {
-      request(
-          handleApiConfig({
-            default: {
-              method: 'GET',
-              url: `${this.api}/${this[this.primaryKey]}/push-logs`,
-            },
-            model: this,
-            ...options,
-          })
-        )
-        .then((res) => {
-          this.loading = false
-          const handleData = options.responseHandler ? options.responseHandler(res.data) : this.responseHandler(res.data, options)
-          this.set(handleData, options)
-          resolve(res)
-        })
-        .catch((err) => {
-          this.loading = false
-          reject(err)
-        })
+    return this.request({
+      options,
+      default: {
+        method: 'GET',
+        url: `${this.api}/${this[this.primaryKey]}/push-logs`,
+      },
+      successCallback: (res) => {
+        const handleData = options.responseHandler ? options.responseHandler(res.data) : this.responseHandler(res.data, options)
+        this.set({
+          logs: handleData
+        }, options)
+      }
     })
   }
 
   pushMessage(message = {}, options = {}) {
-    this.loading = true
-    return new Promise((resolve, reject) => {
-      request(
-          handleApiConfig({
-            default: {
-              method: 'POST',
-              url: `${this.api}/${this[this.primaryKey]}/push-message`,
-            },
-            model: this,
-            requesHandler() {
-              return message
-            },
-            ...options,
-          })
-        )
-        .then((res) => {
-          this.loading = false
-          const handleData = options.responseHandler ? options.responseHandler.call(this, res.data) : this.responseHandler(res.data, options)
-          this.set(handleData, options)
-          resolve(res)
-        })
-        .catch((err) => {
-          this.loading = false
-          reject(err)
-        })
+    options.requesHandler = () => {
+      return message
+    }
+    return this.request({
+      options,
+      default: {
+        method: 'POST',
+        url: `${this.api}/${this[this.primaryKey]}/push-message`,
+      },
+      successCallback: (res) => {
+        const handleData = options.responseHandler ? options.responseHandler(res.data) : this.responseHandler(res.data, options)
+        this.set({
+          logs: handleData
+        }, options)
+      }
     })
   }
 }

@@ -23,7 +23,7 @@ export default {
       default: () => null,
     },
   },
-  setup(props, context) {
+  setup(props) {
     const dialog = useDialog()
     const { detailPage } = props
     const listModelData = isReactive(props.listModelData) ? props.listModelData : reactive(props.listModelData)

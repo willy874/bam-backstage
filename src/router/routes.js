@@ -7,6 +7,8 @@ import ProductListProps from '../views/Product/list'
 import RichmenuListProps from '../views/Richmenu/list'
 import AssetListView from '../views/Asset/List.vue'
 import AssetImageProps from '../views/Asset/image.js'
+import AdminListProps from '../views/System/list.js'
+import RoleListProps from '../views/System/Role/list.js'
 
 const routes = [{
     name: 'Home',
@@ -147,13 +149,13 @@ const routes = [{
         name: 'AdminList',
         path: 'list',
         component: ArticleListView,
-        // props: MemberListProps,
+        props: AdminListProps,
       },
       {
         name: 'RoleList',
         path: 'roles',
         component: ArticleListView,
-        // props: CategoriesListProps,
+        props: RoleListProps,
       }
     ],
   },

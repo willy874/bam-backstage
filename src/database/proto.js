@@ -8,15 +8,22 @@ export default class Database {
     const entity = args || {}
     this.router = entity.router
     this.store = entity.store
-    this.auth = entity.auth || []
     this.created = entity.created || (() => {})
-    this.allow = true
+    /**
+     * 有開放權限的 model
+     * @type {Array<String>} 
+     */
+    this.auth = entity.auth || []
+    /**
+     * 是否初始化就去請求所有API
+     * @type {Boolean} 
+     */
     this.createLoad = false
     // 初始化
     this.data = {}
     Promise.all(
       Object.keys(this.data).map((key) => {
-        if (this.auth.includes(key) || this.allow) {
+        if (this.auth.includes(key)) {
           this.data[key] = null
           return Promise.resolve()
         } else {
@@ -36,10 +43,10 @@ export default class Database {
     return new Model(schema)
   }
 
-  async login() {
+  async login(permission) {
     return await Promise.all(
       Object.keys(schema).map((key) => {
-        if (this.auth.includes(key) || this.allow) {
+        if (permission[key].allow) {
           this.data[key] = this.createModel(schema[key])
           this.store.state.model[key] = this.data[key]
           if (this.createLoad) {

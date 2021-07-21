@@ -1,3 +1,5 @@
+import Swal from '@/utility/alert'
+
 export default function (options) {
   return (err) => {
     const req = err.request
@@ -7,6 +9,10 @@ export default function (options) {
     if (process.env.NODE_ENV === 'development') {
       if (req.status === 401 || req.status === 403) {
         console.log('無使用者權限', res)
+        // Swal.error({ title: '目前無權限' })
+        if (options.router) {
+          options.router.replace('/login')
+        }
       }
       if (req.status === 404) {
         console.log('查無資料', res)

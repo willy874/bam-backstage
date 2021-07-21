@@ -27,7 +27,7 @@
       </div>
     </template>
     <div>
-      <DataTable v-bind="dataTableProps" style="height: calc(100vh - 210px)"></DataTable>
+      <DataTable v-bind="dataTableProps" style="height: 60vh"></DataTable>
     </div>
     <template #footer>
       <div class="flex flex-wrap justify-between items-center rounded-b-lg border-t p-2">

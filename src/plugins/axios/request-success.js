@@ -1,9 +1,9 @@
 function getQueryStringUrl(url, params) {
-  const query = params
-    ? Object.keys(params)
-        .map((key) => `${key}=${params[key].toString()}`)
-        .join('&')
-    : ''
+  const query = params ?
+    Object.keys(params)
+    .map((key) => `${key}=${params[key].toString()}`)
+    .join('&') :
+    ''
   if (/\?/.test(url)) {
     return url + '&' + query
   }

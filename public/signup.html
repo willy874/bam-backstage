@@ -8,11 +8,253 @@
   <title>會員綁定</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css"
     integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
+  <style type="text/css">
+    .form-title {
+      width: 80px;
+      margin-top: 7px;
+    }
+
+    /* iOS  */
+    header {
+      padding-top: constant(safe-area-inset-top);
+      padding-top: env(safe-area-inset-top);
+    }
+
+    /* iOS */
+    footer {
+      padding-bottom: constant(safe-area-inset-bottom);
+      padding-bottom: env(safe-area-inset-bottom);
+    }
+  </style>
 </head>
 
-<body>
+<body class="bg-light">
+  <header class="bg-dark shadow-lg">
+    <div class="py-3">
+      <div class="text-light text-center h5 mb-0" style="letter-spacing: 4px">會員資料綁定</div>
+    </div>
+  </header>
+  <main>
+    <form>
+      <div class="py-2"></div>
+      <div class="mx-auto py-4 text-center" style="width: 200px;">
+        <div class="rounded-circle mb-3 shadow" style=" padding-top: 100%;background-size: cover;" id="member-photo">
+        </div>
+        <div class="h5 mb-0 py-1 d-inline-block text-nowrap font-weight-bold" style="border-bottom: 3px solid #6c757d;"
+          id="member-name">
+          沒有成員
+        </div>
+      </div>
+      <div class="container" style="max-width: 576px;">
+        <div class="d-flex py-1">
+          <div class="flex-shrink-0 py-1">
+            <div class="form-title">姓名</div>
+          </div>
+          <div class="flex-grow-1 py-1">
+            <div>
+              <input type="text" name="real_name" class="form-control" placeholder="請填寫姓名" name="real_name">
+              <div class="error-message" error-message="real_name"></div>
+            </div>
+          </div>
+        </div>
+        <div class="d-flex py-1">
+          <div class="flex-shrink-0 py-1">
+            <div class="form-title">性別</div>
+          </div>
+          <div class="flex-grow-1 py-1">
+            <div style="margin-top: 7px">
+              <div class="d-flex mx-n2">
+                <div class="form-check mx-2">
+                  <input class="form-check-input" type="radio" name="gender" class="" value="1" id="gender-man">
+                  <label class="form-check-label" for="gender-man">男</label>
+                </div>
+                <div class="form-check mx-2">
+                  <input class="form-check-input" type="radio" name="gender" class="" value="2" id="gender-wanman">
+                  <label class="form-check-label" for="gender-wanman">女</label>
+                </div>
+              </div>
+              <div class="error-message" error-message="gender"></div>
+            </div>
+          </div>
+        </div>
+        <div class="d-flex py-1">
+          <div class="flex-shrink-0 py-1">
+            <div class="form-title">電子郵件</div>
+          </div>
+          <div class="flex-grow-1 py-1">
+            <div>
+              <input type="email" name="email" class="form-control" placeholder="請填寫電子郵件">
+              <div class="error-message" error-message="email"></div>
+            </div>
+          </div>
+        </div>
+        <div class="d-flex py-1">
+          <div class="flex-shrink-0 py-1">
+            <div class="form-title">電話</div>
+          </div>
+          <div class="flex-grow-1 py-1">
+            <div>
+              <input type="phone" name="phone_number" class="form-control" placeholder="請填寫電話號碼">
+              <div class="error-message" error-message="phone_number"></div>
+            </div>
+          </div>
+        </div>
+        <div class="d-flex py-1">
+          <div class="flex-shrink-0 py-1">
+            <div class="form-title">地址</div>
+          </div>
+          <div class="flex-grow-1 py-1">
+            <div>
+              <input type="text" name="address" class="form-control" placeholder="請填寫地址">
+              <div class="error-message" error-message="address"></div>
+            </div>
+          </div>
+        </div>
+        <div class="row justify-content-center py-4">
+          <div class="col-6">
+            <button class="btn btn-secondary w-100" type="reset">重置</button>
+          </div>
+          <div class="col-6">
+            <button class="btn btn-primary w-100" type="submit">送出</button>
+          </div>
+        </div>
+      </div>
+    </form>
+  </main>
+  <footer></footer>
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"
     integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+  <script type="text/javascript">
+    (function () {
+      var baseUrl = './'
+
+      function Profile(args) {
+        var entity = args || {}
+        this.id = entity.id || ''
+        this.userid = entity.userid || ''
+        this.name = entity.name || ''
+        this.status_message = entity.status_message || ''
+        this.image_url = entity.image_url || ''
+        this.line_status = entity.line_status || 0
+        this.gender = entity.gender || 0
+        this.email = entity.email || ''
+        this.phone_number = entity.phone_number || ''
+        this.address = entity.address || ''
+        this.real_name = entity.real_name || ''
+        this.points = entity.points || 0
+        this.state = entity.state || 0
+        this.created_at = entity.created_at || ''
+        this.updated_at = entity.updated_at || ''
+        this.verification = entity.verification || false
+      }
+
+      /**
+       * @param {Profile} model
+       */
+      function validateModel(model) {
+        var errors = {}
+        if (model.real_name === '') {
+          errors.real_name = '請填寫姓名'
+        }
+        if (model.gender === 0) {
+          errors.gender = '請選擇性別'
+        }
+        if (model.email === '') {
+          errors.email = '請填寫電子郵件'
+        }
+        if (model.phone_number === '') {
+          errors.phone_number = '請填寫電話號碼'
+        }
+        if (model.address === '') {
+          errors.address = '請填寫地址'
+        }
+        $('.error-message').hide()
+        for (key in errors) {
+          $('[error-message=' + key + ']').show().text(errors[key])
+        }
+        return Boolean(Object.keys(errors).length)
+      }
+
+      /**
+       * @param {Profile} model
+       */
+      function listenerSubmit(model) {
+        var valuesProperty = ['real_name', 'gender', 'email', 'phone_number', 'address']
+        valuesProperty.forEach(function (property) {
+          $('[name=' + property + ']').on('change', function (event) {
+            model[property] = event.target.value
+            console.table('model[property]', model[property])
+          })
+        })
+        $('form').on('submit', function (event) {
+          event.preventDefault()
+          if (validateModel(model)) {
+            return
+          }
+          $.ajax({
+            method: 'POST',
+            url: baseUrl + 'member-profile',
+            headers: {
+              Authorization: 'Bearer ' + new URLSearchParams(location.search).get(
+                'token')
+            },
+            data: {
+              real_name: model.real_name,
+              gender: Number(model.gender),
+              email: model.email,
+              phone_number: model.phone_number,
+              address: model.address,
+              verification: true,
+              _method: 'PUT'
+            },
+            success: ajaxPutProfile,
+            error: ajaxPutError
+          })
+        })
+      }
+
+      function ajaxPutProfile() {
+        $('main').html('' +
+          '<div class="text-center" style="padding: 60px 0; font-size: 32px;">' +
+          '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="200" height="200" fill="#28a745"><path d="m369.164062 174.769531c7.8125 7.8125 7.8125 20.476563 0 28.285157l-134.171874 134.175781c-7.8125 7.808593-20.472657 7.808593-28.285157 0l-63.871093-63.875c-7.8125-7.808594-7.8125-20.472657 0-28.28125 7.808593-7.8125 20.472656-7.8125 28.28125 0l49.730468 49.730469 120.03125-120.035157c7.8125-7.808593 20.476563-7.808593 28.285156 0zm142.835938 81.230469c0 141.503906-114.515625 256-256 256-141.503906 0-256-114.515625-256-256 0-141.503906 114.515625-256 256-256 141.503906 0 256 114.515625 256 256zm-40 0c0-119.394531-96.621094-216-216-216-119.394531 0-216 96.621094-216 216 0 119.394531 96.621094 216 216 216 119.394531 0 216-96.621094 216-216zm0 0"/></svg>' +
+          '<div class="py-4">綁定成功</div>' +
+          '</div>')
+      }
+
+      function ajaxPutError() {
+        $('main').html('<div class="text-center" style="padding: 80px 0; font-size: 32px;">綁定失敗</div>')
+      }
+
+      function ajaxGetError() {
+        $('main').html('<div class="text-center" style="padding: 80px 0; font-size: 32px;">找不到會員</div>')
+      }
+
+      function isVerification() {
+        $('main').html('<div class="text-center" style="padding: 80px 0; font-size: 32px;">您已綁定過會員</div>')
+      }
+
+      $.ajax({
+        method: 'GET',
+        url: baseUrl + 'member-profile',
+        headers: {
+          Authorization: 'Bearer ' + new URLSearchParams(location.search).get('token')
+        },
+        success: ajaxGetProfile,
+        error: ajaxGetError
+      })
+
+      function ajaxGetProfile(data) {
+        var model = new Profile(data)
+        $('#member-photo').css('background-image', 'url(' + model.image_url + ')')
+        $('#member-name').text(model.name)
+        if (model.verification) {
+          isVerification()
+        } else {
+          listenerSubmit(model)
+        }
+      }
+    })()
+  </script>
 </body>
 
 </html>

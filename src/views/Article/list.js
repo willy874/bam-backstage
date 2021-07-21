@@ -14,7 +14,7 @@ export default {
   dataTable: {
     options: [{
         title: 'No.',
-        field: 'id',
+        field: (item, index) => index + 1,
         width: '80px',
         align: 'center'
       },

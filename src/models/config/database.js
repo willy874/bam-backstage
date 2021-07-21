@@ -9,6 +9,8 @@ import {
   AssetsListModel,
   RichmenusListModel,
   MemberCategoryModel,
+  RoleModel,
+  AdminModel,
 } from '@/models/index'
 
 export default {
@@ -45,5 +47,13 @@ export default {
   MemberCategories: {
     model: MemberCategoryModel,
     api: 'member-categories',
+  },
+  Roles: {
+    model: RoleModel,
+    api: 'roles',
+  },
+  Admins: {
+    model: AdminModel,
+    api: 'admins',
   }
 }

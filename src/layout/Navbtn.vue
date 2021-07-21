@@ -1,5 +1,5 @@
 <template>
-  <div @click="clickBtn" class="navbtn" :class="{ active: global[stateName] }">
+  <div @click="clickBtn" class="navbtn" :class="[template, { active: global[stateName] }]">
     <div class="navbtn__line top-line"></div>
     <div class="navbtn__line center-line"></div>
     <div class="navbtn__line bottom-line"></div>
@@ -21,6 +21,10 @@ export default {
     action: {
       type: String,
     },
+    template: {
+      type: String,
+      default: 'default',
+    },
   },
   setup(props) {
     const store = useStore()
@@ -36,39 +40,93 @@ export default {
 <style lang="scss" scoped>
 .navbtn {
   position: relative;
-  width: 25px;
-  height: 20px;
   cursor: pointer;
-  .navbtn__line {
-    position: absolute;
-    right: 0;
-    left: 0;
-    background-color: currentColor;
-  }
-  .top-line {
-    top: 0;
-    height: 16%;
-    transition: height 300ms ease;
-  }
-  .bottom-line {
-    bottom: 0;
-    height: 18%;
-    transition: height 300ms ease;
-  }
-  .center-line {
-    top: 0;
-    bottom: 0;
-    clip-path: polygon(50% 50%, 0 50%, 0 42%, 50% 42%, 100% 42%, 100% 50%, 50% 50%, 100% 50%, 100% 58%, 50% 58%, 0 58%, 0 50%);
-    transition: clip-path 300ms linear;
-    will-change: clip-path;
-  }
-  &.active {
-    .center-line {
-      clip-path: polygon(40% 50%, 10% 10%, 20% 0%, 50% 40%, 80% 0%, 90% 10%, 60% 50%, 90% 90%, 80% 100%, 50% 60%, 20% 100%, 10% 90%);
+  &.default {
+    width: 25px;
+    height: 20px;
+    .navbtn__line {
+      position: absolute;
+      right: 0;
+      left: 0;
+      background-color: currentColor;
     }
-    .top-line,
+    .top-line {
+      top: 0;
+      height: 4px;
+      transition: transform 300ms ease;
+      transform-origin: left top;
+    }
     .bottom-line {
-      height: 0;
+      bottom: 0;
+      height: 4px;
+      transition: transform 300ms ease;
+      transform-origin: left bottom;
+    }
+    .center-line {
+      top: 50%;
+      right: 0;
+      left: 0;
+      height: 4px;
+      transition: opacity 300ms linear;
+      transform: translateY(-50%);
+    }
+    &.active {
+      .top-line {
+        transform: rotate(45deg);
+      }
+      .bottom-line {
+        transform: rotate(-45deg);
+      }
+      .center-line {
+        opacity: 0;
+      }
+    }
+  }
+  &.rotate {
+    width: 24px;
+    height: 24px;
+    .navbtn__line {
+      position: absolute;
+      right: 0;
+      left: 0;
+      background-color: currentColor;
+    }
+    .top-line {
+      top: 8px;
+      left: 7px;
+      width: 10px;
+      height: 2px;
+      border-radius: 4px;
+      transition: transform 300ms ease;
+      transform: rotate(45deg);
+      transform-origin: center top;
+    }
+    .bottom-line {
+      bottom: 8px;
+      left: 7px;
+      width: 10px;
+      height: 2px;
+      border-radius: 4px;
+      transition: transform 300ms ease;
+      transform: rotate(-45deg);
+      transform-origin: center bottom;
+    }
+    .center-line {
+      top: 0;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      background: transparent;
+      border: 3px solid currentColor;
+      border-radius: 50%;
+    }
+    &.active {
+      .top-line {
+        transform: rotate(-45deg);
+      }
+      .bottom-line {
+        transform: rotate(45deg);
+      }
     }
   }
 }

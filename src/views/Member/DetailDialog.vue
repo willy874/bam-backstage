@@ -190,9 +190,6 @@ export default {
       formTitleMarginTop,
       errorMessages,
       covnBadgeColor,
-      ready() {
-        props.initPosition()
-      },
       close: throttle(() => {
         props.dialog.closePopup(props.id)
       }, 300),

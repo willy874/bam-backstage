@@ -2,12 +2,7 @@
   <div id="layout" class="overflow-hidden">
     <Header>
       <template #left>
-        <div
-          class="flex items-center"
-          :style="{
-            width: `${asideWidth}px`,
-          }"
-        >
+        <div class="flex items-center" :style="{ width: `${asideWidth}px` }">
           <div class="px-3 flex-shrink-0" v-show="global.windowInnerWidth < deviceSwitch">
             <Navbtn state-name="asideShow" commit="setAsideShow" />
           </div>
@@ -24,7 +19,7 @@
       <Aside>
         <template #header>
           <div class="p-2" v-show="global.windowInnerWidth > deviceSwitch">
-            <Navbtn state-name="asideShow" commit="setAsideShow" class="text-primary-mirror" />
+            <Navbtn state-name="asideShow" commit="setAsideShow" template="rotate" class="text-primary-mirror" />
           </div>
         </template>
         <div>

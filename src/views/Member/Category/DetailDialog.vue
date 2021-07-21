@@ -31,15 +31,21 @@
           <span class="text-red-500 text-xs" v-show="model.hasError('description')">{{ model.hasError('description') }}</span>
         </div>
       </div>
-      <div class="py-2 sm:flex">
-        <div class="flex-shrink-0 w-20">群組會員</div>
-        <div class="flex-grow">
-          <div class="flex-grow flex items-center">
-            <div class="mr-2">{{ selectedMemerCount }}</div>
-            <button type="button" class="btn-icon text-primary-500 hover:text-primary-600" @click="openMemberSelect">
-              <Icon src="List" size="16" />
-            </button>
+      <div class="sm:flex">
+        <div class="py-2 flex sm:w-1/2">
+          <div class="flex-shrink-0 w-20">群組會員</div>
+          <div class="flex-grow">
+            <div class="flex-grow flex items-center">
+              <div class="mr-2">{{ selectedMemerCount }}</div>
+              <button type="button" class="btn-icon text-primary-500 hover:text-primary-600" @click="openMemberSelect">
+                <Icon src="List" size="16" />
+              </button>
+            </div>
           </div>
+        </div>
+        <div class="py-2 sm:w-1/2 text-right">
+          <button class="btn mx-1 text-primary-mirror bg-blue-500 hover:bg-blue-600" type="button" @click="pushMessage">群組推播</button>
+          <button class="btn mx-1 text-primary-mirror bg-primary-500 hover:bg-primary-600" type="button" @click="listCategory">推播紀錄</button>
         </div>
       </div>
     </form>
@@ -52,7 +58,6 @@
           </div>
         </div>
         <div class="px-1 flex flex-wrap items-center">
-          <button class="btn mx-1 text-primary-mirror bg-primary-500 hover:bg-primary-600" type="button" @click="pushMessage">推播</button>
           <button v-if="model.id" class="btn mx-1 text-primary-mirror bg-red-500 hover:bg-red-600" type="button" @click="deleteModel">刪除</button>
           <button class="btn mx-1 text-primary-mirror bg-gray-500 hover:bg-gray-600" type="button" @click="close">取消</button>
           <SubmitButton class="mx-1 text-primary-mirror bg-green-500 hover:bg-green-600" type="button" :model="model" @click="submit">送出</SubmitButton>
@@ -63,7 +68,7 @@
 </template>
 
 <script>
-import { reactive, ref, onMounted, nextTick, computed } from 'vue'
+import { reactive, ref, onMounted, nextTick } from 'vue'
 import throttle from 'lodash/throttle'
 import { MemberCategoryModel } from '@/models/index'
 import { isModelError } from '@/utility/model-handle'
@@ -72,6 +77,7 @@ import Swal from '@/utility/alert'
 import DialogLayout from '@/container/DialogLayout.vue'
 import MemberListDialog from '@/container/MemberListDialog.vue'
 import LinePushOptionDialog from '../LinePush/OptionDialog.vue'
+import ListLogsDialog from './ListDialog.vue'
 
 export default {
   name: 'CategoryDetailDialog',
@@ -208,7 +214,15 @@ export default {
       }, 1000),
       pushMessage: throttle(() => {
         props.dialog.popup(LinePushOptionDialog, {
-          width: '576px',
+          width: '460px',
+          props: {
+            model,
+          },
+        })
+      }, 300),
+      listCategory: throttle(() => {
+        props.dialog.popup(ListLogsDialog, {
+          width: '460px',
           props: {
             model,
           },

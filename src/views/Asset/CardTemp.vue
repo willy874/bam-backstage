@@ -3,7 +3,7 @@
     <div class="absolute inset-0 flex-grow flex flex-col p-2">
       <div class="flex-grow overflow-auto scroll-bar">
         <div
-          class="flex flex-wrap"
+          class="flex flex-wrap h-full"
           :class="{ 'bg-primary-500 bg-opacity-10': dragHover }"
           ref="root"
           @drop="drop"

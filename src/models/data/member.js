@@ -41,8 +41,8 @@ export default class MemberModel extends DataModel {
     this.selected = entity.selected || false
     if (entity.categories) {
       this.categories = entity.categories ? entity.categories.map(p => new MemberRelationModel(p)) : []
-      this.arrayModel.categories = MemberRelationModel
     }
+    this.arrayModel.categories = MemberRelationModel
     // proto set
     this.api = entity.api || 'member'
   }

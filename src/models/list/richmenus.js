@@ -9,7 +9,7 @@ export default class RichmenusListModel extends ListModel {
     this.listModelType = RichmenusListModel
   }
 
-  syncMenu() {
-    return new Promise((resolve, reject) => {})
-  }
+  // syncMenu() {
+  //   return new Promise((resolve, reject) => {})
+  // }
 }

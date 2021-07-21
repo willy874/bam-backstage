@@ -5,21 +5,70 @@ import {
   request
 } from '@/plugins/axios/request'
 import config from '@/config/index'
-
+import {
+  devErrorMessage
+} from '@/utility/error'
+import permission from './permission'
 export default class Admin {
   constructor(args) {
     const entity = args || {}
     this.router = entity.router
     this.store = entity.store
     this.user = null
-    this.auth = []
+    this.permission = permission
+    /**
+     * 是否開放全部權限
+     * @type {Boolean} 
+     */
+    this.allow = false
+  }
+
+  allowPermissions(jwt) {
+    // console.log(this.router)
+    Object.keys(this.permission).forEach(key => {
+      const auth = this.permission[key]
+      if (jwt.payload.profile.permissions.includes(auth.name) || this.allow) {
+        auth.allow = true
+      }
+    })
+
+    // 用 Router name 來設定權限
+  }
+
+  parseJwt(token) {
+    try {
+      return {
+        header: JSON.parse(atob(token.split('.')[0])),
+        payload: JSON.parse(atob(token.split('.')[1])),
+        verifySignature: token.split('.')[2]
+      }
+    } catch (error) {
+      devErrorMessage({
+        dir: '/src/admin',
+        component: 'class Admin',
+        func: 'parseJwt',
+        message: error.message,
+      })
+      return false
+    }
   }
 
   async login(data) {
-    const tokenData = (await request.post('admin/login', data)).data
-    localStorage.setItem('token', tokenData)
-    // const token = JSON.parse(atob(tokenData.split('.')[1]))
-    // console.log(token)
+    try {
+      const res = await request.post('dashboard/login', data)
+      if (res.isAxiosError) {
+        throw res.message
+      }
+      const tokenData = res.data
+      localStorage.setItem('token', tokenData)
+    } catch (error) {
+      devErrorMessage({
+        dir: '/src/admin',
+        component: 'class Admin',
+        func: 'login',
+        message: error.message,
+      })
+    }
     return await this.autoLogin()
   }
 
@@ -30,13 +79,10 @@ export default class Admin {
     const database = useDatabase()
     if (tokenData) {
       try {
-        const res = await request.get('admin/profile')
-        if (res.isAxiosError) {
-          console.log('profile isAxiosError')
-          throw res.message
-        }
-        this.user = res.data
-        database.login()
+        const jwtData = this.parseJwt(tokenData)
+        this.allowPermissions(jwtData)
+        this.user = jwtData.payload.profile
+        database.login(this.permission)
         if (lastPage) {
           this.router.replace(lastPage)
         } else if (currentUrl && !['/login'].includes(currentUrl)) {
@@ -48,10 +94,12 @@ export default class Admin {
         }
         localStorage.removeItem('lastPage')
       } catch (error) {
-        if (process.env.NODE_ENV === 'development') {
-          console.log('%c[admin/proto] Error: autoLogin', 'color: #f00;background: #ff000011;padding: 2px 6px;border-radius: 4px;')
-          console.dir(error)
-        }
+        devErrorMessage({
+          dir: '/src/admin',
+          component: 'class Admin',
+          func: 'autoLogin',
+          message: error.message,
+        })
         if (error.request.status === 401 || error.request.status === 403) {
           localStorage.removeItem('token')
           if (currentUrl !== '/login') {
@@ -74,6 +122,9 @@ export default class Admin {
   }
 
   getAuth(name) {
+    Object.keys(this.permission).map(key => {
+      return this.permission[key]
+    })
     return {}
   }
 }

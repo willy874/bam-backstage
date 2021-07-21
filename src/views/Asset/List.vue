@@ -28,6 +28,7 @@
 
 <script>
 import { ref, reactive, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 import { Observable } from 'bam-utility-plugins'
 import { useDialog } from '@/components/dialog/index'
 import { useDatabase } from '@/database/index'
@@ -79,30 +80,30 @@ export default {
     },
   },
   setup(props) {
+    const router = useRouter()
     const database = useDatabase()
+    if (!database.data[props.modelName]) {
+      devErrorMessage({
+        dir: '/src/views/Article',
+        component: 'ArticleList',
+        func: 'setup',
+        message: `${props.modelName} models is not auth.`,
+      })
+    }
     const listData = reactive(database.data[props.modelName])
     const searchBarShow = ref(false)
     const filterOptions = reactive(new SearchModel({ search: 'name' }))
     const reflashData = async () => {
-      try {
-        await listData.readList()
-        const allResponse = await Promise.allSettled(listData.data.map(async (model) => await model.readData()))
-        // 清除無效圖片
-        allResponse
-          .map((res, index) => (res.value ? false : listData.data[index].id))
-          .filter((p) => p !== false)
-          .forEach((id) => {
-            const index = listData.data.map((p) => Number(p.id)).indexOf(Number(id))
-            listData.data.splice(index, 1)
-          })
-      } catch (error) {
-        devErrorMessage({
-          dir: '/src/views/Asset',
-          component: 'AssetList',
-          func: 'reflashData',
-          message: error.message,
+      await listData.readList()
+      const allResponse = await Promise.allSettled(listData.data.map(async (model) => await model.readData()))
+      // 清除無效圖片
+      allResponse
+        .map((res, index) => (res.value ? false : listData.data[index].id))
+        .filter((p) => p !== false)
+        .forEach((id) => {
+          const index = listData.data.map((p) => Number(p.id)).indexOf(Number(id))
+          listData.data.splice(index, 1)
         })
-      }
     }
     onMounted(async () => {
       await reflashData()

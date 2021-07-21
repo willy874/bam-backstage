@@ -28,6 +28,7 @@
 
 <script>
 import { ref, reactive, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 import PageLayout from '@/container/PageLayout.vue'
 import SearchBar from '@/container/SearchBar.vue'
 import { ArticleModel, SearchModel } from '@/models/index'
@@ -94,7 +95,16 @@ export default {
     },
   },
   setup(props) {
+    const router = useRouter()
     const database = useDatabase()
+    if (!database.data[props.modelName]) {
+      devErrorMessage({
+        dir: '/src/views/Article',
+        component: 'ArticleList',
+        func: 'setup',
+        message: `${props.modelName} models is not auth.`,
+      })
+    }
     const listModelData = reactive(database.data[props.modelName])
     const searchBarShow = ref(false)
     const filterOptions = reactive(new SearchModel(props.search))
@@ -122,18 +132,7 @@ export default {
     }
 
     onMounted(async () => {
-      try {
-        if (listModelData) {
-          await listModelData.readList()
-        }
-      } catch (error) {
-        devErrorMessage({
-          dir: '/src/views/Article',
-          component: 'ArticleList',
-          func: 'deleteImage',
-          message: error.message,
-        })
-      }
+      await listModelData.readList()
     })
 
     return setupResult

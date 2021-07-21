@@ -1,9 +1,9 @@
 <template>
   <DialogLayout v-bind="$props" title="分眾群組訊息推播">
     <form @submit="submit">
-      <div class="py-2 -mx-2 sm:flex">
-        <div class="flex-shrink-0 px-2 w-20" :style="{ marginTop: `${formTitleMarginTop}px` }">推播訊息</div>
-        <div class="flex-grow">
+      <div>
+        <div class="w-20" :style="{ marginTop: `${formTitleMarginTop}px` }">推播訊息</div>
+        <div class="py-2">
           <TextBox type="textarea" rows="10" :model="model" field="text" placeholder="請輸入要對該群組推播的訊息" />
           <span class="text-red-500 text-xs" v-show="model.hasError('text')">{{ model.hasError('text') }}</span>
         </div>

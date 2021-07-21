@@ -52,25 +52,25 @@ export default [{
       name: 'Asset',
     },
   },
-  {
-    title: '訂單管理',
-    icon: 'ShoppingList',
-    route: {
-      name: 'Order',
-    },
-  },
-  {
-    title: '客服管理',
-    icon: 'Headphones',
-    route: {
-      name: 'Service',
-    },
-  },
+  // {
+  //   title: '訂單管理',
+  //   icon: 'ShoppingList',
+  //   route: {
+  //     name: 'Order',
+  //   },
+  // },
+  // {
+  //   title: '客服管理',
+  //   icon: 'Headphones',
+  //   route: {
+  //     name: 'Service',
+  //   },
+  // },
   {
     title: '系統管理',
     icon: 'Settings',
     children: [{
-        title: '系統管理者',
+        title: '管理者列表',
         route: {
           name: 'AdminList',
         },

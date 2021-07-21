@@ -107,7 +107,7 @@ export default class DataModel {
     return this.errors || false
   }
 
-  formDataFomat(data, exclude) {
+  formDataFormat(data, exclude) {
     const fomat = (value, keys = []) => {
       Object.keys(value).forEach((key) => {
         const formName = [...keys, key].map((k, i) => (i ? `[${k}]` : k)).join('')
@@ -143,7 +143,7 @@ export default class DataModel {
           ...entity[key],
           api: this.api
         })
-      } else if (Array.isArray(this[key]) && Object.keys(this.arrayModel).includes(key)) {
+      } else if (Array.isArray(entity[key]) && Object.keys(this.arrayModel).includes(key)) {
         const Model = this.arrayModel[key]
         this[key] = entity[key].map((p) => {
           return new Model({
@@ -169,103 +169,79 @@ export default class DataModel {
     return resData
   }
 
-  readData(options = {}) {
+  request(params) {
     this.loading = true
+    const options = params.options || {}
     return new Promise((resolve, reject) => {
       request(
           handleApiConfig({
-            default: {
-              method: 'GET',
-              url: `${this.api}/${this[this.primaryKey]}`,
-            },
+            default: params.default,
             model: this,
-            ...options,
+            ...options
           })
         )
         .then((res) => {
           this.loading = false
-          const handleData = options.responseHandler ? options.responseHandler(res.data) : this.responseHandler(res.data, options)
-          this.set(handleData, options)
+          if (params.successCallback) {
+            params.successCallback(res)
+          }
           resolve(res)
         })
         .catch((err) => {
           this.loading = false
+          if (params.errorCallback) {
+            params.errorCallback(res)
+          }
           reject(err)
         })
+    })
+  }
+
+  readData(options = {}) {
+    return this.request({
+      options,
+      default: {
+        method: 'GET',
+        url: `${this.api}/${this[this.primaryKey]}`,
+      },
+      successCallback: (res) => {
+        const handleData = options.responseHandler ? options.responseHandler(res.data) : this.responseHandler(res.data, options)
+        this.set(handleData, options)
+      }
     })
   }
 
   createData(options = {}) {
-    this.loading = true
-    return new Promise((resolve, reject) => {
-      request(
-          handleApiConfig({
-            default: {
-              method: 'POST',
-              url: `${this.api}`,
-            },
-            model: this,
-            ...options,
-          })
-        )
-        .then((res) => {
-          this.loading = false
-          const handleData = options.responseHandler ? options.responseHandler.call(this, res.data) : this.responseHandler(res.data, options)
-          this.set(handleData, options)
-          resolve(res)
-        })
-        .catch((err) => {
-          this.loading = false
-          reject(err)
-        })
+    return this.request({
+      options,
+      default: {
+        method: 'POST',
+        url: `${this.api}`,
+      },
+      successCallback: (res) => {
+        const handleData = options.responseHandler ? options.responseHandler.call(this, res.data) : this.responseHandler(res.data, options)
+        this.set(handleData, options)
+      }
     })
   }
 
   updateData(options = {}) {
-    this.loading = true
-    return new Promise((resolve, reject) => {
-      request(
-          handleApiConfig({
-            default: {
-              method: 'PUT',
-              url: `${this.api}/${this[this.primaryKey]}`,
-            },
-            model: this,
-            ...options,
-          })
-        )
-        .then((res) => {
-          this.loading = false
-          resolve(res)
-        })
-        .catch((err) => {
-          this.loading = false
-          reject(err)
-        })
+    return this.request({
+      options,
+      default: {
+        method: 'PUT',
+        url: `${this.api}/${this[this.primaryKey]}`,
+      }
     })
   }
 
   deleteData(options = {}) {
-    this.loading = true
-    return new Promise((resolve, reject) => {
-      request(
-          handleApiConfig({
-            default: {
-              method: 'DELETE',
-              url: `${this.api}/${this[this.primaryKey]}`,
-            },
-            model: this,
-            ...options,
-          })
-        )
-        .then((res) => {
-          this.loading = false
-          resolve(res)
-        })
-        .catch((err) => {
-          this.loading = false
-          reject(err)
-        })
+    return this.request({
+      options,
+      default: {
+        method: 'DELETE',
+        url: `${this.api}/${this[this.primaryKey]}`,
+      }
     })
   }
 }

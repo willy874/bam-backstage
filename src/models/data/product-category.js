@@ -1,4 +1,6 @@
-import { DataModel } from '../index'
+import {
+  DataModel
+} from '../index'
 
 /**
  * @extends DataModel

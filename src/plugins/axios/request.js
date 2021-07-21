@@ -4,7 +4,6 @@ import requestSuccess from './request-success'
 import requesError from './reques-error'
 import responseSuccess from './response-success'
 import responseError from './response-error'
-
 export const LoadingModels = {}
 
 /**
@@ -15,6 +14,9 @@ export const LoadingModels = {}
  */
 export const getAbstractRequest = (axios, options = {}) => {
   options.LoadingModels = LoadingModels
+  if (Axios.router) {
+    options.router = Axios.router
+  }
   axios.interceptors.request.use(requestSuccess(options), requesError(options))
   axios.interceptors.response.use(responseSuccess(options), responseError(options))
   const AxiosRequest = function (...args) {

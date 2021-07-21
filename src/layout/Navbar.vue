@@ -1,9 +1,9 @@
 <template>
   <nav>
     <ul class="overflow-hidden">
-      <li class="text-primary-mirror" v-for="item in nav" :key="item.uuid">
+      <li class="text-primary-mirror" v-for="item in nav" :key="item.id">
         <div class="relative flex items-center bg-white bg-opacity-0 hover:bg-opacity-40">
-          <template v-if="item.route && hasRoute(item.route.name)">
+          <template v-if="item.route">
             <div class="flex flex-grow items-center relative">
               <div class="flex-shrink-0 p-2">
                 <Icon v-if="item.icon" :src="item.icon" :size="global.iconWidth" />
@@ -37,7 +37,7 @@
           </template>
         </div>
         <ul v-if="item.children && item.children.length && item.open">
-          <li class="relative py-2 flex bg-white bg-opacity-20 hover:bg-opacity-40" v-for="child in item.children" :key="child.uuid">
+          <li class="relative py-2 flex bg-white bg-opacity-20 hover:bg-opacity-40" v-for="child in item.children" :key="child.id">
             <div class="flex-shrink-0 p-2">
               <Icon v-if="child.icon" :src="child.icon" :size="global.iconWidth" />
               <div v-else :style="{ width: `${global.iconWidth}px` }"></div>
@@ -70,25 +70,45 @@ export default {
       default: () => [],
     },
   },
-  setup(props, context) {
+  setup(props) {
     const store = useStore()
     const router = useRouter()
-    const navMiddleware = (config) => {
-      return config.map((model) => {
-        return {
-          uuid: uuid(),
-          open: false,
-          ...model,
-          children: model.children
-            ? model.children.map((child) => {
-                return {
-                  uuid: uuid(),
-                  ...child,
-                }
-              })
-            : [],
-        }
-      })
+    const navMiddleware = () => {
+      return props.config
+        .filter((model) => {
+          // 過濾不存在的 route
+          if (model.route && router.hasRoute(model.route.name)) {
+            return true
+          }
+          if (model.children && model.children.some((m) => router.hasRoute(m.route.name))) {
+            return true
+          }
+        })
+        .map((model) => {
+          // 過濾不存在的 children route
+          const children = model.children ? model.children.filter((m) => m.route && router.hasRoute(m.route.name)) : []
+          // 當只有一個子選項卻沒有 route
+          if (children.length === 1) {
+            return {
+              id: model.id || uuid(),
+              open: model.open || false,
+              ...model,
+              route: children[0].route,
+              children: undefined,
+            }
+          }
+          return {
+            id: model.id || uuid(),
+            open: model.open || false,
+            ...model,
+            children: children.map((child) => {
+              return {
+                id: model.id || uuid(),
+                ...child,
+              }
+            }),
+          }
+        })
     }
     const nav = reactive(navMiddleware(props.config))
     store.commit('setNav', nav)
@@ -102,7 +122,6 @@ export default {
           store.commit('setAsideShow', true)
         }
       },
-      hasRoute: router.hasRoute,
     }
   },
 }
