@@ -43,7 +43,8 @@ export default {
   setup(props, context) {
     const errorInit = ref(false)
     const type = ref(props.type)
-    // const isPassword = ref(type.value === 'password')
+    const isPassword = ref(type.value === 'password')
+    const isViewPassword = ref(false)
     const classPrefix = props.classPrefix
     const computedHandle = ref(props.computed)
     const validate = ref(props.validate)

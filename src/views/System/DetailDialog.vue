@@ -11,15 +11,7 @@
       <div v-if="!model.is_developer" class="py-2 xs:w-1/2 w-full flex">
         <div class="flex-shrink-0 w-20" :style="{ marginTop: `${formTitleMarginTop}px` }">角色</div>
         <div class="flex-grow">
-          <SelectDrop
-            :model="model"
-            :close-element="popupElement"
-            field="role_id"
-            placeholder="請選擇角色"
-            :options="roleList"
-            optionValue="id"
-            optionName="name"
-          ></SelectDrop>
+          <SelectDrop :model="model" field="role_id" placeholder="請選擇角色" :options="roleList" optionValue="id" optionName="name"></SelectDrop>
           <span class="text-red-500 text-xs" v-show="model.hasError('role_id')">{{ model.hasError('role_id') }}</span>
         </div>
       </div>

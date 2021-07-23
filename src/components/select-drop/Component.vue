@@ -1,6 +1,6 @@
 /* eslint-disable prettier/prettier */
 <script>
-import { h, ref, reactive, computed, onMounted, onUnmounted, watch } from 'vue'
+import { h, ref, reactive, computed, watch } from 'vue'
 import cx from 'classnames'
 import { v4 as uuid } from 'uuid'
 import { ListModel } from '@/models/index'
@@ -45,10 +45,6 @@ export default {
     panelHeight: {
       type: Number,
       default: 200,
-    },
-    closeElement: {
-      type: Object,
-      default: () => ref(document.body),
     },
   },
   setup(props, context) {
@@ -128,22 +124,6 @@ export default {
         }
       }
     )
-    // const clickOver = (e) => {
-    //   if (!refsElement.root.value.contains(e.target)) {
-    //     selectActive.value = false
-    //   }
-    // }
-    // onMounted(() => {
-    //   if (props.closeElement.value && props.closeElement.value instanceof HTMLElement) {
-    //     props.closeElement.value.addEventListener('click', clickOver)
-    //   }
-    // })
-    // onUnmounted(() => {
-    //   if (props.closeElement.value && props.closeElement.value instanceof HTMLElement) {
-    //     props.closeElement.value.removeEventListener('click', clickOver)
-    //   }
-    // })
-
     const renderInput = () => {
       return h('input', {
         ...context.attrs,
@@ -171,34 +151,57 @@ export default {
           context.emit('blur', e)
         },
         onInput: (e) => {
-          const option = optionsFilter.value[Number(e.target.value) - 1]
-          if (option) {
+          const indexCheck = optionsFilter.value[Number(e.target.value) - 1]
+          const valueCheck = optionsFilter.value.map((p) => String(p[props.optionValue])).includes(e.target.value)
+          const textCheck = optionsFilter.value.map((p) => String(p[props.optionName])).includes(e.target.value)
+          if (indexCheck) {
+            e.target.value = e.target.value.replace(new RegExp(e.target.value + '$'), '')
+            const option = indexCheck
             modelValue.value = option[props.optionValue]
             selected.value = option
+            selectActive.value = true
           }
-          context.emit('input', e)
+          if (textCheck) {
+            const option = optionsFilter.value.find((p) => p[props.optionName] === e.target.value)
+            modelValue.value = option[props.optionValue]
+            selected.value = option
+            selectActive.value = true
+          }
+          if (valueCheck) {
+            const option = optionsFilter.value.find((p) => p[props.optionValue] === e.target.value)
+            if (option) {
+              modelValue.value = option[props.optionName]
+              selected.value = option
+              selectActive.value = true
+            }
+          }
+          context.emit('input', e, selected.value)
         },
         onChange: (e) => {
           const option = optionsFilter.value.find((p) => String(p[props.optionValue]) === e.target.value)
           if (option) {
             modelValue.value = option[props.optionValue]
             selected.value = option
-            context.emit('change', e)
+            context.emit('change', e, selected.value)
           }
         },
         onKeydown(e) {
           const keyName = e.key
-          if ((keyName === 'Tab' || keyName === 'ArrowDown') && optionsFilter.value.length) {
-            e.preventDefault()
-            optionsFilter.value[0].ref.focus()
+          if (optionsFilter.value.length && selectActive.value) {
+            if (keyName === 'ArrowDown') {
+              optionsFilter.value[0].ref.focus()
+            }
+            if (keyName === 'Tab') {
+              if (e.shiftKey) {
+                selectActive.value = false
+              } else {
+                e.preventDefault()
+                optionsFilter.value[0].ref.focus()
+              }
+            }
           }
           if (keyName === 'Enter') {
-            const valueCheck = optionsFilter.value.map((p) => String(p[props.optionValue])).includes(e.target.value)
-            const textCheck = optionsFilter.value.map((p) => String(p[props.optionName])).includes(e.target.value)
-            if (selectOpen.value && (valueCheck || textCheck)) {
-            } else {
-              selectActive.value = !selectOpen.value
-            }
+            selectActive.value = !selectOpen.value
           }
           const indexCheck = optionsFilter.value[Number(e.target.value) - 1]
           if (indexCheck) {
@@ -317,7 +320,7 @@ export default {
             if (modelValue.value !== item[props.optionValue]) {
               selected.value = item
               modelValue.value = item[props.optionValue]
-              context.emit('change', e)
+              context.emit('change', e, selected.value)
             }
             selectActive.value = false
             refsElement.input.value.focus()
@@ -331,16 +334,34 @@ export default {
           onKeydown(e) {
             e.preventDefault()
             const keyName = e.key
-            if ((keyName === 'Tab' && !e.shiftKey) || keyName === 'ArrowDown') {
+            if (keyName === 'Tab' && !e.shiftKey) {
               if (arrFilter[index + 1]) {
                 arrFilter[index + 1].ref.focus()
-              } else if (keyName === 'Tab') {
+              } else {
                 selectActive.value = false
                 refsElement.input.value.focus()
               }
             }
-            if (((keyName === 'Tab' && e.shiftKey) || keyName === 'ArrowUp') && index) {
-              arrFilter[index - 1].ref.focus()
+            if (keyName === 'ArrowDown') {
+              if (arrFilter[index + 1]) {
+                arrFilter[index + 1].ref.focus()
+              } else {
+                arrFilter[0].ref.focus()
+              }
+            }
+            if (keyName === 'Tab' && e.shiftKey) {
+              if (index) {
+                arrFilter[index - 1].ref.focus()
+              } else {
+                refsElement.input.value.focus()
+              }
+            }
+            if (keyName === 'ArrowUp') {
+              if (index) {
+                arrFilter[index - 1].ref.focus()
+              } else {
+                arrFilter[arrFilter.length - 1].ref.focus()
+              }
             }
             if (keyName === 'Enter') {
               selected.value = item

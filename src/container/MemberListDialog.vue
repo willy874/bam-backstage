@@ -8,13 +8,7 @@
               <Icon class="text-primary-500" src="Search" size="24" />
             </div>
             <div v-if="filterOptions.allow.length" class="p-1">
-              <SelectDrop
-                :model="filterOptions"
-                field="search"
-                :options="filterOptions.allow"
-                :close-element="popupElement"
-                placeholder="請選擇關鍵字搜尋類型"
-              ></SelectDrop>
+              <SelectDrop :model="filterOptions" field="search" :options="filterOptions.allow" placeholder="請選擇關鍵字搜尋類型"></SelectDrop>
             </div>
             <div v-if="filterOptions.type === 'keyword'" class="p-1">
               <TextBox type="text" :model="filterOptions" field="keyword" placeholder="請輸入搜尋關鍵字" />

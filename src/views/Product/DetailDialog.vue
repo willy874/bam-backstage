@@ -43,7 +43,6 @@
           <div class="flex-grow">
             <SelectDrop
               :model="model"
-              :close-element="popupElement"
               field="category_id"
               placeholder="請選擇類型"
               :options="ProductCategories"

@@ -56,15 +56,7 @@
       <div class="py-2 xs:w-1/2 w-full flex">
         <div class="flex-shrink-0 w-20" :style="{ marginTop: `${formTitleMarginTop}px` }">封面圖片</div>
         <div class="flex-grow">
-          <SelectDrop
-            :model="model"
-            :close-element="popupElement"
-            field="image_id"
-            placeholder="請選擇封面圖片"
-            :options="imageList"
-            optionValue="image_id"
-            optionName="name"
-          ></SelectDrop>
+          <SelectDrop :model="model" field="image_id" placeholder="請選擇封面圖片" :options="imageList" optionValue="image_id" optionName="name"></SelectDrop>
           <span class="text-red-500 text-xs" v-show="model.hasError('image_id')">{{ model.hasError('image_id') }}</span>
         </div>
       </div>
