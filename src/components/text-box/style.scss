@@ -1,15 +1,17 @@
 @mixin slot-class {
-  .input-box__prefix svg {
-    color: var(--select-box-primary);
+  .input-box__append-slots {
+    display: flex;
+    align-items: center;
+    padding: 0 0.25rem;
+    svg {
+      color: var(--input-box-primary);
+    }
   }
-  .input-box__suffix svg {
-    color: var(--select-box-primary);
-  }
-  .input-box__prepend svg {
-    color: var(--select-box-primary);
-  }
-  .input-box__append svg {
-    color: var(--select-box-primary);
+  .input-box__password {
+    cursor: pointer;
+    svg {
+      color: #cecece;
+    }
   }
 }
 
@@ -36,6 +38,9 @@
     position: relative;
     display: flex;
     flex-grow: 1;
+    border: 1px solid var(--input-box-border-color);
+    border-radius: 0.25rem;
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
   }
   .input-box__wrapper {
     position: relative;
@@ -52,31 +57,37 @@
     color: var(--input-box-text-color);
     background-color: var(--input-box-bg-color);
     background-clip: padding-box;
-    border: 1px solid var(--input-box-border-color);
-    border-radius: 0.25rem;
-    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+    border: 0;
     appearance: none;
     &::placeholder {
       color: var(--input-box-placeholder-color);
     }
   }
   &:hover {
+    .input-box__container {
+      border: 1px solid var(--input-box-border-color-hover);
+    }
     .input-box__input {
       color: var(--input-box-text-color-hover);
       background-color: var(--input-box-bg-color-hover);
-      border: 1px solid var(--input-box-border-color-hover);
     }
-    @include slot-class;
+    .input-box__append-slots svg {
+      color: var(--input-box-text-color-hover);
+    }
   }
   &:focus-within {
+    .input-box__container {
+      border: 1px solid var(--input-box-border-color-focus);
+      box-shadow: 0 0 0.4rem 0 var(--input-box-border-color-focus);
+    }
     .input-box__input {
       color: var(--input-box-text-color-focus);
       background-color: var(--input-box-bg-color-focus);
-      border: 1px solid var(--input-box-border-color-focus);
       outline: 0;
-      box-shadow: 0 0 0.4rem 0 var(--input-box-border-color-focus);
     }
-    @include slot-class;
+    .input-box__append-slots svg {
+      color: var(--input-box-text-color-focus);
+    }
   }
   &.input-box--invalid {
     --input-box-text-color: var(--input-box-danger);
@@ -95,4 +106,5 @@
     --input-box-border-color: var(--input-box-disabled);
     --input-box-border-color-hover: var(--input-box-disabled);
   }
+  @include slot-class;
 }
