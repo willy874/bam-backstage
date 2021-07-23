@@ -83,7 +83,6 @@ export default {
       }
       await permissionsList.readList()
       permissions.value = model.permissions.map((p) => p.id)
-      console.log(permissions.value)
       await nextTick()
       props.initPosition()
     })

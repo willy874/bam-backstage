@@ -110,14 +110,14 @@ export default {
     })
     const uploadChange = (files) => {
       const Model = props.modelSchema.model
+      const fileList = createFileModelList(files, Model)
+      const count = reactive({
+        value: fileList.length,
+      })
+      const uploadIndex = reactive({
+        value: 0,
+      })
       const observable = new Observable((subscriber) => {
-        const fileList = createFileModelList(files, Model)
-        const count = reactive({
-          value: fileList.length,
-        })
-        const uploadIndex = reactive({
-          value: 0,
-        })
         fileList.forEach((model) => {
           subscriber.next(async () => {
             const res = await model.createData()

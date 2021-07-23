@@ -40,7 +40,6 @@ export default {
     watch(
       () => props.props.index.value,
       (value) => {
-        console.log(value, props.props.index.value)
         if (value === props.props.count.value) {
           props.dialog.closePopup(props.id)
         }

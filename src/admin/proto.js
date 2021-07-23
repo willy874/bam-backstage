@@ -1,4 +1,7 @@
 import {
+  ref
+} from 'vue'
+import {
   useDatabase
 } from '@/database/index'
 import {
@@ -16,6 +19,7 @@ export default class Admin {
     this.store = entity.store
     this.user = null
     this.permission = permission
+    this.isLogin = ref(false)
     /**
      * 是否開放全部權限
      * @type {Boolean} 
@@ -31,8 +35,6 @@ export default class Admin {
         auth.allow = true
       }
     })
-
-    // 用 Router name 來設定權限
   }
 
   parseJwt(token) {
@@ -50,6 +52,35 @@ export default class Admin {
         message: error.message,
       })
       return false
+    }
+  }
+
+  reflashToken() {
+    const timeLimit = 30 * 60000 // 微秒
+    const fixTime = 1 * 60000 // 微秒
+    const tokenLimit = localStorage.getItem('tokenLimit') || new Date().getTime() + timeLimit - fixTime
+    localStorage.setItem('tokenLimit', tokenLimit)
+    const awaitTime = tokenLimit - new Date().getTime()
+    if (awaitTime >= 0) {
+      setTimeout(async () => {
+        try {
+          console.log('reflash Token')
+          const res = await request.get('reflash-token')
+          if (res.isAxiosError) {
+            throw res.message
+          }
+          localStorage.setItem('token', res.data)
+          localStorage.setItem('tokenLimit', new Date().getTime() + timeLimit - fixTime)
+          this.reflashToken()
+        } catch (error) {
+          devErrorMessage({
+            dir: '/src/admin',
+            component: 'class Admin',
+            func: 'reflashToken',
+            message: error.message,
+          })
+        }
+      }, awaitTime)
     }
   }
 
@@ -80,6 +111,14 @@ export default class Admin {
     if (tokenData) {
       try {
         const jwtData = this.parseJwt(tokenData)
+        if (!jwtData) {
+          throw {
+            status: 401,
+            message: 'jwt limt time out.'
+          }
+        }
+        this.isLogin.value = true
+        // this.reflashToken()
         this.allowPermissions(jwtData)
         this.user = jwtData.payload.profile
         database.login(this.permission)
@@ -100,13 +139,11 @@ export default class Admin {
           func: 'autoLogin',
           message: error.message,
         })
-        if (error.request.status === 401 || error.request.status === 403) {
-          localStorage.removeItem('token')
-          if (currentUrl !== '/login') {
-            localStorage.setItem('lastPage', currentUrl)
-          }
-          this.router.replace('/login')
+        localStorage.removeItem('token')
+        if (currentUrl !== '/login') {
+          localStorage.setItem('lastPage', currentUrl)
         }
+        this.router.replace('/login')
       }
     } else {
       if (currentUrl !== '/login') {
@@ -118,13 +155,8 @@ export default class Admin {
   logout() {
     this.user = null
     localStorage.removeItem('token')
+    localStorage.removeItem('tokenLimit')
+    this.isLogin.value = false
     this.router.replace('/login')
-  }
-
-  getAuth(name) {
-    Object.keys(this.permission).map(key => {
-      return this.permission[key]
-    })
-    return {}
   }
 }

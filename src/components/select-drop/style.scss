@@ -25,12 +25,13 @@
   --select-drop-bg-color: #fff;
   --select-drop-border-color: #cecece;
   --select-drop-text-color-focus: var(--select-drop-text-color);
-  --select-drop-bg-color-focus: var(--select-drop-bg-color);
+  --select-drop-bg-color-input-focus: var(--select-drop-bg-color);
   --select-drop-border-color-focus: #86b7fe;
   --select-drop-text-color-hover: var(--select-drop-text-color);
   --select-drop-text-color-selected: var(--select-drop-text-color);
-  --select-drop-bg-color-hover: rgba(23, 162, 184, 0.3);
-  --select-drop-bg-color-selected: rgba(23, 162, 184, 0.3);
+  --select-drop-bg-color-hover: rgba(23, 162, 184, 0.4);
+  --select-drop-bg-color-selected: rgba(23, 162, 184, 0.2);
+  --select-drop-bg-color-option-focus: rgba(23, 162, 184, 0.4);
   --select-drop-border-color-hover: var(--select-drop-primary);
   --select-drop-scrollbar-color-thumb: #86b7fe;
   --select-drop-scrollbar-color-track-piece: rgba(23, 162, 184, 0.3);
@@ -123,6 +124,10 @@
   }
   .select-drop__option {
     cursor: pointer;
+    &:focus {
+      background-color: var(--select-drop-bg-color-option-focus);
+      outline: 0;
+    }
     &:hover {
       background-color: var(--select-drop-bg-color-hover);
     }
@@ -152,7 +157,7 @@
     }
     .select-drop__input {
       color: var(--select-drop-text-color-focus);
-      background-color: var(--select-drop-bg-color-focus);
+      background-color: var(--select-drop-bg-color-input-focus);
       outline: 0;
     }
     @include slot-class;

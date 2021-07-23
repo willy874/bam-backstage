@@ -16,7 +16,7 @@
       </template>
     </Header>
     <div class="flex flex-grow relative">
-      <Aside>
+      <Aside v-if="isLogin">
         <template #header>
           <div class="p-2" v-show="global.windowInnerWidth > deviceSwitch">
             <Navbtn state-name="asideShow" commit="setAsideShow" template="rotate" class="text-primary-mirror" />
@@ -43,6 +43,7 @@
 <script>
 import { ref } from 'vue'
 import { useStore } from 'vuex'
+import { useAdmin } from '@/admin/index'
 import config from '@/config/index'
 import Header from './Header.vue'
 import HeaderBar from './HeaderBar.vue'
@@ -55,8 +56,10 @@ export default {
   name: 'Layout',
   setup() {
     const store = useStore()
-
+    const admin = useAdmin()
+    const isLogin = admin.isLogin
     return {
+      isLogin,
       navbarConfig,
       global: ref(store.state.global),
       asideWidth: ref(config.layout.asideWidth),

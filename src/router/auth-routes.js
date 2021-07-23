@@ -146,7 +146,13 @@ const routes = [{
   },
 ]
 
-export default function addRoutePermissions(permissions) {
+export default function addRoutePermissions(permissions = [], dev = false) {
+  if (dev) {
+    routes.forEach(route => {
+      this.addRoute(route)
+    })
+    return
+  }
   permissions.forEach(auth => {
     const route = routes.find(r => r.name === auth)
     if (route) {

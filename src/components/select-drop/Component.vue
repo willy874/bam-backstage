@@ -18,10 +18,6 @@ export default {
       type: String,
       required: true,
     },
-    computed: {
-      type: Function,
-      default: (v) => v,
-    },
     validate: {
       type: [Function, Boolean],
       default: () => false,
@@ -58,11 +54,13 @@ export default {
   setup(props, context) {
     const errorInit = ref(false)
     const classPrefix = props.classPrefix
-    const computedHandle = ref(props.computed)
     const validate = ref(props.validate)
     const field = ref(props.field)
     const model = props.model
+    const selectActive = ref(false)
     const selectFocus = ref(false)
+    const selectHover = ref(false)
+    const selectOpen = ref(false)
     const refsElement = {
       root: ref({}),
       input: ref({}),
@@ -130,23 +128,22 @@ export default {
         }
       }
     )
-    const clickOver = (e) => {
-      if (!refsElement.root.value.contains(e.target)) {
-        selectFocus.value = false
-      }
-    }
-    onMounted(() => {
-      if (props.closeElement.value && props.closeElement.value instanceof HTMLElement) {
-        props.closeElement.value.addEventListener('click', clickOver)
-      }
-    })
-    onUnmounted(() => {
-      if (props.closeElement.value && props.closeElement.value instanceof HTMLElement) {
-        props.closeElement.value.removeEventListener('click', clickOver)
-      }
-    })
+    // const clickOver = (e) => {
+    //   if (!refsElement.root.value.contains(e.target)) {
+    //     selectActive.value = false
+    //   }
+    // }
+    // onMounted(() => {
+    //   if (props.closeElement.value && props.closeElement.value instanceof HTMLElement) {
+    //     props.closeElement.value.addEventListener('click', clickOver)
+    //   }
+    // })
+    // onUnmounted(() => {
+    //   if (props.closeElement.value && props.closeElement.value instanceof HTMLElement) {
+    //     props.closeElement.value.removeEventListener('click', clickOver)
+    //   }
+    // })
 
-    // console.log()
     const renderInput = () => {
       return h('input', {
         ...context.attrs,
@@ -154,15 +151,27 @@ export default {
         value: modelValue.value,
         ref: refsElement.input,
         type: 'text',
+        onClick: (e) => {
+          if (selectOpen.value) {
+            selectActive.value = false
+          } else {
+            selectActive.value = true
+          }
+          context.emit('click', e)
+        },
         onFocus: (e) => {
           selectFocus.value = true
           context.emit('focus', e)
         },
         onBlur: async (e) => {
+          selectFocus.value = false
+          if (selectHover.value === false) {
+            selectActive.value = false
+          }
           context.emit('blur', e)
         },
         onInput: (e) => {
-          const option = options.data[Number(e.target.value) - 1]
+          const option = optionsFilter.value[Number(e.target.value) - 1]
           if (option) {
             modelValue.value = option[props.optionValue]
             selected.value = option
@@ -170,11 +179,30 @@ export default {
           context.emit('input', e)
         },
         onChange: (e) => {
-          const option = options.data.find((p) => String(p[props.optionValue]) === e.target.value)
+          const option = optionsFilter.value.find((p) => String(p[props.optionValue]) === e.target.value)
           if (option) {
             modelValue.value = option[props.optionValue]
             selected.value = option
             context.emit('change', e)
+          }
+        },
+        onKeydown(e) {
+          const keyName = e.key
+          if ((keyName === 'Tab' || keyName === 'ArrowDown') && optionsFilter.value.length) {
+            e.preventDefault()
+            optionsFilter.value[0].ref.focus()
+          }
+          if (keyName === 'Enter') {
+            const valueCheck = optionsFilter.value.map((p) => String(p[props.optionValue])).includes(e.target.value)
+            const textCheck = optionsFilter.value.map((p) => String(p[props.optionName])).includes(e.target.value)
+            if (selectOpen.value && (valueCheck || textCheck)) {
+            } else {
+              selectActive.value = !selectOpen.value
+            }
+          }
+          const indexCheck = optionsFilter.value[Number(e.target.value) - 1]
+          if (indexCheck) {
+            e.preventDefault()
           }
         },
         value: selected.value[props.optionName],
@@ -233,6 +261,8 @@ export default {
       }
     })
 
+    const optionsFilter = computed(() => options.data.filter((p) => !p.deleted))
+
     const optionsRefsRender = (item) => {
       return (ref) => {
         item.ref = ref
@@ -244,21 +274,23 @@ export default {
         {
           class: cx(`${classPrefix}__panel`, context.attrs.class),
           style: {
-            maxHeight: selectFocus.value ? `${props.panelHeight}px` : 0,
+            maxHeight: selectActive.value ? `${props.panelHeight}px` : 0,
           },
           onTransitionend: (e) => {
-            if (selectFocus.value) {
+            if (selectActive.value) {
               e.target.style.overflow = 'auto'
+              selectOpen.value = true
               context.emit('open')
             } else {
               refsElement.wrapper.value.style.position = 'static'
               refsElement.wrapper.value.style.maxWidth = selectWidth.value
               refsElement.wrapper.value.style.minWidth = 'none'
+              selectOpen.value = false
               context.emit('close')
             }
           },
           onTransitionstart: (e) => {
-            if (selectFocus.value) {
+            if (selectActive.value) {
               refsElement.wrapper.value.style.position = 'absolute'
               refsElement.wrapper.value.style.maxWidth = 'none'
               refsElement.wrapper.value.style.minWidth = selectWidth.value
@@ -267,15 +299,16 @@ export default {
             }
           },
         },
-        [options.data.filter((p) => !p.deleted).map((option, index) => renderOption(option, index))]
+        [optionsFilter.value.map((option, index, arr) => renderOption(option, index, arr))]
       )
     }
-    const renderOption = (item, index) => {
+    const renderOption = (item, index, arrFilter) => {
       return h(
         'div',
         {
           role: 'option',
           key: item.uuid,
+          tabindex: selectActive.value ? String(index) : undefined,
           class: cx(`${classPrefix}__option`, context.attrs.class, {
             [`${classPrefix}__option--selected`]: item[props.optionValue] === selected.value[props.optionValue],
           }),
@@ -286,7 +319,35 @@ export default {
               modelValue.value = item[props.optionValue]
               context.emit('change', e)
             }
-            selectFocus.value = false
+            selectActive.value = false
+            refsElement.input.value.focus()
+          },
+          onFocus: (e) => {
+            context.emit('optionFocus', e, item, index, arrFilter)
+          },
+          onBlur: (e) => {
+            context.emit('optionBlur', e, item, index, arrFilter)
+          },
+          onKeydown(e) {
+            e.preventDefault()
+            const keyName = e.key
+            if ((keyName === 'Tab' && !e.shiftKey) || keyName === 'ArrowDown') {
+              if (arrFilter[index + 1]) {
+                arrFilter[index + 1].ref.focus()
+              } else if (keyName === 'Tab') {
+                selectActive.value = false
+                refsElement.input.value.focus()
+              }
+            }
+            if (((keyName === 'Tab' && e.shiftKey) || keyName === 'ArrowUp') && index) {
+              arrFilter[index - 1].ref.focus()
+            }
+            if (keyName === 'Enter') {
+              selected.value = item
+              modelValue.value = item[props.optionValue]
+              selectActive.value = false
+              refsElement.input.value.focus()
+            }
           },
         },
         [h('div', { class: cx(`${classPrefix}__text`) }, item[props.optionName] || item[props.optionValue])]
@@ -317,11 +378,19 @@ export default {
         {
           ref: refsElement.root,
           class: cx(`${classPrefix}`, `${classPrefix}--${props.template}`, {
-            [`${classPrefix}--active`]: selectFocus.value,
+            [`${classPrefix}--active`]: selectActive.value,
           }),
           style: {
             height: `${selectHeight.value}px`,
             width: selectWidth.value,
+          },
+          onMouseenter: (e) => {
+            selectHover.value = true
+            context.emit('mouseenter', e)
+          },
+          onMouseleave: (e) => {
+            selectHover.value = false
+            context.emit('mouseleave', e)
           },
         },
         [
