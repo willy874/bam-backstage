@@ -52,9 +52,7 @@ export default class MemberCategoryModel extends DataModel {
   }
 
   pushMessage(message = {}, options = {}) {
-    options.requesHandler = () => {
-      return message
-    }
+    options.requesHandler = () => message
     return this.request({
       options,
       default: {

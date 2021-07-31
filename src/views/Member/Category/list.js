@@ -50,9 +50,7 @@ export default {
       },
       {
         title: '數量',
-        field: (item) => {
-          return 1
-        },
+        field: 'members_count',
         width: '60px',
         align: 'center',
       },

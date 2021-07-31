@@ -70,7 +70,7 @@ export default {
           return
         }
         try {
-          const res = await model.createData()
+          const res = await model.pushMessage({ text: model.text })
           if (res.isAxiosError) {
             throw res.message
           }

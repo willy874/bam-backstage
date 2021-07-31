@@ -27,6 +27,7 @@ new Promise(async (resolve) => {
   // app.config.devtools = true
   app.use(router).use(store).use(DatabaesPlugin).use(AdminPlugin).use(AxiosPlugin).use(ComponentPlugin)
   const admin = useAdmin()
+  // console.log(router)
   await admin.autoLogin()
   resolve(app)
 }).then((app) => {
