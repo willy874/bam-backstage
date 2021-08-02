@@ -26,7 +26,11 @@ export default class OrderModel extends DataModel {
     this.product_description = entity.product_description || ''
     this.product_price = entity.product_price || 0
     this.state = entity.state || 0
-    this.product_data = entity.product_data || '' // JSON
+    try {
+      this.product_data = JSON.parse(entity.product_data || '{}')
+    } catch (error) {
+      this.product_data = entity.product_data || {}
+    }
     // proto set
     this.api = entity.api || 'order'
   }

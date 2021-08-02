@@ -13,7 +13,25 @@ Swal.delete = (count = 0, options = {}) => {
   })
 }
 
+Swal.checkConfirm = (options = {}) => {
+  return Swal.fire({
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#ff0000',
+    cancelButtonColor: '#999',
+    confirmButtonText: '確定',
+    cancelButtonText: '取消',
+    ...options
+  })
+}
+
 Swal.success = (options = {}) => {
+  if (typeof options === 'string') {
+    return Swal.fire({
+      icon: 'success',
+      title: options
+    })
+  }
   return Swal.fire({
     icon: 'success',
     title: '發送成功',
@@ -22,6 +40,12 @@ Swal.success = (options = {}) => {
 }
 
 Swal.error = (options = {}) => {
+  if (typeof options === 'string') {
+    return Swal.fire({
+      icon: 'error',
+      title: options
+    })
+  }
   return Swal.fire({
     icon: 'error',
     title: '系統錯誤，請聯繫開發人員',

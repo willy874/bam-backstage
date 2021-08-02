@@ -19,7 +19,7 @@ export default {
     name: 'Asset',
     allow: false,
   },
-  Order: {
+  Orders: {
     name: 'Order',
     allow: false,
   },

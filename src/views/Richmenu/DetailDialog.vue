@@ -207,13 +207,18 @@ export default {
             if (res.isAxiosError) throw res.message
           }
         } catch (error) {
+          if (error.response) {
+            if (error.response.data.error.code === 0) Swal.error()
+            if (error.response.data.error.code === 1) Swal.error('該圖文選單不存在')
+            if (error.response.data.error.code === 2) Swal.error('更新失敗')
+            if (error.response.data.error.code === 3) Swal.error('LINE系統連線失敗')
+          }
           devErrorMessage({
             dir: '/src/views/Richmenu',
             component: 'RichmenuDetailDialog',
             func: 'submit',
             message: error.message,
           })
-          Swal.error({ title: '儲存失敗' })
         }
       }, 300),
     }

@@ -12,6 +12,7 @@ import {
   devErrorMessage
 } from '@/utility/error'
 import permission from './permission'
+import Swal from '@/utility/alert'
 export default class Admin {
   constructor(args) {
     const entity = args || {}
@@ -64,8 +65,8 @@ export default class Admin {
     if (awaitTime >= 0) {
       setTimeout(async () => {
         try {
-          console.log('reflash Token')
-          const res = await request.get('reflash-token')
+          const adminData = atob(JSON.parse(localStorage.getItem('admin')))
+          const res = await request.post('dashboard/login', adminData)
           if (res.isAxiosError) {
             throw res.message
           }
@@ -92,13 +93,20 @@ export default class Admin {
       }
       const tokenData = res.data
       localStorage.setItem('token', tokenData)
+      localStorage.setItem('admin', btoa(JSON.stringify(data)))
     } catch (error) {
+      if (error.response) {
+        if (error.response.data.error.code === 0) Swal.error()
+        if (error.response.data.error.code === 1) Swal.error('查無此帳號')
+        if (error.response.data.error.code === 2) Swal.error('密碼輸入錯誤')
+      }
       devErrorMessage({
         dir: '/src/admin',
         component: 'class Admin',
         func: 'login',
         message: error.message,
       })
+      console.dir(error)
     }
     return await this.autoLogin()
   }
@@ -118,7 +126,7 @@ export default class Admin {
           }
         }
         this.isLogin.value = true
-        // this.reflashToken()
+        this.reflashToken()
         this.allowPermissions(jwtData)
         this.user = jwtData.payload.profile
         database.login(this.permission)
@@ -154,6 +162,7 @@ export default class Admin {
 
   logout() {
     this.user = null
+    localStorage.removeItem('admin')
     localStorage.removeItem('token')
     localStorage.removeItem('tokenLimit')
     this.isLogin.value = false

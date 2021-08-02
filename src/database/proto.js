@@ -46,16 +46,19 @@ export default class Database {
   async login(permission) {
     return await Promise.all(
       Object.keys(schema).map((key) => {
-        if (permission[key].allow) {
-          this.data[key] = this.createModel(schema[key])
-          this.store.state.model[key] = this.data[key]
-          if (this.createLoad) {
-            return this.data[key].readList()
+        try {
+          if (permission[key].allow) {
+            this.data[key] = this.createModel(schema[key])
+            this.store.state.model[key] = this.data[key]
+            if (this.createLoad) {
+              return this.data[key].readList()
+            }
+            return Promise.resolve()
           }
-          return Promise.resolve()
-        } else {
-          return Promise.resolve()
+        } catch (error) {
+          console.log(`%cNo permission for %c${key}`, 'color: #000;', 'color: #f00;');
         }
+        return Promise.resolve()
       })
     )
   }

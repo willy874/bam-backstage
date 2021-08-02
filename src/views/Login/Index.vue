@@ -41,7 +41,11 @@ export default {
       password: 'password',
     })
     const login = async () => {
-      await admin.login(form)
+      try {
+        admin.login(form)
+      } catch (error) {
+        admin.logout()
+      }
     }
     return { form, login, background: '#fff' }
   },

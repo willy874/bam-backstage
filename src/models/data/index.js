@@ -10,6 +10,7 @@ import MemberCategoryModel from './member-category.js'
 import MemberRelationModel from './member-relation.js'
 import MemberModel from './member.js'
 import NewsLatestModel from './news-latest.js'
+import OrderModel from './order.js'
 import PermissionModel from './permission.js'
 import ProductCategoryModel from './product-category.js'
 import ProductImageModel from './product-image.js'
@@ -34,6 +35,7 @@ export {
   MemberRelationModel,
   MemberModel,
   NewsLatestModel,
+  OrderModel,
   PermissionModel,
   ProductCategoryModel,
   ProductImageModel,

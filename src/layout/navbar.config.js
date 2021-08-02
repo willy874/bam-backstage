@@ -55,13 +55,13 @@ export default [{
       },
     }]
   },
-  // {
-  //   title: '訂單管理',
-  //   icon: 'ShoppingList',
-  //   route: {
-  //     name: 'Order',
-  //   },
-  // },
+  {
+    title: '訂單管理',
+    icon: 'ShoppingList',
+    route: {
+      name: 'Order',
+    },
+  },
   // {
   //   title: '客服管理',
   //   icon: 'Headphones',
