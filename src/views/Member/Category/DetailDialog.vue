@@ -36,7 +36,7 @@
           <div class="flex-shrink-0 w-20">群組會員</div>
           <div class="flex-grow">
             <div class="flex-grow flex items-center">
-              <div class="mr-2">{{ selectedMemerCount }}</div>
+              <div class="mr-2">{{ model.members_count }}</div>
               <button type="button" class="btn-icon text-primary-500 hover:text-primary-600" @click="openMemberSelect">
                 <Icon src="List" size="16" />
               </button>
@@ -87,7 +87,6 @@ export default {
   },
   setup(props) {
     const model = reactive(new MemberCategoryModel(props.props.model))
-    const selectedMemerCount = ref(2)
     onMounted(async () => {
       await model.readData()
       await nextTick()
@@ -118,7 +117,6 @@ export default {
     return {
       model,
       badgeColor,
-      selectedMemerCount,
       formTitleMarginTop,
       errorMessages,
       close,

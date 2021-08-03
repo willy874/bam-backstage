@@ -14,7 +14,7 @@
             </TextBox>
           </div>
           <div class="py-2">
-            <TextBox :model="form" field="password">
+            <TextBox type="password" :model="form" field="password">
               <template #prefix>
                 <Icon class="m-1 text-blue-400" src="Padlock" size="24" />
               </template>
