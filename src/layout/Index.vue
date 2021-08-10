@@ -7,7 +7,9 @@
             <Navbtn state-name="asideShow" commit="setAsideShow" />
           </div>
           <div class="flex-grow px-3 py-1">
-            <img class="h-10" src="../assets/logo-light.png" alt="" />
+            <RouterLink to="/">
+              <img class="h-10" src="../assets/logo-light.png" alt="" />
+            </RouterLink>
           </div>
         </div>
       </template>

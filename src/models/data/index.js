@@ -1,6 +1,7 @@
 import AdminModel from './admin.js'
 import ArticleImageModel from './article-image.js'
 import ArticleModel from './article.js'
+import DashboardModel from './dashboard.js'
 import FileModel from './file.js'
 import ImageAssetModel from './image-asset.js'
 import ImageTagModel from './image-tag.js'
@@ -26,6 +27,7 @@ export {
   AdminModel,
   ArticleImageModel,
   ArticleModel,
+  DashboardModel,
   FileModel,
   ImageAssetModel,
   ImageTagModel,

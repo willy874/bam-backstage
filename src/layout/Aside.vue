@@ -10,7 +10,7 @@
       '--tw-translate-x': global.windowInnerWidth < deviceSwitch && !global.asideShow ? `-100%` : 0,
     }"
   >
-    <div class="absolute inset-0 overflow-y-auto overflow-x-hidden flex flex-col">
+    <div class="absolute inset-0 scroll-bar flex flex-col">
       <aside id="aside" class="flex flex-col flex-grow">
         <div class="flex-shrink-0">
           <slot name="header"></slot>
