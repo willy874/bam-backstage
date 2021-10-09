@@ -115,6 +115,7 @@ export default {
         ],
       }
     })
+    console.log(model)
     onMounted(async () => {
       await model.readData()
     })
